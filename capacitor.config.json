@@ -1,0 +1,6 @@
+{
+	"appId": "io.ionic.starter",
+	"appName": "kolonyc-app",
+	"webDir": "www",
+	"bundledWebRuntime": false
+}

@@ -1,0 +1,8 @@
+{
+  "name": "kolonyc-app",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "angular",
+  "id": "2f877879"
+}
