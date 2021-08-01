@@ -1,0 +1,95 @@
+<ion-header>
+  <ion-toolbar color="danger">
+    <ion-buttons slot="start">
+      <ion-menu-button></ion-menu-button>
+    </ion-buttons>
+    <ion-title>
+      Mi cuenta
+    </ion-title>
+    <ion-buttons slot="end" (click)="updateProfile()" style="zoom:2.0; padding-right: 4px;">
+      <ion-icon name="checkmark"></ion-icon>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <form [formGroup]="form">
+    <ion-list lines="full" *ngIf="user" class="ion-padding">
+      <ion-item>
+        <ion-label position="floating">Email</ion-label>
+        <ion-input required type="text" placeholder="Email" formControlName="email" disabled="disabled"></ion-input>
+      </ion-item>
+
+      <ion-item>
+        <ion-label position="floating">Teléfono</ion-label>
+        <ion-input formControlName="phone" type="text" placeholder="Teléfono"></ion-input>
+        <ion-text color="danger"><small *ngIf="!form.controls.phone.valid && attempt">{{defaultErrorMessage}}</small></ion-text>
+      </ion-item>
+
+      <ion-item>
+        <ion-label position="floating">Nombre y apellidos</ion-label>
+        <ion-input required type="text" placeholder="Nombre y apellidos" formControlName="displayName"></ion-input>
+        <ion-text color="danger"><small *ngIf="!form.controls.displayName.valid && attempt">{{defaultErrorMessage}}</small></ion-text>
+      </ion-item>
+    </ion-list>
+
+    <ion-row class="ion-justify-content-center">
+
+      <ion-col size="7">
+        <ion-button color="danger" (click)="loadImage('takePicture')">
+          <ion-icon name="camera"></ion-icon>
+        </ion-button>
+        <ion-button color="secondary" (click)="loadImage('getGallery')">
+          <ion-icon name="image"></ion-icon>
+        </ion-button>
+        <ion-button *ngIf="croppedImage == null" color="primary" (click)="cropImage()">
+          <ion-icon name="crop"></ion-icon>
+        </ion-button>
+        <ion-button *ngIf="croppedImage" color="primary" (click)="loadImage('crop')">
+          <ion-icon name="checkmark"></ion-icon>
+        </ion-button>
+      </ion-col>
+    </ion-row>
+
+    <ion-row  class="ion-justify-content-center">
+      <ion-col size="8">
+        <ion-img *ngIf="base64Image === null" [src]="user.profilePicture" (click)="showPhoto()" style="max-width: 200px;"></ion-img>
+      </ion-col>
+    </ion-row>
+
+    <ion-row  class="ion-justify-content-center">
+      <ion-col size="8">
+        <image-cropper *ngIf="base64Image" [imageBase64]="base64Image" [maintainAspectRatio]="true" [aspectRatio]="4 / 3" format="png" (imageCropped)="imageCropped($event)" outputType="base64"></image-cropper>
+      </ion-col>
+      <ion-col size="4">
+        <img *ngIf="croppedImage" [src]="croppedImage" alt="">
+      </ion-col>
+    </ion-row>
+  </form>
+
+  <ion-list lines="full" *ngIf="user" class="ion-padding">
+    <ion-item (click)="resetPassword()">
+      <ion-icon slot="start" name="md-key"></ion-icon>
+      <ion-label>Cambiar contraseña</ion-label>
+    </ion-item>
+  </ion-list>
+
+  <ion-list *ngIf="colony.name">
+    <ion-item>
+      <ion-label>
+        <div class="ion-text-center">
+          <h1 class="title">Datos colonia</h1>
+        </div>
+      </ion-label>
+    </ion-item>
+    <ion-item>
+      <ion-label class="ion ion-text-wrap">
+        <p><strong>{{colony.name}}</strong> - {{colony.address.street}} {{colony.address.number}}, {{colony.address.municipality}} ({{colony.address.postalCode}}). {{colony.address.state}}. {{colony.address.country}}</p>
+      </ion-label>
+    </ion-item>
+  </ion-list>
+
+
+
+</ion-content>
+

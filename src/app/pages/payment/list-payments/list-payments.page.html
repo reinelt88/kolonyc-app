@@ -1,0 +1,62 @@
+<ion-header>
+  <ion-toolbar color="danger">
+    <ion-buttons slot="start">
+      <ion-menu-button></ion-menu-button>
+    </ion-buttons>
+    <ion-title>
+      Pagos de mensualidades
+    </ion-title>
+  </ion-toolbar>
+</ion-header>
+<ion-content *ngIf="showList">
+  <ion-item *ngIf="user.role === 'ADMIN'">
+    <ion-label>Ubicaciones</ion-label>
+
+    <ionic-selectable #selectComponent [(ngModel)]="house" [items]="houses" canSearch="true" searchPlaceholder="Buscar..." itemValueField="id" itemTextField="place" headerColor="danger" searchFailText="No se encuentran resultados">
+      <ng-template ionicSelectableCloseButtonTemplate>
+        <ion-icon name="close-circle"></ion-icon>
+      </ng-template>
+
+      <ng-template ionicSelectableTitleTemplate>
+        Seleccione {{colonyType | lowercase}}
+      </ng-template>
+
+      <ng-template ionicSelectableItemTemplate let-house="item">
+        {{colonyType}} {{house.place}}
+      </ng-template>
+
+      <ng-template ionicSelectableFooterTemplate>
+        <ion-footer>
+          <ion-toolbar>
+            <ion-row class="ion-text-center">
+              <ion-col size="6"><ion-button color="danger" expand="block" (click)="clear()">Limpiar</ion-button></ion-col>
+              <ion-col size="6"><ion-button color="danger" expand="block" (click)="confirm()">OK</ion-button></ion-col>
+            </ion-row>
+          </ion-toolbar>
+        </ion-footer>
+      </ng-template>
+    </ionic-selectable>
+  </ion-item>
+
+  <ion-searchbar [(ngModel)]="searchTerm" (ionInput)="search($event)" (keydown.enter)="hideKeyboard()" placeholder="Buscar"></ion-searchbar>
+
+  <ion-list>
+    <ion-item-sliding *ngFor="let payment of payments">
+      <ion-item detail="true" lines="inset" button [routerLink]="['/payment-details', payment.id]">
+        <ion-label>
+          <p>{{payment.houseId}} <strong>({{payment.month}} - {{payment.year}})</strong></p>
+          <p>${{payment.amount}}</p>
+          <p>{{payment.type}}</p>
+          <ion-badge [color]="payment.status == 'Pendiente' ? 'warning' : payment.status == 'Realizado' ? 'tertiary' : payment.status == 'Aprobado' ? 'success' : 'danger'">{{payment.status}}</ion-badge>
+          <p><strong>Fecha:</strong> {{payment.createdAt | date:'dd/MM/yyyy h:mm:ss a'}}</p>
+        </ion-label>
+      </ion-item>
+    </ion-item-sliding>
+  </ion-list>
+
+  <ion-fab vertical="bottom" horizontal="end" slot="fixed">
+    <ion-fab-button [routerLink]="['/payment-details']" routerDirection="forward">
+      <ion-icon name="add"></ion-icon>
+    </ion-fab-button>
+  </ion-fab>
+</ion-content>

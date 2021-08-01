@@ -1,0 +1,30 @@
+<ion-header>
+  <ion-toolbar color="danger">
+    <ion-buttons slot="start">
+      <ion-menu-button></ion-menu-button>
+    </ion-buttons>
+    <ion-title>
+      Áreas comunes
+    </ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-list>
+    <ion-item-sliding *ngFor="let a of areas">
+      <ion-item detail="true" lines="inset" button [routerLink]="['/area-details', a.id]">
+        <ion-thumbnail slot="start">
+          <img [src]="a.picture">
+        </ion-thumbnail>
+        <ion-label>
+          <h2 >{{a.name}}</h2>
+        </ion-label>
+      </ion-item>
+    </ion-item-sliding>
+  </ion-list>
+  <ion-fab *ngIf="this.user.role === 'SUPERADMIN' || this.user.role === 'ADMIN'" vertical="bottom" horizontal="end" slot="fixed">
+    <ion-fab-button routerLink="/area-details" routerDirection="forward">
+      <ion-icon name="add"></ion-icon>
+    </ion-fab-button>
+  </ion-fab>
+</ion-content>

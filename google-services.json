@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "415122887478",
+    "firebase_url": "https://colonyc-14f60.firebaseio.com",
+    "project_id": "colonyc-14f60",
+    "storage_bucket": "colonyc-14f60.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:415122887478:android:9396b583308c67d6e31997",
+        "android_client_info": {
+          "package_name": "com.teclients.colonyc"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "415122887478-d9dqced6pk4krfkqr34gdo0c6f0s981h.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD1fquNevpwKLxG9FxPZcT_W3yuCEhrTUY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "415122887478-d9dqced6pk4krfkqr34gdo0c6f0s981h.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

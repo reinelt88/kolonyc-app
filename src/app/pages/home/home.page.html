@@ -1,0 +1,27 @@
+<ion-header *ngIf="savedUser">
+  <ion-toolbar color="danger">
+    <ion-buttons slot="start">
+      <ion-menu-button></ion-menu-button>
+    </ion-buttons>
+    <ion-title>
+      Bienvenido {{(savedUser.displayName !== '') ? savedUser.displayName : savedUser.email}}
+    </ion-title>
+
+    <ion-button slot="end" color="danger" routerLink="/notification" *ngIf="savedUser.role === 'ADMIN' || savedUser.role === 'RESIDENT'">
+      <ion-badge color="danger">{{notificationQuantity}}</ion-badge>
+      <ion-icon name="notifications" slot="icon-only"></ion-icon>
+    </ion-button>
+
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="card-background-page" *ngIf="savedUser">
+
+  <div *ngIf="cards.length>0">
+    <ion-card [routerDirection]="'root'" [routerLink]="c.route" *ngFor="let c of cards">
+      <img [src]="c.src"/>
+      <div class="card-title">{{c.title}}</div>
+    </ion-card>
+  </div>
+
+</ion-content>

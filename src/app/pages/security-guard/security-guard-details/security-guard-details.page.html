@@ -1,0 +1,53 @@
+<ion-header>
+    <ion-toolbar color="danger">
+        <ion-buttons slot="start">
+            <ion-back-button defaultHref="/list-security-guards"></ion-back-button>
+        </ion-buttons>
+        <ion-title *ngIf="securitytId">{{user.displayName}}</ion-title>
+        <ion-title *ngIf="!securitytId">Detalles</ion-title>
+        <ion-buttons slot="end" (click)="saveSecurity()" style="zoom:2.0; padding-right: 4px;">
+            <ion-icon name="checkmark"></ion-icon>
+        </ion-buttons>
+    </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+    <ion-list lines="full">
+        <form [formGroup]="form">
+            <ion-item *ngIf="!securitytId">
+                <ion-label>Generar correo automático</ion-label>
+                <ion-toggle slot="start" name="generateEmail" color="danger" (ionChange)="generateMailChange($event)"></ion-toggle>
+            </ion-item>
+            <ion-item>
+                <ion-label *ngIf="securitytId" position="floating">Email</ion-label>
+                <ion-input formControlName="email" [disabled]="securitytId" type="text" placeholder="Email"></ion-input>
+                <ion-text color="danger"><small *ngIf="!form.controls.email.valid && attempt">Por favor ingrese un email válido</small></ion-text>
+            </ion-item>
+            <ion-item>
+                <ion-label *ngIf="securitytId" position="floating">Nombre</ion-label>
+                <ion-input formControlName="displayName" type="text" placeholder="Nombre" autocapitalize="true"></ion-input>
+                <ion-text color="danger"><small
+                        *ngIf="!form.controls.displayName.valid && attempt">{{defaultErrorMessage}}</small></ion-text>
+            </ion-item>
+            <ion-item>
+                <ion-label *ngIf="securitytId" position="floating">Teléfono</ion-label>
+                <ion-input formControlName="phone" type="text" placeholder="Télefono" (keydown.enter)="hideKeyboard()"></ion-input>
+                <ion-text color="danger"><small *ngIf="!form.controls.phone.valid && attempt">{{defaultErrorMessage}}</small></ion-text>
+            </ion-item>
+        </form>
+    </ion-list>
+
+    <div class="box" *ngIf="securitytId">
+        <div class="preview">
+            <ion-img [src]="user.profilePicture"></ion-img>
+        </div>
+    </div>
+
+
+    <ion-fab vertical="bottom" horizontal="end" slot="fixed" *ngIf="securitytId">
+        <ion-fab-button color="danger" (click)="confirmMessage()">
+            <ion-icon name="trash"></ion-icon>
+        </ion-fab-button>
+    </ion-fab>
+
+</ion-content>

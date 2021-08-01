@@ -1,0 +1,33 @@
+<ion-header>
+  <ion-toolbar color="danger">
+    <ion-buttons slot="start">
+      <ion-menu-button></ion-menu-button>
+    </ion-buttons>
+    <ion-title>
+      Colonias
+    </ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-list>
+    <ion-item-sliding *ngFor="let colony of colonies">
+      <ion-item detail="true" lines="inset" button [routerLink]="['/colony-details', colony.id]">
+        <ion-thumbnail slot="start">
+          <img [src]="colony.picture">
+        </ion-thumbnail>
+        <ion-label>
+          <h2 >{{colony.name}}</h2>
+          <p>Municipio: {{colony.address.municipality}}</p>
+          <p>Estado: {{colony.address.state}}</p>
+        </ion-label>
+      </ion-item>
+    </ion-item-sliding>
+  </ion-list>
+  <ion-fab vertical="bottom" horizontal="end" slot="fixed">
+    <ion-fab-button routerLink="/colony-details" routerDirection="forward">
+      <ion-icon name="add"></ion-icon>
+    </ion-fab-button>
+  </ion-fab>
+</ion-content>
+

@@ -1,0 +1,67 @@
+<ion-header>
+    <ion-toolbar color="danger">
+        <ion-buttons slot="start">
+            <ion-menu-button></ion-menu-button>
+        </ion-buttons>
+        <ion-title>
+            Productos
+        </ion-title>
+    </ion-toolbar>
+</ion-header>
+
+<ion-item>
+    <ion-label>Ubicaciones</ion-label>
+
+    <ionic-selectable #selectComponent [(ngModel)]="category" [items]="categories" canSearch="true" searchPlaceholder="Buscar..." itemValueField="id" itemTextField="name" headerColor="danger" searchFailText="No se encuentran resultados">
+        <ng-template ionicSelectableCloseButtonTemplate>
+            <ion-icon name="close-circle"></ion-icon>
+        </ng-template>
+
+        <ng-template ionicSelectableTitleTemplate>
+            Seleccione categoría
+        </ng-template>
+
+        <ng-template ionicSelectableItemTemplate let-category="item">
+            {{category.name}}
+        </ng-template>
+
+        <ng-template ionicSelectableFooterTemplate>
+            <ion-footer>
+                <ion-toolbar>
+                    <ion-row class="ion-text-center">
+                        <ion-col size="6"><ion-button color="danger" expand="block" (click)="clear()">Limpiar</ion-button></ion-col>
+                        <ion-col size="6"><ion-button color="danger" expand="block" (click)="confirm()">OK</ion-button></ion-col>
+                    </ion-row>
+                </ion-toolbar>
+            </ion-footer>
+        </ng-template>
+    </ionic-selectable>
+</ion-item>
+
+<ion-content>
+
+    <ion-row>
+        <ion-col size="6" *ngFor="let p of products">
+            <ion-card [routerLink]="['/product-details', p.id]">
+                <ion-img *ngIf="p.pictures.length>0" class="full-image" src="{{p.pictures[0]}}"></ion-img>
+                <ion-img *ngIf="p.pictures.length==0" class="full-image" src="{{noImage}}"></ion-img>
+                <ion-card-header>
+                    <div *ngIf="p.offerPrice">${{p.offerPrice}} <s>${{p.price}}</s><br></div>
+                    <div *ngIf="!p.offerPrice">${{p.price}}<br></div>
+                    <small>{{p.name}}</small>
+                </ion-card-header>
+            </ion-card>
+        </ion-col>
+    </ion-row>
+
+<!--    <ion-infinite-scroll threshold="100px" (ionInfinite)="load($event)">-->
+<!--        <ion-infinite-scroll-content loadingSpinner="bubbles" loadingText="Cargando más productos...">-->
+<!--        </ion-infinite-scroll-content>-->
+<!--    </ion-infinite-scroll>-->
+
+    <ion-fab vertical="bottom" horizontal="end" slot="fixed">
+        <ion-fab-button routerLink="/product-details" routerDirection="forward">
+            <ion-icon name="add"></ion-icon>
+        </ion-fab-button>
+    </ion-fab>
+</ion-content>

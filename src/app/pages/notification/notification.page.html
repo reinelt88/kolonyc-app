@@ -1,0 +1,34 @@
+<ion-header>
+    <ion-toolbar color="danger">
+        <ion-buttons slot="start">
+            <ion-menu-button></ion-menu-button>
+        </ion-buttons>
+        <ion-title>
+            Notificaciones
+        </ion-title>
+        <ion-buttons slot="end" routerLink="/home" style="zoom:2.0; padding-right: 7px;">
+            <ion-icon name="close"></ion-icon>
+        </ion-buttons>
+    </ion-toolbar>
+</ion-header>
+
+<ion-content>
+    <ion-list>
+        <ion-item-sliding *ngFor="let n of notifications">
+            <ion-item lines="inset" [color]="n.status === 'unread' ? 'light' : ''">
+                <ion-icon slot="start" name="information-circle"></ion-icon>
+                <ion-label class="ion-text-wrap">
+                    <p>{{n.title}}</p>
+                </ion-label>
+<!--                <ion-icon slot="end" (click)="updateStatus(n.id)" name="checkmark"></ion-icon>-->
+            </ion-item>
+        </ion-item-sliding>
+        <ion-item-sliding *ngIf="notifications.length == 0">
+            <ion-item lines="inset">
+                <ion-label>
+                    <p class="ion-text-center">{{defaultMessage}}</p>
+                </ion-label>
+            </ion-item>
+        </ion-item-sliding>
+    </ion-list>
+</ion-content>

@@ -1,0 +1,98 @@
+<ion-header>
+    <ion-toolbar color="danger">
+        <ion-buttons slot="start">
+            <ion-back-button defaultHref="/list-products"></ion-back-button>
+        </ion-buttons>
+        <ion-title *ngIf="productId">{{marketplaceCategory.name}}</ion-title>
+        <ion-title *ngIf="!productId">Detalles</ion-title>
+        <ion-buttons slot="end" (click)="saveProduct()" style="zoom:2.0; padding-right: 4px;">
+            <ion-icon name="checkmark"></ion-icon>
+        </ion-buttons>
+    </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding" *ngIf="showForm">
+    <form [formGroup]="form">
+        <ion-list lines="full" *ngIf="product">
+            <ion-item>
+                <ion-label>Categoría</ion-label>
+                <ion-select value="categorías" okText="Ok" cancelText="Cancelar" formControlName="categoryId" style="min-width: 70%;">
+                    <ion-select-option *ngFor="let cat of categories" value="{{cat.id}}">{{cat.name | titlecase}}</ion-select-option>
+                </ion-select>
+                <ion-text color="danger"><small *ngIf="!form.controls.categoryId.valid && attempt">{{defaultErrorMessage}}</small></ion-text>
+            </ion-item>
+
+            <ion-item>
+                <ion-label *ngIf="productId" position="floating">Nombre</ion-label>
+                <ion-input formControlName="name" type="text" placeholder="Nombre" autocapitalize="true"></ion-input>
+                <ion-text color="danger"><small *ngIf="!form.controls.name.valid && attempt">{{defaultErrorMessage}}</small></ion-text>
+            </ion-item>
+
+            <ion-item>
+                <ion-label *ngIf="productId" position="floating">Descripción</ion-label>
+                <ion-textarea rows="4" formControlName="description" placeholder="Descripción" [value]="product.description" autocapitalize="true"></ion-textarea>
+                <ion-text color="danger"><small *ngIf="!form.controls.description.valid && attempt">{{defaultErrorMessage}}</small></ion-text>
+            </ion-item>
+
+            <ion-item>
+              <ion-label *ngIf="productId" position="floating">Precio</ion-label>
+              <ion-input formControlName="price" type="number" placeholder="Precio"></ion-input>
+              <ion-text color="danger"><small *ngIf="!form.controls.price.valid && attempt">{{defaultErrorMessage}}</small></ion-text>
+            </ion-item>
+
+            <ion-item>
+                <ion-label *ngIf="productId" position="floating">Precio de oferta</ion-label>
+                <ion-input formControlName="offerPrice" type="number" placeholder="Precio de oferta"></ion-input>
+                <ion-text color="danger"><small *ngIf="!form.controls.offerPrice.valid && attempt">{{defaultErrorMessage}}</small></ion-text>
+            </ion-item>
+
+            <ion-item>
+                <ion-label>Estado del producto</ion-label>
+                <ion-select value="Tipo de pago" okText="Ok" cancelText="Cancelar" formControlName="productStatus">
+                    <ion-select-option *ngFor="let p of productStatus" [value]="p">{{p | titlecase}}</ion-select-option>
+                </ion-select>
+                <ion-text color="danger"><small *ngIf="!form.controls.productStatus.valid && attempt">{{defaultErrorMessage}}</small></ion-text>
+            </ion-item>
+
+            <ion-item>
+                <ion-label>Estado de la publicación</ion-label>
+                <ion-select value="Tipo de pago" okText="Ok" cancelText="Cancelar" formControlName="publicationStatus">
+                    <ion-select-option *ngFor="let ps of publicationStatus" [value]="ps">{{ps| titlecase}}</ion-select-option>
+                </ion-select>
+                <ion-text color="danger"><small *ngIf="!form.controls.publicationStatus.valid && attempt">{{defaultErrorMessage}}</small></ion-text>
+            </ion-item>
+    </ion-list>
+    </form>
+
+    <ion-list lines="full" *ngIf="product">
+        <ion-item>
+            <ion-label>Mostrar información de teléfono</ion-label>
+            <ion-toggle slot="start" name="showForm" color="danger" ngModel="{{product.showPhone}}" (ionChange)="showPhone($event)"></ion-toggle>
+        </ion-item>
+    </ion-list>
+
+    <ion-row class="ion-justify-content-center">
+        <ion-col size="6">
+            <ion-button color="secondary" (click)="loadImage()" expand="full" size="large">
+                <ion-icon name="image"></ion-icon>
+            </ion-button>
+        </ion-col>
+    </ion-row>
+
+    <ion-row class="ion-justify-content-center" *ngIf="product.pictures.length > 0">
+        <ion-col size="4" *ngFor="let p of product.pictures">
+            <ion-img src="{{p}}" (click)="showPhoto(p)"></ion-img>
+        </ion-col>
+    </ion-row>
+
+<!--        <ion-thumbnail slot="start">-->
+<!--            <ion-img [src]="p"></ion-img>-->
+<!--        </ion-thumbnail>-->
+
+    <ion-fab vertical="bottom" horizontal="end" slot="fixed" *ngIf="productId">
+        <ion-fab-button color="danger" (click)="confirmMessage()">
+            <ion-icon name="trash"></ion-icon>
+        </ion-fab-button>
+    </ion-fab>
+
+</ion-content>

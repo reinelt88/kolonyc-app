@@ -1,0 +1,22 @@
+ion-img {
+  //height:100px;
+  //width:100%;
+  //background-size: cover;
+  width: auto;
+  height: 100px;
+  min-width: 100%;
+  min-height: 100%;
+}
+
+ion-content{
+  --background: url('../../../../assets/logo-opacity.png') no-repeat bottom center;
+}
+
+
+//ion-img {
+//  object-fit: resize;
+//  width: auto !important;
+//  border: 0;
+//  padding: 0;
+//  background-color: grey;
+//}

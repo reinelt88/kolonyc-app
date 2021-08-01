@@ -1,0 +1,61 @@
+<ion-content class="ion-padding" *ngIf="savedUser.uid!==''">
+    <ion-grid>
+        <ion-row class="ion-justify-content-center">
+            <ion-col size="8">
+                <img src="assets/logo.png"  alt="Logo" style="align-items: center">
+                <p class="ion-text-center">Accediendo con usuario {{ savedUser.email }}</p>
+                <p class="ion-text-center"><a routerLink="/logout" routerDirection="forward">Cancelar</a></p>
+            </ion-col>
+        </ion-row>
+    </ion-grid>
+</ion-content>
+
+<ion-content class="ion-padding" *ngIf="savedUser.uid === ''">
+    <ion-grid>
+        <form [formGroup]="form">
+            <ion-row>
+                <ion-col size-md="6" size-lg="5" size-xs="12">
+                    <div class="ion-text-center">
+                        <img src="assets/logo.png" id="imgPlacement" alt="Logo" style="align-items: center">
+                    </div>
+
+                    <div class="ion-padding">
+                        <ion-item>
+                            <ion-input type="text" placeholder="Email" formControlName="email" style="display: block;"></ion-input>
+                            <ion-text color="danger"><small *ngIf="!form.controls.email.valid && attempt">{{defaultErrorMessage}}</small></ion-text>
+                        </ion-item>
+                        <ion-item>
+                            <ion-input type="password" placeholder="Password" formControlName="password" (keydown.enter)="hideKeyboard()"></ion-input>
+                            <ion-text color="danger"><small *ngIf="!form.controls.password.valid && attempt">{{defaultErrorMessage}}</small></ion-text>
+                        </ion-item>
+                    </div>
+                    <div class="ion-padding">
+                        <ion-button size="large" (click)="onLogin()" expand="block" color="danger"><ion-icon slot="start" name="md-key"></ion-icon>Acceder</ion-button>
+                    </div>
+                </ion-col>
+            </ion-row>
+        </form>
+    </ion-grid>
+
+    <ion-row>
+        <ion-col>
+            <div class="ion-text-center">
+                <p>
+                    ¿Has olvidado tu contraseña? <a routerLink="/recovery-password">Entre aquí para recuperarla</a>
+                </p>
+            </div>
+        </ion-col>
+    </ion-row>
+
+    <ion-row>
+        <ion-col>
+            <div class="ion-text-center">
+                <small>
+                    2020 Kolonyc Inc. Todos los derechos reservados
+                </small>
+            </div>
+        </ion-col>
+    </ion-row>
+
+
+</ion-content>

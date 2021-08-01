@@ -1,0 +1,114 @@
+<ion-header>
+    <ion-toolbar color="danger">
+        <ion-buttons slot="start">
+            <ion-back-button defaultHref="/list-residents"></ion-back-button>
+        </ion-buttons>
+        <ion-title *ngIf="residentId">{{user.displayName}}</ion-title>
+        <ion-title *ngIf="!residentId">Detalles</ion-title>
+        <ion-buttons slot="end" (click)="saveResident()" style="zoom:2.0; padding-right: 4px;">
+            <ion-icon name="checkmark"></ion-icon>
+        </ion-buttons>
+    </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+    <form [formGroup]="form">
+        <ion-list lines="full">
+
+            <ion-item>
+                <ion-label *ngIf="residentId" position="floating">Email</ion-label>
+                <ion-input formControlName="email" [disabled]="residentId" type="text" placeholder="Email"></ion-input>
+                <ion-text color="danger">
+                    <small *ngIf="!form.controls.email.valid && attempt">Por favor ingrese un email válido</small>
+                </ion-text>
+            </ion-item>
+            <ion-item>
+                <ion-label *ngIf="residentId" position="floating">Nombre</ion-label>
+                <ion-input formControlName="displayName" type="text" placeholder="Nombre"
+                           autocapitalize="true"></ion-input>
+                <ion-text color="danger">
+                    <small *ngIf="!form.controls.displayName.valid && attempt">{{defaultErrorMessage}}</small>
+                </ion-text>
+            </ion-item>
+            <ion-item>
+                <ion-label *ngIf="residentId" position="floating">Teléfono</ion-label>
+                <ion-input formControlName="phone" type="text" placeholder="Télefono"></ion-input>
+                <ion-text color="danger">
+                    <small *ngIf="!form.controls.phone.valid && attempt">{{defaultErrorMessage}}</small>
+                </ion-text>
+            </ion-item>
+
+
+
+
+            <ion-item>
+                <ion-label>Ubicacion</ion-label>
+
+                <ionic-selectable #selectComponent [(ngModel)]="selectedHouse" [ngModelOptions]="{standalone: true}" [items]="houses" canSearch="true" searchPlaceholder="Buscar..." itemValueField="id" itemTextField="place" headerColor="danger" searchFailText="No se encuentran resultados">
+                    <ng-template ionicSelectableCloseButtonTemplate>
+                        <ion-icon name="close-circle"></ion-icon>
+                    </ng-template>
+
+                    <ng-template ionicSelectableTitleTemplate>
+                        Seleccione {{placeType | lowercase}}
+                    </ng-template>
+
+                    <ng-template ionicSelectableItemTemplate let-house="item">
+                        {{ house.place }}
+                    </ng-template>
+
+                    <ng-template ionicSelectableFooterTemplate>
+                        <ion-footer>
+                            <ion-toolbar>
+                                <ion-row class="ion-text-center">
+                                    <ion-col size="4"><ion-button color="danger" expand="block" (click)="clear()">Limpiar</ion-button></ion-col>
+                                    <ion-col size="2"><ion-button color="danger" expand="block" (click)="addHouseAlert()">+</ion-button></ion-col>
+                                    <ion-col size="2"><ion-button color="danger" expand="block" (click)="deleteHouseAlert()" >-</ion-button></ion-col>
+                                    <ion-col size="4"><ion-button color="danger" expand="block" (click)="confirm()">OK</ion-button></ion-col>
+                                </ion-row>
+                            </ion-toolbar>
+                        </ion-footer>
+                    </ng-template>
+                </ionic-selectable>
+            </ion-item>
+
+
+
+
+        </ion-list>
+
+<!--        <ion-row class="ion-padding">-->
+<!--            <ion-col size="8">-->
+<!--                <ion-label *ngIf="residentId" position="floating">Ubicación</ion-label>-->
+<!--                <ion-select formControlName="house" value="Ubicación" okText="Ok" cancelText="Cancelar" [placeholder]="placeType">-->
+<!--                    <ion-select-option *ngFor="let h of houses" value="{{h.id}}">{{placeType}} {{h.place}} - #{{h.number}}</ion-select-option>-->
+<!--                </ion-select>-->
+<!--                <ion-text color="danger">-->
+<!--                    <small *ngIf="!form.controls.house.valid && attempt">Por favor seleccione una opción</small>-->
+<!--                </ion-text>-->
+<!--            </ion-col>-->
+<!--            <ion-col size="2">-->
+<!--                <ion-button (click)="addHouseAlert()">-->
+<!--                    <ion-icon name="add"></ion-icon>-->
+<!--                </ion-button>-->
+<!--            </ion-col>-->
+<!--            <ion-col size="2">-->
+<!--                <ion-button *ngIf="form.controls.house.value !== ''" (click)="deleteHouseAlert(form.controls.house.value)" color="danger">-->
+<!--                    <ion-icon name="remove"></ion-icon>-->
+<!--                </ion-button>-->
+<!--            </ion-col>-->
+<!--        </ion-row>-->
+
+        <div class="box" *ngIf="residentId">
+            <div class="preview">
+                <ion-img [src]="user.profilePicture"></ion-img>
+            </div>
+        </div>
+
+        <ion-fab vertical="bottom" horizontal="end" slot="fixed" *ngIf="residentId">
+            <ion-fab-button color="danger" (click)="confirmMessage()">
+                <ion-icon name="trash"></ion-icon>
+            </ion-fab-button>
+        </ion-fab>
+    </form>
+</ion-content>

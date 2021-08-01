@@ -1,0 +1,27 @@
+<ion-header>
+  <ion-toolbar color="danger">
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/list-accesses"></ion-back-button>
+    </ion-buttons>
+    <ion-title>Tipos de acceso</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+
+  <ion-list>
+    <ion-item-sliding *ngFor="let t of types">
+      <ion-item detail="true" lines="inset" button [routerLink]="['/access-type-details', t.id]">
+        <ion-label class="ion-text-wrap">
+          <h2>{{ t.name }}</h2>
+        </ion-label>
+      </ion-item>
+    </ion-item-sliding>
+  </ion-list>
+
+  <ion-fab vertical="bottom" horizontal="end" slot="fixed">
+    <ion-fab-button [routerLink]="['/access-type-details']" routerDirection="forward">
+      <ion-icon name="add"></ion-icon>
+    </ion-fab-button>
+  </ion-fab>
+</ion-content>

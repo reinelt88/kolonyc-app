@@ -1,0 +1,67 @@
+<ion-header>
+    <ion-toolbar color="danger">
+        <ion-buttons slot="start">
+            <ion-back-button defaultHref="/finances-home/receipts"></ion-back-button>
+        </ion-buttons>
+        <ion-title>Detalles</ion-title>
+        <ion-buttons *ngIf="savedUser.role === 'ADMIN'" slot="end" (click)="saveReceipt()" style="zoom:2.0; padding-right: 4px;">
+            <ion-icon name="checkmark"></ion-icon>
+        </ion-buttons>
+    </ion-toolbar>
+</ion-header>
+
+<ion-content>
+    <form [formGroup]="form">
+        <ion-list lines="full" class="ion-padding">
+            <ion-item>
+                <ion-label *ngIf="receiptId" position="floating">Descripción</ion-label>
+                <ion-textarea [disabled]="savedUser.role !== 'ADMIN'" formControlName="description" placeholder="Descripción" autocapitalize="true"></ion-textarea>
+                <ion-text color="danger"><small *ngIf="!form.controls.description.valid && attempt">Por favor ingrese un valor válido</small></ion-text>
+            </ion-item>
+            <ion-item>
+                <ion-label *ngIf="receiptId" position="floating">Cantidad</ion-label>
+                <ion-input [disabled]="savedUser.role !== 'ADMIN'" formControlName="amount" type="number" placeholder="Cantidad"></ion-input>
+                <ion-text color="danger"><small *ngIf="!form.controls.amount.valid && attempt">Por favor ingrese una cantidad válida</small></ion-text>
+            </ion-item>
+        </ion-list>
+
+        <ion-row class="ion-padding">
+            <ion-col size="8">
+                <ion-label *ngIf="receiptId" position="floating">Tipo de ingreso</ion-label>
+                <ion-select [disabled]="savedUser.role !== 'ADMIN'" formControlName="type" value="Tipos de ingreso" okText="Ok" cancelText="Cancelar" placeholder="Tipo de ingreso">
+                    <ion-select-option *ngFor="let receiptType of receiptTypes" value="{{receiptType.id}}">{{receiptType.name}}</ion-select-option>
+                </ion-select>
+                <ion-text color="danger"><small *ngIf="!form.controls.type.valid && attempt">Por favor seleccione una opción</small></ion-text>
+            </ion-col>
+            <ion-col size="2">
+                <ion-button *ngIf="savedUser.role === 'ADMIN'" (click)="presentAlertPrompt()">
+                    <ion-icon name="add"></ion-icon>
+                </ion-button>
+            </ion-col>
+            <ion-col size="2">
+                <ion-button *ngIf="savedUser.role === 'ADMIN' && form.controls.type.value !== ''" (click)="delReceiptTypeConfirmMessage(form.controls.type.value)" color="danger">
+                    <ion-icon name="remove"></ion-icon>
+                </ion-button>
+            </ion-col>
+        </ion-row>
+        <ion-row class="ion-justify-content-center">
+            <ion-col>
+                <ion-img [src]="receipt.evidence" (click)="showPhoto()"></ion-img>
+            </ion-col>
+            <ion-col size="6">
+                <ion-button color="danger" (click)="loadImage('takePicture')" size="large">
+                    <ion-icon name="camera"></ion-icon>
+                </ion-button>
+                <ion-button color="secondary" (click)="loadImage('getImages')" size="large">
+                    <ion-icon name="image"></ion-icon>
+                </ion-button>
+            </ion-col>
+        </ion-row>
+    </form>
+
+    <ion-fab vertical="bottom" horizontal="end" slot="fixed" *ngIf="receiptId && savedUser.role === 'ADMIN'">
+        <ion-fab-button color="danger" (click)="confirmMessage()">
+            <ion-icon name="trash"></ion-icon>
+        </ion-fab-button>
+    </ion-fab>
+</ion-content>

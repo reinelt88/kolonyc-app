@@ -1,0 +1,117 @@
+<ion-header>
+    <ion-toolbar color="danger">
+        <ion-buttons slot="start">
+            <ion-back-button [defaultHref]="['/access-details', accessId]"></ion-back-button>
+        </ion-buttons>
+        <ion-title>Detalles</ion-title>
+        <ion-buttons *ngIf="this.savedUser.role === 'SECURITY' && person.inDate == ''" slot="end" (click)="confirmMessage('in')" style="zoom:2.0; padding-right: 7px;">
+            <ion-icon name="checkmark"></ion-icon>
+        </ion-buttons>
+        <ion-buttons *ngIf="this.savedUser.role === 'SECURITY' && person.inDate !== '' && person.outDate == ''" slot="end" (click)="confirmMessage('out')" style="zoom:2.0; padding-right: 7px;">
+            <ion-icon name="checkmark"></ion-icon>
+        </ion-buttons>
+    </ion-toolbar>
+</ion-header>
+
+<ion-content>
+    <ion-grid>
+
+        <ion-row>
+            <ion-col size="12" *ngIf="person">
+                <ion-list>
+
+                    <ion-item>
+                        <ion-label>
+                            <h1>
+                                {{person.name}}
+                                <ion-badge
+                                    [color]="person.status == 'pendiente' ? 'warning' : person.status == 'completado' ? 'success' : 'tertiary'">{{person.status}}
+                                </ion-badge>
+                            </h1>
+                        </ion-label>
+                    </ion-item>
+
+                    <ion-item *ngIf="person.companions">
+                        <ion-label><p>Acompañantes: {{person.companions}}</p></ion-label>
+                    </ion-item>
+
+                    <ion-item *ngIf="inDate">
+                        <ion-label> Entrada: {{inDate | date:'dd/MM/yyyy h:mm:ss a'}}</ion-label>
+                    </ion-item>
+                    <ion-item *ngIf="outDate">
+                        <ion-label> Salida: {{outDate | date:'dd/MM/yyyy h:mm:ss a'}}</ion-label>
+                    </ion-item>
+
+                </ion-list>
+            </ion-col>
+        </ion-row>
+
+
+        <ion-row *ngIf="savedUser.role=='SECURITY'">
+            <ion-col size="12">
+                <ion-list>
+                    <ion-item>
+                        <ion-label position="floating">Información adicional</ion-label>
+                        <ion-textarea [(ngModel)]="person.speechRecognition" [value]="person.speechRecognition" rows="4" placeholder="Mediante reconocimiento de voz puedes dejar un mensaje sin tener que escribirlo"></ion-textarea>
+                        <ion-button slot="end" size="large" (click)="startListening()" [color]="isRecording ? 'danger' : 'primary'">
+                            <ion-icon name="microphone"></ion-icon>
+                        </ion-button>
+                        <ion-button slot="end" size="large" (click)="stopListening()" *ngIf="isIos()" color="danger">
+                            <ion-icon name="square"></ion-icon>
+                        </ion-button>
+                    </ion-item>
+                </ion-list>
+            </ion-col>
+        </ion-row>
+
+
+        <ion-row *ngIf="savedUser.role=='SECURITY'">
+            <ion-col size="12">
+                <ion-list>
+                    <ion-item lines="full">
+                        <ion-label>Identificación:</ion-label>
+                    </ion-item>
+                    <ion-item lines="none">
+                        <ion-thumbnail slot="start" (click)="showPhoto(1)">
+                            <ion-img [src]="this.person.document_1"></ion-img>
+                        </ion-thumbnail>
+                        <ion-button color="danger" (click)="loadImage('takePicture', 1)" size="large">
+                            <ion-icon name="camera"></ion-icon>
+                        </ion-button>
+                        <ion-button color="secondary" (click)="loadImage('getGallery', 1)" size="large">
+                            <ion-icon name="image"></ion-icon>
+                        </ion-button>
+<!--                        <ion-label>Identificación</ion-label>-->
+                    </ion-item>
+                    <ion-item lines="full">
+                        <ion-label>Matrícula:</ion-label>
+                    </ion-item>
+                    <ion-item lines="none">
+                        <ion-thumbnail slot="start" (click)="showPhoto(2)">
+                            <ion-img [src]="this.person.document_2"></ion-img>
+                        </ion-thumbnail>
+                        <ion-button color="danger" (click)="loadImage('takePicture', 2)" size="large">
+                            <ion-icon name="camera"></ion-icon>
+                        </ion-button>
+                        <ion-button color="secondary" (click)="loadImage('getGallery', 2)" size="large">
+                            <ion-icon name="image"></ion-icon>
+                        </ion-button>
+                    </ion-item>
+                </ion-list>
+            </ion-col>
+        </ion-row>
+
+    </ion-grid>
+
+    <ion-fab *ngIf="this.savedUser.role === 'RESIDENT'" vertical="bottom" horizontal="end" slot="fixed">
+        <ion-fab-button color="danger" (click)="deleteConfirmMessage()">
+            <ion-icon name="trash"></ion-icon>
+        </ion-fab-button>
+    </ion-fab>
+
+    <ion-fab vertical="bottom" horizontal="start" slot="fixed" *ngIf="this.savedUser.role === 'SECURITY'">
+        <ion-fab-button (click)="helpModal()">
+            <ion-icon name="help"></ion-icon>
+        </ion-fab-button>
+    </ion-fab>
+</ion-content>

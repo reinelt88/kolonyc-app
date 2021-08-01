@@ -1,0 +1,117 @@
+<ion-header>
+    <ion-toolbar color="danger">
+        <ion-buttons slot="start">
+            <ion-back-button defaultHref="/list-accesses"></ion-back-button>
+        </ion-buttons>
+        <ion-title>Detalles</ion-title>
+        <ion-buttons slot="end" (click)="save()" style="zoom:2.0; padding-right: 4px;">
+            <ion-icon name="checkmark"></ion-icon>
+        </ion-buttons>
+    </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+    <form [formGroup]="form">
+        <ion-list lines="full">
+            <ion-item>
+                <ion-label>Tipo de pago</ion-label>
+                <ion-select value="Tipo de pago" okText="Ok" cancelText="Cancelar" formControlName="type" (ionChange)="changeType($event)">
+                    <ion-select-option *ngFor="let t of types" [value]="t">{{t}}</ion-select-option>
+                </ion-select>
+                <ion-text color="danger"><small *ngIf="!form.controls.type.valid && attempt">{{defaultErrorMessage}}</small></ion-text>
+            </ion-item>
+
+            <ion-item>
+                <ion-label>Mes</ion-label>
+                <ion-select value="Año" okText="Ok" cancelText="Cancelar" formControlName="month">
+                    <ion-select-option [selected]="form.controls.month.value == m.id" *ngFor="let m of months" [value]="m.id">{{m.name}}</ion-select-option>
+                </ion-select>
+                <ion-text color="danger"><small *ngIf="!form.controls.month.valid && attempt">{{defaultErrorMessage}}</small></ion-text>
+            </ion-item>
+
+            <ion-item>
+                <ion-label>Año</ion-label>
+                <ion-select value="Año" okText="Ok" cancelText="Cancelar" formControlName="year">
+                    <ion-select-option [selected]="y == form.controls.year.value" *ngFor="let y of years" [value]="y">{{y}}</ion-select-option>
+                </ion-select>
+                <ion-text color="danger"><small *ngIf="!form.controls.year.valid && attempt">{{defaultErrorMessage}}</small></ion-text>
+            </ion-item>
+
+            <ion-item *ngIf="user.role === 'ADMIN'">
+                <ion-label>Ubicacion</ion-label>
+
+                <ionic-selectable #selectComponent [(ngModel)]="selectedHouse" [ngModelOptions]="{standalone: true}" [items]="houses" canSearch="true" searchPlaceholder="Buscar..." itemValueField="id" itemTextField="place" headerColor="danger" searchFailText="No se encuentran resultados">
+                    <ng-template ionicSelectableCloseButtonTemplate>
+                        <ion-icon name="close-circle"></ion-icon>
+                    </ng-template>
+
+                    <ng-template ionicSelectableTitleTemplate>
+                        Seleccione {{colonyType | lowercase}}
+                    </ng-template>
+
+                    <ng-template ionicSelectableItemTemplate let-house="item">
+                        {{ house.place }}
+                    </ng-template>
+
+                    <ng-template ionicSelectableFooterTemplate>
+                        <ion-footer>
+                            <ion-toolbar>
+                                <ion-row class="ion-text-center">
+                                    <ion-col size="6"><ion-button color="danger" expand="block" (click)="clear()">Limpiar</ion-button></ion-col>
+                                    <ion-col size="6"><ion-button color="danger" expand="block" (click)="confirm()">OK</ion-button></ion-col>
+                                </ion-row>
+                            </ion-toolbar>
+                        </ion-footer>
+                    </ng-template>
+                </ionic-selectable>
+            </ion-item>
+
+            <ion-item *ngIf="user.role === 'ADMIN'">
+                <ion-label>Estado</ion-label>
+                <ion-select [disabled]="payment.type == 'PayPal'" value="Año" okText="Ok" cancelText="Cancelar" formControlName="status">
+                    <ion-select-option *ngFor="let s of statuses" [value]="s">{{s}}</ion-select-option>
+                </ion-select>
+                <ion-text color="danger"><small *ngIf="!form.controls.status.valid && attempt">{{defaultErrorMessage}}</small></ion-text>
+            </ion-item>
+
+            <ion-item>
+                <ion-label *ngIf="paymentId" position="floating">Cantidad</ion-label>
+                <ion-input formControlName="amount" type="text" placeholder="Cantidad"></ion-input>
+                <ion-text color="danger"><small *ngIf="!form.controls.amount.valid && attempt">{{defaultErrorMessage}}</small></ion-text>
+            </ion-item>
+
+            <ion-item>
+                <ion-label *ngIf="paymentId" position="floating">Referencia</ion-label>
+                <ion-input [readonly]="payment.type == 'PayPal'" formControlName="referenceNumber" type="text" placeholder="Referencia"></ion-input>
+                <ion-text color="danger"><small *ngIf="!form.controls.referenceNumber.valid && attempt">{{defaultErrorMessage}}</small></ion-text>
+            </ion-item>
+
+            <ion-item>
+                <ion-label *ngIf="paymentId" position="floating">Notas</ion-label>
+                <ion-textarea formControlName="notes" placeholder="Notas" [value]="payment.notes" autocapitalize="true"></ion-textarea>
+            </ion-item>
+
+            <ion-item lines="full" *ngIf="payment.type != 'PayPal'">
+                <ion-label>Evidencia:</ion-label>
+            </ion-item>
+            <ion-item lines="none" *ngIf="payment.type != 'PayPal'">
+                <ion-thumbnail slot="start" (click)="showPhoto()">
+                    <ion-img [src]="this.payment.evidence"></ion-img>
+                </ion-thumbnail>
+                <ion-button color="danger" (click)="loadImage('takePicture')" size="large">
+                    <ion-icon name="camera"></ion-icon>
+                </ion-button>
+                <ion-button color="secondary" (click)="loadImage('getGallery')" size="large">
+                    <ion-icon name="image"></ion-icon>
+                </ion-button>
+            </ion-item>
+
+        </ion-list>
+    </form>
+
+    <ion-fab vertical="bottom" horizontal="end" slot="fixed" *ngIf="paymentId">
+        <ion-fab-button color="danger" (click)="confirmMessage()">
+            <ion-icon name="trash"></ion-icon>
+        </ion-fab-button>
+    </ion-fab>
+</ion-content>

@@ -1,0 +1,20 @@
+
+
+
+<ion-content>
+  <ion-tabs *ngIf="show">
+
+    <ion-tab-bar slot="bottom" *ngIf="user.role != 'SECURITY'">
+      <ion-tab-button tab="list">
+        <ion-icon name="apps"></ion-icon>
+        <ion-label>Todos</ion-label>
+      </ion-tab-button>
+
+      <ion-tab-button tab="pendings">
+        <ion-icon name="close-circle"></ion-icon>
+        <ion-label>Pendientes</ion-label>
+      </ion-tab-button>
+    </ion-tab-bar>
+
+  </ion-tabs>
+</ion-content>

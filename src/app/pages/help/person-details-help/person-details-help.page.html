@@ -1,0 +1,71 @@
+<ion-header translucent>
+  <ion-toolbar>
+    <ion-title>Ayuda</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="closeModal()">Cerrar</ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+<ion-content fullscreen>
+  <ion-list>
+    <ion-item>
+      <ion-button slot="start" color="danger">
+        <ion-icon name="camera"></ion-icon>
+      </ion-button>
+      <ion-label class="ion-text-wrap">
+        <h2>Tomar foto</h2>
+        <p>Puedes tomar una foto directamente de la indentificación de la persona que intenta acceder</p>
+      </ion-label>
+    </ion-item>
+
+    <ion-item>
+      <ion-button slot="start" color="secondary">
+        <ion-icon name="image"></ion-icon>
+      </ion-button>
+      <ion-label class="ion-text-wrap">
+        <h2>Galería</h2>
+        <p>Selecciona de tu galería de imágenes una captura anterior</p>
+      </ion-label>
+    </ion-item>
+
+    <ion-item>
+      <ion-button slot="start" color="primary">
+        <ion-icon name="microphone"></ion-icon>
+      </ion-button>
+      <ion-label class="ion-text-wrap">
+        <h2>Reconocimento de voz</h2>
+        <p>Puedes llenar el campo de descripción automáticamente sin la necesidad de escribir, el texto se irá guardando automáticamente</p>
+      </ion-label>
+    </ion-item>
+
+    <ion-item>
+      <ion-button slot="start" color="danger">
+        <ion-icon name="square"></ion-icon>
+      </ion-button>
+      <ion-label class="ion-text-wrap">
+        <h2>Detener grabación</h2>
+        <p>En <strong>"dispositivos IOS"</strong> es necesario detener la grabación, este ícono no aparecera en <strong>"dispositivos Android"</strong></p>
+      </ion-label>
+    </ion-item>
+
+    <ion-item>
+      <ion-button slot="start" color="danger">
+        <ion-icon name="checkmark"></ion-icon>
+      </ion-button>
+      <ion-label class="ion-text-wrap">
+        <h2>Permitir entrada/salida</h2>
+        <p>Permite la entrada o la salida de un personal a la colonia, si el estado se encuentra en <ion-badge color="warning">Pendiente</ion-badge> significa que la persona no ha entrado y el sistema procedera a darle entrada, si aparece <ion-badge color="tertiary">En curso</ion-badge> significa que la persona ya se encuentra dentro y se va a proceder a darle la salida</p>
+      </ion-label>
+    </ion-item>
+
+    <ion-item>
+      <ion-thumbnail slot="start">
+        <ion-img src="https://firebasestorage.googleapis.com/v0/b/colonyc-14f60.appspot.com/o/no-image.PNG?alt=media&token=f40787bf-1ff9-4888-bf06-6f02d5a2123a"></ion-img>
+      </ion-thumbnail>
+      <ion-label class="ion-text-wrap">
+        <h2>Ampliar foto</h2>
+        <p>Kolonyc te muestra una miniatura de la imagen pero puede ser ampiada pulsando sobre ella</p>
+      </ion-label>
+    </ion-item>
+  </ion-list>
+</ion-content>

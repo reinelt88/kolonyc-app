@@ -1,0 +1,26 @@
+<ion-header>
+    <ion-toolbar color="danger">
+        <ion-buttons slot="start">
+            <ion-menu-button></ion-menu-button>
+        </ion-buttons>
+        <ion-title>
+            Pagos pendientes
+        </ion-title>
+    </ion-toolbar>
+</ion-header>
+<ion-content>
+    <ion-list>
+        <ion-item-sliding *ngFor="let node of nodes">
+            <ion-item lines="inset">
+                <ion-label class="ion-text-wrap">
+                    <p>
+                        {{ colonyType }} {{node.location.place}} - {{node.location.number}}
+                    </p>
+                    <span *ngFor="let payment of node.payments">
+                        <ion-badge style="margin: 0 10px 0 0" color="danger" *ngIf="!payment.paid">{{payment.month}} / {{payment.year}}</ion-badge>
+                    </span>
+                </ion-label>
+            </ion-item>
+        </ion-item-sliding>
+    </ion-list>
+</ion-content>

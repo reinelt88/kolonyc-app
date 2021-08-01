@@ -1,0 +1,39 @@
+<ion-content>
+
+  <ion-item *ngIf="savedUser.role==='SUPERADMIN'">
+    <ion-label>Colonias</ion-label>
+    <ion-select value="colonias" okText="Ok" cancelText="Cancelar" [(ngModel)]="colonyId" (ionChange)="listChange($event)">
+      <ion-select-option *ngFor="let colony of colonies" value="{{colony.id}}">{{colony.name}}</ion-select-option>
+    </ion-select>
+  </ion-item>
+
+  <ion-grid>
+    <ion-row>
+      <ion-col size="12">
+        <h2 class="ion-text-center">Gastos</h2>
+
+        <ion-list>
+          <ion-item-sliding *ngFor="let expense of expenses">
+            <ion-item detail="true" lines="inset" button [routerLink]="['/expense-details', expense.id]">
+              <ion-label class="ion-text-wrap">
+                <h3>{{expense.createdAt | date:'dd/MM/yyyy h:mm:ss a'}} - {{expense.type}}</h3>
+                <p>Descripción: {{expense.description}}</p>
+                <ion-text color="primary"><p>${{expense.amount}}</p></ion-text>
+              </ion-label>
+            </ion-item>
+          </ion-item-sliding>
+        </ion-list>
+
+        <ion-list *ngIf="expenses.length == 0 && savedUser.role==='SUPERADMIN'">
+          <ion-text class="ion-text-center" color="medium">Seleccione colonia para visualizar información</ion-text>
+        </ion-list>
+
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+  <ion-fab vertical="bottom" horizontal="end" slot="fixed" *ngIf="savedUser.role === 'ADMIN'">
+    <ion-fab-button routerLink="/expense-details" routerDirection="forward">
+      <ion-icon name="add"></ion-icon>
+    </ion-fab-button>
+  </ion-fab>
+</ion-content>

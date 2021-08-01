@@ -1,0 +1,32 @@
+<ion-header>
+  <ion-toolbar color="danger">
+    <ion-buttons slot="start">
+      <ion-menu-button></ion-menu-button>
+    </ion-buttons>
+    <ion-title>
+      Guardias de seguridad
+    </ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-list>
+    <ion-item-sliding *ngFor="let sec of securitiesList">
+      <ion-item detail="true" lines="inset" button [routerLink]="['/security-guard-details', sec.id]">
+        <ion-avatar slot="start">
+          <img [src]="sec.profilePicture">
+        </ion-avatar>
+        <ion-label>
+          <h3>{{sec.name}}</h3>
+          <p>Colonia: {{sec.colonyName}}</p>
+        </ion-label>
+      </ion-item>
+    </ion-item-sliding>
+  </ion-list>
+  <ion-fab vertical="bottom" horizontal="end" slot="fixed">
+    <ion-fab-button routerLink="/security-guard-details" routerDirection="forward">
+      <ion-icon name="add"></ion-icon>
+    </ion-fab-button>
+  </ion-fab>
+</ion-content>
+

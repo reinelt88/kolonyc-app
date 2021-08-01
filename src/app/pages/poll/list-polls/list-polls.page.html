@@ -1,0 +1,33 @@
+<ion-header>
+  <ion-toolbar color="danger">
+    <ion-buttons slot="start">
+      <ion-menu-button></ion-menu-button>
+    </ion-buttons>
+    <ion-title>
+      Encuestas
+    </ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-list>
+    <ion-item-sliding *ngFor="let p of polls">
+      <ion-item detail="true" lines="inset" button [routerLink]="['/poll-details', p.id]">
+        <ion-label class="ion-text-wrap">
+          <h2>{{ p.name }}</h2>
+          <small>{{ p.description }}</small>
+          <p>
+            <ion-badge [color]="p.status == 'En curso' ? 'success' : 'danger'">{{p.status}}</ion-badge>
+            <span *ngIf="p.status == 'En curso'"> Finaliza el: {{p.endDateFormatted | date:'dd/MM/yyyy h:mm:ss a'}}</span>
+          </p>
+        </ion-label>
+      </ion-item>
+    </ion-item-sliding>
+  </ion-list>
+
+  <ion-fab *ngIf="user.role != 'RESIDENT'" vertical="bottom" horizontal="end" slot="fixed">
+    <ion-fab-button routerLink="/poll-details" routerDirection="forward">
+      <ion-icon name="add"></ion-icon>
+    </ion-fab-button>
+  </ion-fab>
+</ion-content>

@@ -1,0 +1,80 @@
+<ion-header>
+  <ion-toolbar color="danger">
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/list-polls"></ion-back-button>
+    </ion-buttons>
+    <ion-title *ngIf="pollId">{{poll.name}}</ion-title>
+    <ion-title *ngIf="pollId == null">Detalles</ion-title>
+    <ion-buttons *ngIf="(user.role == 'RESIDENT' && hasVoted == false) || user.role == 'ADMIN'" slot="end" (click)="savePoll()" style="zoom:2.0; padding-right: 4px;">
+      <ion-icon name="checkmark"></ion-icon>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+
+  <form [formGroup]="form">
+    <ion-list lines="full">
+      <ion-item>
+        <ion-label *ngIf="pollId" position="floating">Nombre</ion-label>
+        <ion-input [readonly]="user.role == 'RESIDENT'" formControlName="name" type="text" placeholder="Nombre" autocapitalize="true"></ion-input>
+        <ion-text color="danger"><small *ngIf="!form.controls.name.valid && attempt">{{defaultErrorMessage}}</small></ion-text>
+      </ion-item>
+
+      <ion-item>
+        <ion-label *ngIf="pollId" position="floating">Descripción</ion-label>
+        <ion-textarea [readonly]="user.role == 'RESIDENT'" rows="4" formControlName="description" placeholder="Descripción" [value]="poll.description" autocapitalize="true"></ion-textarea>
+        <ion-text color="danger"><small *ngIf="!form.controls.description.valid && attempt">Por favor ingrese un valor válido</small></ion-text>
+      </ion-item>
+    </ion-list>
+  </form>
+
+  <ion-list lines="full">
+    <ion-item lines="none">
+      <ion-label>Fecha fin</ion-label>
+      <ion-datetime [readonly]="user.role == 'RESIDENT'" cancelText="Cancelar"  doneText="Ok" displayFormat="DD/MM/YYYY h:mm A" pickerFormat="MMM DD, YYYY HH:mm" placeholder="Seleccione fecha" [min]="minDate" [value]="endDate" [ngModel]="poll.endDate" (ionChange)="updateEndDate($event)"></ion-datetime>
+    </ion-item>
+  </ion-list>
+
+  <ion-list *ngIf="!hasVoted">
+    <ion-item-sliding><h4 class="ion-text-center">Opciones</h4></ion-item-sliding>
+    <ion-item-sliding *ngFor="let p of pollOptions" (click)="selectedOptionId = p.id">
+      <ion-item lines="inset" [color]="selectedOptionId == p.id && user.role == 'RESIDENT' ? 'danger' : ''">
+        <ion-icon name="checkmark-circle-outline" slot="start"></ion-icon>
+        <ion-label class="ion-text-wrap">
+          <h2>{{ p.name }} <span *ngIf="user.role != 'RESIDENT'">({{p.quantity}})</span></h2>
+        </ion-label>
+        <ion-icon *ngIf="user.role != 'RESIDENT'" name="trash" slot="end" color="danger" (click)="removePollOption(p.id)"></ion-icon>
+      </ion-item>
+    </ion-item-sliding>
+  </ion-list>
+
+  <div *ngIf="hasVoted">
+    <div  *ngFor="let p of pollOptions">
+       <h3>{{p.percentFormated}}%</h3> <span>{{p.name}} - {{p.quantity}} Votos</span><br />
+      <ion-progress-bar color="danger" value="{{p.percent}}"></ion-progress-bar>
+    </div>
+  </div>
+
+
+  <ion-card *ngIf="user.role !== 'RESIDENT'">
+    <ion-card-header tappable>
+      <ion-card-title>Agregar opción</ion-card-title>
+    </ion-card-header>
+    <ion-card-content>
+      <ion-list>
+        <ion-item>
+          <ion-input type="text" placeholder="Opción" [(ngModel)]="pollOption.name" autocapitalize="true"></ion-input>
+        </ion-item>
+      </ion-list>
+      <ion-button color="danger" expand="block" (click)="addPollOption()" [disabled]="pollOption.name==''">Agregar</ion-button>
+    </ion-card-content>
+  </ion-card>
+
+  <ion-fab vertical="bottom" horizontal="end" slot="fixed" *ngIf="pollId && user.role != 'RESIDENT'">
+    <ion-fab-button color="danger" (click)="confirmMessage()">
+      <ion-icon name="trash"></ion-icon>
+    </ion-fab-button>
+  </ion-fab>
+
+</ion-content>
