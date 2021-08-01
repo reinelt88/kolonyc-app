@@ -8,6 +8,11 @@ export class StorageService {
 
     constructor(public storage: Storage) {
         console.log('Your storage provider is working here !');
+        this.init().then(() => {});
+    }
+
+    async init() {
+      await this.storage.create();
     }
 
     async set(key: string, value: any): Promise<any> {
