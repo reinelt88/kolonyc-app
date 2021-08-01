@@ -13,6 +13,7 @@ import {Events} from './sharedServices/events.service';
 import {AngularFireAuth} from '@angular/fire/auth';
 import {FCM} from '@ionic-native/fcm/ngx';
 import { SplashScreen } from '@capacitor/splash-screen';
+import {timer} from "rxjs";
 
 @Component({
   selector: 'app-root',
@@ -52,7 +53,9 @@ export class AppComponent extends BasePage {
       this.manageProfileData(res);
     });
 
-    this.manageProfileData(this.savedUser);
+    timer(1000).subscribe(() => {
+      this.manageProfileData(this.savedUser);
+    });
   }
 
   async initializeApp() {
@@ -65,6 +68,7 @@ export class AppComponent extends BasePage {
   }
 
   manageProfileData(res) {
+
 
     if (res.id !== '') {
       this.displayName = (res.displayName) ? res.displayName : res.email;
@@ -121,7 +125,7 @@ export class AppComponent extends BasePage {
       const accesses = {
         title: 'Accesos',
         url: '/list-accesses',
-        icon: 'hand',
+        icon: 'close-circle-outline',
         color: '#FFD439'
       };
 
@@ -234,14 +238,8 @@ export class AppComponent extends BasePage {
             });
           });
         });
-
-
-
         // this.appPages = [ home, accesses, finances, payment, areas, poll, marketplace];
         // this.appPages = [ home, accesses, finances, payment, areas, poll];
-
-
-
       } else if (res.role === 'SECURITY') {
         this.appPages = [ home, accesses, proccess, paymentPendings];
       }

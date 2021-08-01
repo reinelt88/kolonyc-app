@@ -6,7 +6,8 @@ import {StorageService} from '../../sharedServices/storage.service';
 import {BasePage} from '../../pages/base/base.page';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {Keyboard} from '@ionic-native/keyboard/ngx';
-import {Events} from "../../sharedServices/events.service";
+import {Events} from '../../sharedServices/events.service';
+import {timer} from 'rxjs';
 
 @Component({
     selector: 'app-login',
@@ -44,6 +45,13 @@ export class LoginPage extends BasePage implements OnInit {
         this.events.subscribe('loginError', (res) => {
             this.toast(4000, res, 'danger');
         });
+      timer(1000).subscribe(() => {
+        this.storageService.getObject('user').then(user => {
+          if (user) {
+            this.router.navigateByUrl('/home');
+          }
+        });
+      });
     }
 
     async onLogin() {
