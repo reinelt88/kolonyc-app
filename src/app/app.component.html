@@ -1,28 +1,63 @@
 <ion-app>
-  <ion-split-pane contentId="main-content">
-    <ion-menu contentId="main-content" type="overlay">
-      <ion-content>
-        <ion-list id="inbox-list">
-          <ion-list-header>Inbox</ion-list-header>
-          <ion-note>hi@ionicframework.com</ion-note>
 
-          <ion-menu-toggle auto-hide="false" *ngFor="let p of appPages; let i = index">
-            <ion-item routerDirection="root" [routerLink]="[p.url]" lines="none" detail="false" routerLinkActive="selected">
-              <ion-icon slot="start" [ios]="p.icon + '-outline'" [md]="p.icon + '-sharp'"></ion-icon>
-              <ion-label>{{ p.title }}</ion-label>
+  <ion-split-pane contentId="main-content">
+    <!--        <ion-menu contentId="main-content" type="overlay" [swipeGesture]="true" *ngIf="isLoggedIn">-->
+    <ion-menu contentId="main-content" type="overlay" [swipeGesture]="false">
+      <ion-header>
+
+        <ion-toolbar>
+          <ion-title>
+            <!--                        <img src="assets/logo-mini.png" alt="logo menu"/> -->
+            <small>Kolonyc V0.0.5</small>
+          </ion-title>
+        </ion-toolbar>
+
+        <ion-row class="ion-justify-content-center">
+          <ion-avatar>
+            <img class="user-avatar round" src='{{profilePicture}}'/>
+          </ion-avatar>
+        </ion-row>
+
+        <ion-row>
+          <ion-col>
+            <div class="ion-text-center">
+              <h4>{{displayName}}</h4>
+              <ion-select *ngIf="showRoleSwitch" value="Role" [ngModel]="role" (ngModelChange)="roleChange($event)" style="width: 60%; margin: 0 auto;">
+                <ion-select-option [selected]="role=='ADMIN'" value="ADMIN">Administrador</ion-select-option>
+                <ion-select-option [selected]="role=='RESIDENT'" value="RESIDENT">Residente</ion-select-option>
+              </ion-select>
+              <ion-menu-toggle auto-hide="false">
+                <ion-button color="light" size="small" [routerDirection]="'root'" [routerLink]="['/my-account']">Mi cuenta</ion-button>
+                <!--                                <ion-button *ngIf="role === 'ADMIN' || role === 'RESIDENT'" color="light" size="small" [routerDirection]="'root'" [routerLink]="['/user-switch']">  <ion-icon name="refresh"></ion-icon> Switch</ion-button>-->
+              </ion-menu-toggle>
+            </div>
+          </ion-col>
+        </ion-row>
+
+      </ion-header>
+      <ion-content *ngIf="isLoggedIn">
+
+        <ion-list lines="full">
+
+          <ion-menu-toggle auto-hide="false" *ngFor="let p of appPages">
+            <ion-item [routerDirection]="'root'" [routerLink]="[p.url]">
+              <ion-icon slot="start" [name]="p.icon" [ngStyle]="{'color': p.color}"></ion-icon>
+              <ion-label>{{p.title}}</ion-label>
             </ion-item>
           </ion-menu-toggle>
-        </ion-list>
 
-        <ion-list id="labels-list">
-          <ion-list-header>Labels</ion-list-header>
-
-          <ion-item *ngFor="let label of labels" lines="none">
-            <ion-icon slot="start" ios="bookmark-outline" md="bookmark-sharp"></ion-icon>
-            <ion-label>{{ label }}</ion-label>
+          <!--                    <ion-item [routerDirection]="'root'" (click)="onLogout()">-->
+          <ion-item [routerDirection]="'root'" routerLink="/logout">
+            <ion-icon slot="start" name="exit"></ion-icon>
+            <ion-label>Salir</ion-label>
           </ion-item>
+
         </ion-list>
+
       </ion-content>
+      <!--            <div class="ion-text-center">-->
+      <!--                <img src="assets/logo.png" id="imgPlacement" alt="Logo" width="80" style="align-items: center">-->
+      <!--            </div>-->
     </ion-menu>
     <ion-router-outlet id="main-content"></ion-router-outlet>
   </ion-split-pane>
