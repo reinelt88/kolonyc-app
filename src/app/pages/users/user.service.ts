@@ -60,6 +60,13 @@ export class UserService {
             .get();
     }
 
+    getResidentsByHouse(houseId: string) {
+      return this.db.collection<User>('user')
+        .ref.where('role', '==', 'RESIDENT')
+        .where('houseId', '==', houseId)
+        .get();
+    }
+
     async getByResidentAndAdminByColony(colonyId: string) {
         const residents = this.db.collection<User>('user')
             .ref.where('role', '==', 'RESIDENT')

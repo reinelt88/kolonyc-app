@@ -77,20 +77,37 @@ export class ListResidentsPage extends BasePage implements OnInit {
             this.houseService.getAll(this.user.colonyId).subscribe(houses => {
                 this.residentsList = [];
                 houses.forEach(h => {
-                    this.residentService.getAll(this.user.colonyId, h.id).subscribe(res => {
-                        this.proccessList(res, h);
-                    });
+                  this.userService.getResidentsByHouse(h.id).then(res => {
+                    if (!res.empty) {
+                      const residents: any = [];
+                      res.docs.forEach(d => {
+                        const data: any = d.data();
+                        data.id = d.id;
+                        residents.push(data);
+                      });
+                      this.proccessList(residents, h);
+                    }
+                  }, error => console.log(error));
                 });
             });
         } else {
             this.residentsList = [];
             this.houseService.get(this.house.id, this.user.colonyId).subscribe(house => {
                 this.houseService.getByAllByPlace(this.user.colonyId, house.place).then(houses => {
-                    houses.forEach(h => {
-                        this.residentService.getAll(this.user.colonyId, h.id).subscribe(res => {
-                            this.proccessList(res, h);
+                  this.residentsList = [];
+                  houses.forEach(h => {
+                    this.userService.getResidentsByHouse(h.id).then(res => {
+                      if (!res.empty) {
+                        const residents: any = [];
+                        res.docs.forEach(d => {
+                          const data: any = d.data();
+                          data.id = d.id;
+                          residents.push(data);
                         });
-                    });
+                        this.proccessList(residents, h);
+                      }
+                    }, error => console.log(error));
+                  });
                 });
             });
         }
@@ -102,28 +119,21 @@ export class ListResidentsPage extends BasePage implements OnInit {
         res.forEach(resident => {
             const resMod: any = {
                 id: resident.id,
-                profilePicture: '',
+                profilePicture: resident.profilePicture,
                 colonyName: '',
-                name: '',
+                name: resident.displayName,
                 place: h.place,
                 number: h.number,
             };
 
-            this.userService.get(resident.userId).subscribe(user => {
-                if (user) {
-                    resMod.profilePicture = user.profilePicture;
-                    resMod.name = user.displayName;
-
-                    this.colonyService.get(user.colonyId).subscribe(colony => {
-                        resMod.colonyName = colony.name;
-                    });
-
-                    this.residentsList.push(resMod);
-                    if (!this.residentsList.find(o => o.id === resMod.id)) {
-                        this.residentsList.push(resMod);
-                    }
-                }
+            this.colonyService.get(resident.colonyId).subscribe(colony => {
+                resMod.colonyName = colony.name;
             });
+
+            this.residentsList.push(resMod);
+            if (!this.residentsList.find(o => o.id === resMod.id)) {
+                this.residentsList.push(resMod);
+            }
 
         });
     }

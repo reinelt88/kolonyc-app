@@ -23,7 +23,7 @@ import {timer} from "rxjs";
 export class AppComponent extends BasePage {
   public appPages = [];
   displayName = 'Jhon Doe';
-  profilePicture = 'https://w.wallhaven.cc/full/45/wallhaven-4575j5.jpg';
+  profilePicture = 'https://w.wallhaven.cc/full/6k/wallhaven-6kre3q.jpg';
   isLoggedIn = false;
   role = null;
   // showSplash = true;

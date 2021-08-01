@@ -28,7 +28,7 @@
               </ion-select>
               <ion-menu-toggle auto-hide="false">
                 <ion-button color="light" size="small" [routerDirection]="'root'" [routerLink]="['/my-account']">Mi cuenta</ion-button>
-                <!--                                <ion-button *ngIf="role === 'ADMIN' || role === 'RESIDENT'" color="light" size="small" [routerDirection]="'root'" [routerLink]="['/user-switch']">  <ion-icon name="refresh"></ion-icon> Switch</ion-button>-->
+                <!-- <ion-button *ngIf="role === 'ADMIN' || role === 'RESIDENT'" color="light" size="small" [routerDirection]="'root'" [routerLink]="['/user-switch']">  <ion-icon name="refresh"></ion-icon> Switch</ion-button>-->
               </ion-menu-toggle>
             </div>
           </ion-col>
@@ -46,7 +46,7 @@
             </ion-item>
           </ion-menu-toggle>
 
-          <!--                    <ion-item [routerDirection]="'root'" (click)="onLogout()">-->
+          <!-- <ion-item [routerDirection]="'root'" (click)="onLogout()">-->
           <ion-item [routerDirection]="'root'" routerLink="/logout">
             <ion-icon slot="start" name="exit"></ion-icon>
             <ion-label>Salir</ion-label>
