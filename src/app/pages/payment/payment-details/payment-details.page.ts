@@ -26,6 +26,7 @@ import {Events} from '../../../sharedServices/events.service';
 })
 export class PaymentDetailsPage extends BasePage implements OnInit {
 
+    @ViewChild('selectComponent', {static: false}) selectComponent: IonicSelectableComponent;
     public form: FormGroup;
     public attempt = false;
     public defaultErrorMessage = 'Por favor ingrese un valor válido';
@@ -41,7 +42,6 @@ export class PaymentDetailsPage extends BasePage implements OnInit {
     public currency = 'MXN';
     public currencyIcon = '$';
 
-    @ViewChild('selectComponent', {static: false}) selectComponent: IonicSelectableComponent;
     constructor(
         private router: Router,
         private formBuilder: FormBuilder,
@@ -59,7 +59,8 @@ export class PaymentDetailsPage extends BasePage implements OnInit {
         private alertController: AlertController,
         private httpService: HttpService,
         private notificationService: NotificationService,
-        private payPal: PayPal
+        private payPal: PayPal,
+        private navController: NavController,
     ) {
         super(storageService, toastController);
         this.buildForm();
@@ -128,16 +129,7 @@ export class PaymentDetailsPage extends BasePage implements OnInit {
                 });
 
             } else {
-                this.houseService.getResidentByUid(this.user.colonyId, this.user.id).then(user => {
-                    if (user) {
-                        this.houseService.getHouseByResident(this.user.colonyId, user.id).then(house => {
-                            if (house) {
-                                this.form.get('houseId').setValue(house.id);
-                            }
-                        });
-                    }
-                });
-
+                this.form.get('houseId').setValue(this.user.houseId);
                 this.form.get('status').setValue('Realizado');
             }
 
@@ -219,7 +211,6 @@ export class PaymentDetailsPage extends BasePage implements OnInit {
             this.payment.year = this.form.value.year;
             this.payment.type = this.form.value.type;
             this.payment.houseId = (this.user.role === 'ADMIN') ? this.selectedHouse.id : this.form.value.houseId;
-            // this.payment.houseId = this.form.value.houseId;
             this.payment.referenceNumber = this.form.value.referenceNumber;
             this.payment.status = this.form.value.status;
             this.payment.notes = this.form.value.notes;
@@ -234,14 +225,16 @@ export class PaymentDetailsPage extends BasePage implements OnInit {
                         this.oldStatus = obs.status;
 
                         if (this.oldStatus !== this.payment.status) {
-                            this.houseService.getResidentsByHouse(this.user.colonyId, this.payment.houseId).then(res => {
-                                res.forEach(r => {
-                                    this.userService.get(r.userId).subscribe(user => {
-                                       // console.log(user);
+                            this.userService.getByColonyAndHouse(this.user.colonyId, this.payment.houseId).then(res => {
+                                if (res.docs.length > 0) {
+                                    res.forEach(r => {
+                                        const user = r.data();
+                                        user.id = r.id;
                                         const notification: PushNotification = {
                                             notification: {
                                                 title: 'Estado de pago actualizado',
-                                                body: 'El administrado de la colonia ha actualizado el estado del pago del ' + this.payment.month + '/' + this.payment.year + ' a ' + this.payment.status,
+                                                body: 'El administrado de la colonia ha actualizado el estado del ' +
+                                                  'pago del ' + this.payment.month + '/' + this.payment.year + ' a ' + this.payment.status,
                                                 image: user.profilePicture
                                             },
                                             to: user.token,
@@ -260,7 +253,7 @@ export class PaymentDetailsPage extends BasePage implements OnInit {
                                             referenceNumber: this.payment.referenceNumber,
                                             type: this.payment.type,
                                             notes: this.payment.notes,
-                                            evidence: this.payment.evidence,
+                                            evidence: (this.payment.evidence !== '') ? this.payment.evidence : this.noImage,
                                             month: this.payment.month,
                                             year: this.payment.year,
                                             house: '',
@@ -271,16 +264,16 @@ export class PaymentDetailsPage extends BasePage implements OnInit {
                                             console.log(res);
                                         });
 
-                                        console.log(user);
-
                                         // system notification
-                                        this.notification.title = 'El administrado de la colonia ha actualizado el estado del pago del ' + this.payment.month + '/' + this.payment.year + ' a ' + this.payment.status;
-                                        this.notificationService.add(this.notification, r.userId).then(() => {
+                                        this.notification.title = 'El administrado de la colonia ha ' +
+                                          'actualizado el estado del pago del ' +
+                                          '' + this.payment.month + '/' + this.payment.year + ' a ' + this.payment.status;
+                                        this.notificationService.add(this.notification, r.id).then(() => {
                                             this.events.publish('userNotification');
                                         });
 
                                     });
-                                });
+                                }
                             });
                         }
 
@@ -289,14 +282,19 @@ export class PaymentDetailsPage extends BasePage implements OnInit {
                             this.toast(2000, 'Datos actualizados correctamente', 'success');
                             this.attempt = false;
                             loading.dismiss();
-                            this.router.navigateByUrl('/list-payments');
+                            this.router.navigateByUrl('/payment-home/list');
                         });
                     }
                 });
             // Creando nuevo pago
             } else {
                 // Se verifica que no exista ya el pago para esa casa y ese mes
-                this.paymentService.getByHouseAndMonthAndYear(this.user.colonyId, this.payment.houseId, this.payment.month, this.payment.year).then(res => {
+                this.paymentService.getByHouseAndMonthAndYear(
+                  this.user.colonyId,
+                  this.payment.houseId,
+                  this.payment.month,
+                  this.payment.year
+                ).then(res => {
                     if (res.docs.length > 0) {
                         this.toast(4000, 'Ya existe un pago para el mes indicado', 'danger');
                         loading.dismiss();
@@ -317,7 +315,6 @@ export class PaymentDetailsPage extends BasePage implements OnInit {
     }
 
     makePayment() {
-        this.payment.houseId = (this.user.role === 'ADMIN') ? this.selectedHouse.id : this.form.value.houseId;
         this.paymentService.add(this.payment, this.user.colonyId).then(() => { // Añadiendo el pago
             this.userService.getByColonyAndRole(this.user.colonyId, 'ADMIN').then(result => { // Obtenemos al ADMIN
                 if (result.docs.length > 0) {
@@ -341,7 +338,7 @@ export class PaymentDetailsPage extends BasePage implements OnInit {
                             referenceNumber: this.payment.referenceNumber,
                             type: this.payment.type,
                             notes: this.payment.notes,
-                            evidence: this.payment.evidence,
+                            evidence: (this.payment.evidence !== '') ? this.payment.evidence : this.noImage,
                             month: this.payment.month,
                             year: this.payment.year,
                         };
@@ -368,17 +365,16 @@ export class PaymentDetailsPage extends BasePage implements OnInit {
                                     console.log(r);
                                 });
                             } else { // Si el usuario que crea el pago es ADMIN
-                                // Se obtienen los residentes de la casa que hizo el pago
-                                this.houseService.getResidentsByHouse(this.user.colonyId, this.payment.houseId).then(residents => {
-                                    residents.forEach(r => {
-                                        // Se obtiene el usuario asociado al residente
-                                        this.userService.get(r.userId).subscribe(user => {
-                                            paymentEmail.email = user.email;
+                                this.userService.getByColonyAndHouse(this.user.colonyId, this.payment.houseId).then(residents => {
+                                    if (residents.docs.length > 0) {
+                                        residents.docs.forEach( r => {
+                                            const resident = r.data();
+                                            paymentEmail.email = resident.email;
                                             this.httpService.paymentEmailNotification(paymentEmail).subscribe(response => {
                                                 console.log(response);
                                             });
                                         });
-                                    });
+                                    }
                                 });
                             }
 
@@ -391,7 +387,8 @@ export class PaymentDetailsPage extends BasePage implements OnInit {
                             this.toast(2000, 'Pago realizado correctamente, su confirmación será notificada', 'success');
                             this.attempt = false;
                             // loading.dismiss();
-                            this.router.navigateByUrl('/list-payments');
+                            this.events.publish('paymentAdd');
+                            this.router.navigateByUrl('/payment-home/list');
                         });
 
                     });

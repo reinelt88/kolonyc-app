@@ -1,7 +1,6 @@
 import {User} from '../../models/user';
 import {StorageService} from '../../sharedServices/storage.service';
 import {ToastController} from '@ionic/angular';
-import {Resident} from '../../models/resident';
 import {Person} from '../../models/person';
 import {Access} from '../../models/access';
 import {Colony} from '../../models/colony';
@@ -26,14 +25,14 @@ import * as moment from 'moment';
 import {MarketplaceCategory} from '../../models/marketplaceCategory';
 import {Product} from '../../models/product';
 import {AccessType} from '../../models/accessType';
+import {Chat} from '../../models/chat';
 
 @Component({
     templateUrl: './base.page.html',
 })
 export class BasePage {
 
-    public noImage = 'https://firebasestorage.googleapis.com/v0/b/colonyc-14f60.appspot.com' +
-      '/o/no-image.PNG?alt=media&token=f40787bf-1ff9-4888-bf06-6f02d5a2123a';
+    public noImage = 'https://firebasestorage.googleapis.com/v0/b/colonyc-14f60.appspot.com/o/no-image.PNG?alt=media&token=f40787bf-1ff9-4888-bf06-6f02d5a2123a';
 
     public now = firebase.firestore.FieldValue.serverTimestamp();
 
@@ -61,7 +60,10 @@ export class BasePage {
         displayName: '',
         profilePicture: this.noImage,
         colonyId: '',
+        houseId: '',
         token: '',
+        connected: false,
+        savedProducts: [],
         createdAt: this.now,
     };
 
@@ -75,12 +77,10 @@ export class BasePage {
         profilePicture: this.noImage,
         displayName: '',
         colonyId: '',
+        houseId: '',
         token: '',
-        createdAt: this.now,
-    };
-
-    resident: Resident = {
-        userId: '',
+        connected: false,
+        savedProducts: [],
         createdAt: this.now,
     };
 
@@ -108,7 +108,7 @@ export class BasePage {
 
     access: Access = {
         code: '',
-        residentId: '',
+        houseId: '',
         status: '',
         startDate: '',
         endDate: '',
@@ -172,6 +172,7 @@ export class BasePage {
     };
 
     house: House = {
+        id: '',
         place: '',
         number: '',
         createdAt: this.now,
@@ -205,7 +206,7 @@ export class BasePage {
         endTime: '',
         allDay: '',
         desc: '',
-        residentId: '',
+        userId: '',
         createdAt: this.now,
     };
 
@@ -243,6 +244,15 @@ export class BasePage {
 
     accessType: AccessType = {
         name: ''
+    };
+
+    chat: Chat = {
+        sellerId: '',
+        buyerId: '',
+        productId: '',
+        message: '',
+        sendBy: '',
+        createdAt: this.now,
     };
 
     color = null;

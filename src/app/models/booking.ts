@@ -4,6 +4,6 @@ export interface Booking {
     endTime: any;
     allDay: any;
     desc: string;
-    residentId: string;
+    userId: string;
     createdAt: any;
 }

@@ -10,7 +10,7 @@
 </ion-header>
 <ion-content *ngIf="showList">
   <ion-item *ngIf="user.role === 'ADMIN'">
-    <ion-label>Ubicaciones</ion-label>
+    <ion-label>Seleccione {{colonyType | lowercase}}</ion-label>
 
     <ionic-selectable #selectComponent [(ngModel)]="house" [items]="houses" canSearch="true" searchPlaceholder="Buscar..." itemValueField="id" itemTextField="place" headerColor="danger" searchFailText="No se encuentran resultados">
       <ng-template ionicSelectableCloseButtonTemplate>

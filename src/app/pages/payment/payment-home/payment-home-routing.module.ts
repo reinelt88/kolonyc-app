@@ -7,6 +7,11 @@ import {AuthGuard} from '../../../security/guards/auth.guard';
 const routes: Routes = [
     {
         path: '',
+        redirectTo: '/payment-home/list',
+        pathMatch: 'full'
+    },
+    {
+        path: '',
         component: PaymentHomePage,
         children:
             [
@@ -33,11 +38,6 @@ const routes: Routes = [
                         ]
                 }
             ]
-    },
-    {
-        path: '',
-        redirectTo: '/payment-home/list',
-        pathMatch: 'full'
     }
 ];
 

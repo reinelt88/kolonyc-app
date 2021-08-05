@@ -1,7 +1,7 @@
 export interface Access {
     id?: string;
     code: string;
-    residentId: string;
+    houseId: string;
     accessType: '';
     callResident: false;
     status: string;

@@ -42,9 +42,9 @@ export class LoginPage extends BasePage implements OnInit {
     }
 
     ionViewWillEnter() {
-        this.events.subscribe('loginError', (res) => {
-            this.toast(4000, res, 'danger');
-        });
+      this.events.subscribe('loginError', (res) => {
+          this.toast(4000, res, 'danger');
+      });
       timer(1000).subscribe(() => {
         this.storageService.getObject('user').then(user => {
           if (user) {

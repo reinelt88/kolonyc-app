@@ -1,0 +1,24 @@
+<ion-header>
+  <ion-toolbar color="danger">
+
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/list-products"></ion-back-button>
+    </ion-buttons>
+
+    <ion-title>Chats</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-list>
+    <ion-item-sliding *ngFor="let chat of chats">
+      <ion-item detail="true" lines="inset" button [routerLink]="['/chat', chat.productId, chat.sellerId, chat.buyerId]">
+        <ion-label>
+          <p>{{chat.createdAt}}</p>
+          <p>{{chat.product}}</p>
+          <p>{{chat.buyer}}</p>
+        </ion-label>
+      </ion-item>
+    </ion-item-sliding>
+  </ion-list>
+</ion-content>

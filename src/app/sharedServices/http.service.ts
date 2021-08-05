@@ -10,7 +10,7 @@ import {PaymentStatusEmail} from '../models/paymentStatusEmail';
 })
 export class HttpService {
 
-    private fcmHttpOptions = {
+    private FcmHttpOptions = {
         headers: new HttpHeaders({
             'Content-Type': 'application/json',
             Authorization: 'key=' + environment.fcmToken
@@ -29,7 +29,7 @@ export class HttpService {
     }
 
     pushNotification(notification: PushNotification) {
-        return this.http.post(environment.fcmUrl, JSON.stringify(notification), this.fcmHttpOptions);
+        return this.http.post(environment.fcmUrl, JSON.stringify(notification), this.FcmHttpOptions);
     }
 
     paymentEmailNotification(paymentEmail: PaymentEmail) {

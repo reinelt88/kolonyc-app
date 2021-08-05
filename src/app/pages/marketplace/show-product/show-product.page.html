@@ -1,12 +1,63 @@
 <ion-header>
-  <ion-toolbar color="danger">
-    <ion-buttons slot="start">
-      <ion-back-button defaultHref="/list-products"></ion-back-button>
-    </ion-buttons>
-    <ion-title *ngIf="productId">{{product.name}}</ion-title>
-  </ion-toolbar>
+    <ion-toolbar color="danger">
+        <ion-buttons slot="start">
+            <ion-back-button defaultHref="/list-products"></ion-back-button>
+        </ion-buttons>
+        <ion-title *ngIf="productId">{{product.name}}</ion-title>
+    </ion-toolbar>
 </ion-header>
 
 <ion-content class="ion-padding">
 
+    <ion-card>
+        <ion-card-header>
+            <ion-img *ngIf="product.pictures.length==0" class="full-image" src="{{noImage}}"></ion-img>
+            <ion-slides *ngIf="product.pictures.length>0" pager="true" [options]="slideOpts">
+                <ion-slide *ngFor="let p of product.pictures">
+                    <ion-img class="full-image" src="{{p}}"></ion-img>
+                </ion-slide>
+            </ion-slides>
+            <h3>{{product.name}}</h3>
+            <p *ngIf="product.offerPrice">${{product.offerPrice}} <s>${{product.price}}</s></p>
+            <p *ngIf="!product.offerPrice">${{product.price}}</p>
+        </ion-card-header>
+    </ion-card>
+
+    <ion-list *ngIf="ready">
+        <ion-item *ngIf="publicationDate">
+            <ion-label color="medium">
+                <small>Publicado el {{publicationDate}}</small>
+            </ion-label>
+        </ion-item>
+        <ion-item *ngIf="marketplaceCategory.name">
+            <ion-label>
+                <small>Categoría</small> {{marketplaceCategory.name}}
+            </ion-label>
+        </ion-item>
+        <ion-item *ngIf="product.productStatus">
+            <ion-label>
+                <small>Estado</small> {{product.productStatus}}
+            </ion-label>
+        </ion-item>
+        <ion-item *ngIf="product.description">
+            <ion-label>
+                <small>Detalles:</small> <br>
+                {{product.description}}
+            </ion-label>
+        </ion-item>
+        <ion-item *ngIf="product.description">
+            <ion-label>
+                <small>Vendedor </small>
+                {{sellerUser.displayName}}
+            </ion-label>
+        </ion-item>
+        <ion-item *ngIf="product.showPhone">
+            <ion-label>
+                <small>Teléfono </small>
+                {{sellerUser.phone}}
+            </ion-label>
+        </ion-item>
+    </ion-list>
 </ion-content>
+
+<ion-button expand="full" color="danger" (click)="openActionSheet()">Opciones</ion-button>

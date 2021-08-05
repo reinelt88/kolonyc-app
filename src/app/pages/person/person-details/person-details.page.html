@@ -1,7 +1,7 @@
 <ion-header>
     <ion-toolbar color="danger">
         <ion-buttons slot="start">
-            <ion-back-button [defaultHref]="['/access-details', accessId]"></ion-back-button>
+            <ion-back-button (click)="back()"></ion-back-button>
         </ion-buttons>
         <ion-title>Detalles</ion-title>
         <ion-buttons *ngIf="this.savedUser.role === 'SECURITY' && person.inDate == ''" slot="end" (click)="confirmMessage('in')" style="zoom:2.0; padding-right: 7px;">

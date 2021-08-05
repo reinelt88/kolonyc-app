@@ -1,7 +1,7 @@
 import {Component, OnInit, ViewChild} from '@angular/core';
 import {UserService} from '../users/user.service';
 import {StorageService} from '../../sharedServices/storage.service';
-import {ActionSheetController, LoadingController, Platform, ToastController} from '@ionic/angular';
+import {ActionSheetController, LoadingController, ToastController} from '@ionic/angular';
 import {AuthService} from '../../sharedServices/auth.service';
 import {AngularFirestore} from '@angular/fire/firestore';
 import {AngularFireStorage} from '@angular/fire/storage';
@@ -105,10 +105,11 @@ export class MyAccountPage extends BasePage implements OnInit {
             this.user.displayName = this.form.value.displayName;
             this.user.phone = this.form.value.phone;
             this.userService.update(this.user, this.user.id).then(() => {
-                this.attempt = false;
-                this.userService.updateStorageAndEvents(this.user);
-                this.toast(2000, 'Actualización exitosa', 'success');
-
+                this.colonyService.update(this.colony, this.user.colonyId).then(() => {
+                    this.attempt = false;
+                    this.userService.updateStorageAndEvents(this.user);
+                    this.toast(2000, 'Actualización exitosa', 'success');
+                });
             });
         } else {
             this.attempt = true;
@@ -122,6 +123,10 @@ export class MyAccountPage extends BasePage implements OnInit {
             this.toast(5000, 'Por favor siga las instrucciones recibidas en su correo electrónico y acceda con su nueva contraseña', 'dark');
             this.router.navigateByUrl('/logout');
         });
+    }
+
+    usePaypal($event) {
+        this.colony.usePaypal = $event.detail.checked;
     }
 
     // *******************************Image managment

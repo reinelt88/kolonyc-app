@@ -19,11 +19,12 @@ export class RegisterPage implements OnInit {
         phone: '',
         password: '',
         role: '',
-        profilePicture: 'https://firebasestorage.googleapis.com/v0/b/colonyc-14f60.appspot.com/o/' +
-          'no-image.PNG?alt=media&token=f40787bf-1ff9-4888-bf06-6f02d5a2123a',
+        profilePicture: 'https://firebasestorage.googleapis.com/v0/b/colonyc-14f60.appspot.com/o/no-image.PNG?alt=media&token=f40787bf-1ff9-4888-bf06-6f02d5a2123a',
         displayName: '',
         colonyId: '',
         token: '',
+        connected: false,
+        savedProducts: [],
         createdAt: firebase.firestore.FieldValue.serverTimestamp(),
     };
 

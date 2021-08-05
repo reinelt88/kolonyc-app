@@ -6,7 +6,6 @@ import {ColonyService} from '../../colony/colony.service';
 import {User} from '../../../models/user';
 import {UserService} from '../../users/user.service';
 import {AuthService} from '../../../sharedServices/auth.service';
-import {ResidentService} from '../resident.service';
 import {BasePage} from '../../base/base.page';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {Keyboard} from '@ionic-native/keyboard/ngx';
@@ -22,7 +21,8 @@ import {IonicSelectableComponent} from 'ionic-selectable';
 })
 export class ResidentDetailsPage extends BasePage implements OnInit {
 
-    residentId = null;
+    @ViewChild('selectComponent', {static: false}) selectComponent: IonicSelectableComponent;
+    public residentId = null;
     public form: FormGroup;
     public attempt = false;
     public defaultErrorMessage = 'Por favor ingrese un valor válido';
@@ -30,7 +30,6 @@ export class ResidentDetailsPage extends BasePage implements OnInit {
     public placeType = null;
     public selectedHouse = null;
 
-    @ViewChild('selectComponent', {static: false}) selectComponent: IonicSelectableComponent;
     constructor(
         private loadingController: LoadingController,
         private route: ActivatedRoute,
@@ -41,7 +40,6 @@ export class ResidentDetailsPage extends BasePage implements OnInit {
         private colonyService: ColonyService,
         private userService: UserService,
         private authService: AuthService,
-        private residentService: ResidentService,
         private alertController: AlertController,
         private formBuilder: FormBuilder,
         private keyboard: Keyboard,
@@ -91,8 +89,8 @@ export class ResidentDetailsPage extends BasePage implements OnInit {
                 if (residentId === null || residentId === undefined ) {
                     arrHouses.push(obj);
                 } else {
-                    this.houseService.getHouseByResident(this.user.colonyId, this.residentId).then(house => {
-                        if (house.id === h.id) {
+                    this.userService.get(this.residentId).subscribe(resident => {
+                        if (resident.houseId === h.id) {
                             arrHouses.push(obj);
                             this.selectedHouse = obj;
                         }
@@ -113,31 +111,26 @@ export class ResidentDetailsPage extends BasePage implements OnInit {
 
         await loading.present();
 
-        this.houseService.getHouseByResident(this.user.colonyId, this.residentId).then(house => {
-            this.house = house;
-            // this.form.get('house').setValue(house.id);
-            this.selectedHouse = house;
-        });
+        this.userService.get(this.residentId).subscribe(resident => {
 
-        this.houseService.getResident(this.user.colonyId, this.residentId).then(resident => {
-            this.resident = resident;
-            const userId = this.resident.userId;
-            if (userId !== '') {
-                this.userService.get(userId).subscribe(user => {
-                    this.user = user;
-                    this.user.id = userId;
-                    this.form.get('email').setValue(user.email);
-                    this.form.get('displayName').setValue(user.displayName);
-                    this.form.get('phone').setValue(user.phone);
-                    loading.dismiss();
-                });
-            }
-        });
+            this.user = resident;
+            this.form.get('email').setValue(resident.email);
+            this.form.get('displayName').setValue(resident.displayName);
+            this.form.get('phone').setValue(resident.phone);
 
+            this.houseService.get(resident.houseId, this.user.colonyId).subscribe(house => {
+
+                this.house = house;
+                this.house.id = resident.houseId;
+                this.selectedHouse = house;
+            });
+
+            loading.dismiss();
+        });
     }
 
     removeResident() {
-        this.residentService.remove(this.residentId, this.user.colonyId, this.house.id);
+        this.userService.remove(this.residentId);
         this.nav.navigateForward('/list-residents');
     }
 
@@ -156,43 +149,20 @@ export class ResidentDetailsPage extends BasePage implements OnInit {
             if (this.selectedHouse !== null && this.selectedHouse !== undefined) {
                 // Si se hace un update del residente
                 if (this.residentId) {
-
-                    this.resident.userId = this.user.id;
-
-                    if (this.house.id !== this.selectedHouse.id) { // si cambia de casa
-
-                        this.residentService.remove(this.residentId, this.user.colonyId, this.house.id).then(() => {});  // eliminamos el residente de la casa anterior
-                        this.residentService.add(this.resident, this.user.colonyId, this.selectedHouse.id).then(() => { // se añade el residente en otra casa
-                            this.user.displayName = this.form.value.displayName;
-                            this.user.email = this.form.value.email;
-                            this.user.phone = this.form.value.phone;
-                            this.userService.update(this.user, this.resident.userId).then(() => {
-                                this.attempt = false;
-                                this.nav.navigateForward('/list-residents');
-                            });
-                        });
-                    } else { // si se mantiene en la misma casa se hace el update
-
-                        this.residentService.update(this.residentId, this.resident, this.user.colonyId, this.selectedHouse.id).then(() => {
-
-                            this.user.displayName = this.form.value.displayName;
-                            this.user.email = this.form.value.email;
-                            this.user.phone = this.form.value.phone;
-                            this.userService.update(this.user, this.resident.userId).then(() => {
-                                this.attempt = false;
-                                this.nav.navigateForward('/list-residents');
-                            });
-                        });
-                    }
-
+                    this.user.displayName = this.form.value.displayName;
+                    this.user.email = this.form.value.email;
+                    this.user.phone = this.form.value.phone;
+                    this.user.houseId = this.selectedHouse.id;
+                    this.userService.update(this.user, this.residentId).then(() => {
+                        this.attempt = false;
+                        this.nav.navigateForward('/list-residents');
+                    });
                 } else { // Creando residente
-
                     this.authService.afAuth.createUserWithEmailAndPassword(this.form.value.email, 'user123')
                         .then(() => {
                             this.authService.afAuth.currentUser.then(u => u.sendEmailVerification())
                                 .then(async () => {
                                   // create new
-
                                   const user: User = {
                                     uid: await this.authService.afAuth.currentUser.then(u => u.uid),
                                     email: this.form.value.email,
@@ -203,22 +173,20 @@ export class ResidentDetailsPage extends BasePage implements OnInit {
                                     profilePicture: this.noImage,
                                     colonyId: this.user.colonyId,
                                     token: '',
-                                    createdAt: this.user.createdAt
+                                    connected: false,
+                                    createdAt: this.user.createdAt,
+                                    houseId: this.selectedHouse.id,
+                                    savedProducts: []
                                   };
 
                                   this.userService.add(user).then(docRef => {
-
-                                    this.resident.userId = docRef.id;
-
-                                    this.residentService.add(this.resident, this.user.colonyId, this.selectedHouse.id).then(() => {
-                                      this.attempt = false;
-                                      this.nav.navigateForward('/list-residents');
-                                    });
+                                    this.nav.navigateForward('/list-residents');
                                   });
 
                                 });
-                        }).catch((error) => {
-                        error.log('Error registering user', error.message);
+                        }).catch((error: Error) => {
+                        console.log('Error registering user', error.message);
+                        this.toast(2000, error.message, 'danger');
                     });
 
                 }
@@ -359,8 +327,8 @@ export class ResidentDetailsPage extends BasePage implements OnInit {
     }
 
     deleteHouse(house) {
-        this.houseService.getResidentsByHouse(this.user.colonyId, house.id).then(res => {
-            if (res.length > 0) {
+        this.userService.getByColonyAndHouse(this.user.colonyId, house.id).then(res => {
+            if (res.docs.length > 0) {
                 this.toast(2000, 'No se puede eliminar la ubicación porque tiene residentes asociados', 'danger');
             } else {
                 this.form.get('house').setValue('');

@@ -13,19 +13,20 @@ export class NotificationService {
     private collection: AngularFirestoreCollection<Notification>;
     private obj: Observable<Notification[]>;
 
+
     constructor(
         private db: AngularFirestore,
     ) {
     }
 
     getCollection(userId: string) {
-        return this.collection = this.db.collection<Notification>('/user/' + userId + '/notification',
-            ref => ref.orderBy('createdAt', 'desc'));
+        return this.collection = this.db.collection<Notification>('/user/' + userId + '/notification', ref => ref.orderBy('createdAt', 'desc'));
     }
 
     getAll(userId: string) {
         return this.obj = this.getCollection(userId).snapshotChanges().pipe(map(
-            actions => actions.map(
+            actions => {
+                return actions.map(
                     a => {
 
                         const data = a.payload.doc.data();
@@ -34,7 +35,8 @@ export class NotificationService {
 
                         return {id, ...data};
                     }
-                )
+                );
+            }
             )
         );
     }

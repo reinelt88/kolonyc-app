@@ -1,19 +1,20 @@
-import { Component } from '@angular/core';
-import {BasePage} from './pages/base/base.page';
-import * as moment from 'moment';
-import {LoadingController, MenuController, Platform, ToastController} from '@ionic/angular';
+import {Component} from '@angular/core';
+import {AlertController, LoadingController, MenuController, Platform, ToastController} from '@ionic/angular';
 import {AuthService} from './sharedServices/auth.service';
 import {Router} from '@angular/router';
 import {StorageService} from './sharedServices/storage.service';
+import {BasePage} from './pages/base/base.page';
+import {timer} from 'rxjs';
+import {FCM} from '@ionic-native/fcm/ngx';
 import {HouseService} from './pages/resident/house.service';
 import {UserService} from './pages/users/user.service';
+import * as moment from 'moment';
 import {ColonyService} from './pages/colony/colony.service';
 import {PaymentService} from './pages/payment/payment.service';
-import {Events} from './sharedServices/events.service';
 import {AngularFireAuth} from '@angular/fire/auth';
-import {FCM} from '@ionic-native/fcm/ngx';
+import {Events} from './sharedServices/events.service';
 import { SplashScreen } from '@capacitor/splash-screen';
-import {timer} from "rxjs";
+
 
 @Component({
   selector: 'app-root',
@@ -23,11 +24,12 @@ import {timer} from "rxjs";
 export class AppComponent extends BasePage {
   public appPages = [];
   displayName = 'Jhon Doe';
-  profilePicture = 'https://w.wallhaven.cc/full/6k/wallhaven-6kre3q.jpg';
+  profilePicture = 'https://w.wallhaven.cc/full/45/wallhaven-4575j5.jpg';
   isLoggedIn = false;
   role = null;
   // showSplash = true;
   public showRoleSwitch = false;
+
   constructor(
     private platform: Platform,
     private authService: AuthService,
@@ -43,6 +45,7 @@ export class AppComponent extends BasePage {
     private userService: UserService,
     private colonyService: ColonyService,
     private paymentService: PaymentService,
+    private alertController: AlertController,
   ) {
     super(storageService, toastController);
     this.initializeApp();
@@ -58,30 +61,23 @@ export class AppComponent extends BasePage {
     });
   }
 
-  async initializeApp() {
-    try {
-      await SplashScreen.hide();
-      this.notificationSetup();
-    } catch (err) {
-      console.log('This is normal in a browser', err);
-    }
-  }
-
   manageProfileData(res) {
-
-
     if (res.id !== '') {
+
+      this.platform.pause.subscribe(() => {
+        res.connected = false;
+        this.userService.update(res, res.id).then(() => {
+          console.log('ngOnDestroy');
+        }, e => console.log(e));
+      });
+
       this.displayName = (res.displayName) ? res.displayName : res.email;
       this.profilePicture = res.profilePicture;
       this.isLoggedIn = true;
       this.role = res.role;
 
       if (res.role === 'ADMIN') {
-        this.houseService.getResidentByUid(res.colonyId, res.id).then(r => {
-          if (r) {
-            this.showRoleSwitch = true;
-          }
-        });
+        this.showRoleSwitch = true;
       } else {
         this.userService.getByEmailAndColony(res.colonyId, res.email).then(rs => {
           if (rs.docs.length > 0) {
@@ -165,7 +161,7 @@ export class AppComponent extends BasePage {
       };
 
       const areas = {
-        title: 'Areas comunes',
+        title: 'Áreas comunes',
         url: '/list-areas',
         icon: 'football',
         color: '#0CA9EA'
@@ -194,56 +190,93 @@ export class AppComponent extends BasePage {
 
 
       if (res.role === 'SUPERADMIN') {
-        // this.appPages = [ home, colonies, users, accesses, finances, marketplaceCategory];
-        this.appPages = [ home, colonies, users, accesses, finances];
+        this.appPages = [ home, colonies, users, accesses, finances, marketplaceCategory];
       } else if (res.role === 'ADMIN') {
-        // this.appPages = [ home, residents, security, accesses, finances, payment, areas, poll, marketplace];
-        this.appPages = [ home, residents, security, accesses, finances, payment, areas, poll];
+        this.appPages = [ home, residents, security, accesses, payment, finances, areas, poll, marketplace];
 
       } else if (res.role === 'RESIDENT') {
+        this.colonyService.get(res.colonyId).subscribe(colony => {
+          if (colony) {
+            const startDate = moment(colony.createdAt.seconds * 1000).toDate();
+            const endDate = moment().toDate();
 
-        this.colonyService.get(this.savedUser.colonyId).subscribe(colony => {
-          this.houseService.getResidentByUid(this.savedUser.colonyId, this.savedUser.id).then(resident => {
-            this.houseService.getHouseByResident(this.savedUser.colonyId, resident.id).then(house => {
-              const startDate = moment(colony.createdAt.seconds * 1000).toDate();
-              const endDate = moment().toDate();
+            const months = this.getMonths(startDate, endDate);
 
-              const months = this.getMonths(startDate, endDate);
-
-              const promises = [];
-              months.forEach(item => {
-                promises.push(this.paymentService.getByHouseAndMonthAndYearApprovedQty(
-                  this.savedUser.colonyId, house.id, item.month + 1 , item.year
-                ));
-              });
-
-              Promise.all(promises).then(values => {
-                let qty = 0;
-                values.forEach(v => {
-                  if (v === 0) {
-                    qty++;
-                  }
-                });
-
-                if (qty > 2) {
-                  this.appPages = [ home, payment];
-                } else {
-                  this.appPages = [ home, residents, security, accesses, finances, payment, areas, poll];
-                }
-
-              }, reason => {
-                console.log(reason);
-              });
-
+            const promises = [];
+            months.forEach(item => {
+              promises.push(
+                this.paymentService.getByHouseAndMonthAndYearApprovedQty(
+                  res.colonyId,
+                  res.houseId,
+                  item.month + 1,
+                  item.year)
+              );
             });
-          });
+
+            Promise.all(promises).then(values => {
+              let qty = 0;
+              values.forEach(v => {
+                if (v === 0) {
+                  qty++;
+                }
+              });
+
+              if (qty > 2) {
+                this.appPages = [ home, payment];
+              } else {
+                this.appPages = [ home, accesses, payment, finances, areas, poll, marketplace];
+              }
+
+            }, reason => {
+              console.log(reason);
+            });
+          }
         });
+
+
+
         // this.appPages = [ home, accesses, finances, payment, areas, poll, marketplace];
         // this.appPages = [ home, accesses, finances, payment, areas, poll];
+
+
+
       } else if (res.role === 'SECURITY') {
         this.appPages = [ home, accesses, proccess, paymentPendings];
       }
     }
+  }
+
+  initializeApp() {
+    this.platform.ready().then(() => {
+      SplashScreen.hide();
+      this.notificationSetup();
+    });
+  }
+
+  async alert(msg) {
+    const alert = await this.alertController.create({
+      cssClass: 'my-custom-class',
+      header: msg.title,
+      message: msg.body,
+      buttons: [
+        {
+          text: 'Cancel',
+          role: 'cancel',
+          cssClass: 'secondary',
+          handler: (blah) => {
+            console.log('Confirm Cancel: blah');
+          }
+        }, {
+          text: 'Ver mensaje',
+          cssClass: 'secondary',
+          handler: () => {
+            this.router.navigateByUrl('chat/' + msg.productId + '/' + msg.sellerId + '/' + msg.buyerId);
+          }
+        }
+      ]
+    });
+
+    await alert.present();
   }
 
   roleChange($event) {
@@ -267,25 +300,9 @@ export class AppComponent extends BasePage {
     return months;
   }
 
-  private async presentToast(message) {
-    const toast = await this.toastController.create({
-      message,
-      duration: 6000
-    });
-    toast.present();
-  }
-
   private notificationSetup() {
-    this.fcm.onNotification().subscribe(
-      (msg) => {
-        if (this.platform.is('ios')) {
-          this.presentToast(msg.aps.alert);
-        } else {
-          console.log(msg);
-          this.presentToast(msg.body);
-        }
-      });
+    this.fcm.onNotification().subscribe((msg) => {
+      this.alert(msg);
+    });
   }
-
-
 }

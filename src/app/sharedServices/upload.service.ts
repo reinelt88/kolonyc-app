@@ -1,12 +1,12 @@
-import {Injectable} from '@angular/core';
+import {Injectable, ViewChild} from '@angular/core';
 import {LoadingController, Platform} from '@ionic/angular';
 import {Camera, CameraOptions} from '@ionic-native/camera/ngx';
 import {ImagePicker} from '@ionic-native/image-picker/ngx';
 import {PhotoViewer} from '@ionic-native/photo-viewer/ngx';
-import {Observable} from 'rxjs';
-import {Events} from './events.service';
 import firebase from 'firebase/app';
 import 'firebase/storage';
+import {Observable} from 'rxjs';
+import {Events} from './events.service';
 
 @Injectable({
     providedIn: 'root'
@@ -23,6 +23,36 @@ export class UploadService {
     ) {
 
     }
+
+    // getImages(path: string, maxImages: number) {
+    //
+    //     const options = {
+    //         // width: 200,
+    //         quality: 30,
+    //         outputType: 1,
+    //         maximumImagesCount: maxImages
+    //     };
+    //
+    //
+    //     return new Promise<any>((resolve, reject) => {
+    //         this.imagePicker.getPictures(options).then((results) => {
+    //             const arrImages = [];
+    //             if (results.length > 0) {
+    //                 results.forEach(r => {
+    //                     this.uploadImage('data:image/jpeg;base64,' + r, path). (res => {
+    //                         arrImages.push(res);
+    //                     });
+    //                     // arrImages.push(r);
+    //                 });
+    //             }
+    //             resolve(arrImages);
+    //         }, (err) => {
+    //             console.log(err);
+    //         });
+    //     });
+    //
+    //
+    // }
 
     getImages(path: string, maxImages: number) {
 
@@ -64,6 +94,23 @@ export class UploadService {
             console.log('Error', err);
         });
     }
+
+    // uploadImage(data: string, path: string) {
+    //
+    //     const storageRef = firebase.storage().ref();
+    //     const filename = Math.floor(Date.now() / 1000);
+    //     const imageRef = storageRef.child(path + '/' + filename + '.jpg');
+    //
+    //     imageRef.putString(data, firebase.storage.StringFormat.DATA_URL).then((snapshot) => {
+    //         return new Promise<any>((resolve, reject) => {
+    //             snapshot.ref.getDownloadURL().then(url => {
+    //                 resolve(url);
+    //             });
+    //         });
+    //
+    //     }, e => console.log(e));
+    //
+    // }
 
     uploadImage(data: string, path: string) {
 

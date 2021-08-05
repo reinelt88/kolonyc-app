@@ -56,10 +56,9 @@ export class PendingPaymentsPage extends BasePage implements OnInit {
                 this.colonyType = (this.colony.type === 'vertical') ? 'Edificio' : 'Calle';
 
                 if (this.user.role === 'RESIDENT') {
-                    this.houseService.getResidentByUid(this.user.colonyId, this.user.id).then(resident => {
-                        this.houseService.getHouseByResident(this.user.colonyId, resident.id).then(houses => {
-                            this.processNodes([houses]);
-                        });
+                    this.houseService.get(this.user.houseId, this.user.colonyId).subscribe(house => {
+                        house.id = this.user.houseId;
+                        this.processNodes([house]);
                     });
                 } else {
                     this.houseService.getAll(this.user.colonyId).subscribe(items => {
@@ -107,7 +106,6 @@ export class PendingPaymentsPage extends BasePage implements OnInit {
             });
             nodes.push(node);
         });
-        console.log(nodes);
         this.nodes = nodes;
     }
 

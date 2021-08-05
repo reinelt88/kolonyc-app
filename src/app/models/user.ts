@@ -8,6 +8,9 @@ export interface User {
     displayName: string;
     profilePicture: string;
     colonyId: string;
+    houseId?: string;
     token: string;
+    connected: boolean;
+    savedProducts: string [];
     createdAt: any;
 }

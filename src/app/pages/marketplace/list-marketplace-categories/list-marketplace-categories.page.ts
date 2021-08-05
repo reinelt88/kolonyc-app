@@ -3,7 +3,6 @@ import {BasePage} from '../../base/base.page';
 import {LoadingController, ToastController} from '@ionic/angular';
 import {StorageService} from '../../../sharedServices/storage.service';
 import {MarketplaceCategoryService} from '../marketplaceCategory.service';
-import {Colony} from '../../../models/colony';
 import {MarketplaceCategory} from '../../../models/marketplaceCategory';
 
 @Component({

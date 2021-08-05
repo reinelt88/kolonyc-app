@@ -3,14 +3,16 @@
         <ion-buttons slot="start">
             <ion-menu-button></ion-menu-button>
         </ion-buttons>
-        <ion-title>
-            Productos
-        </ion-title>
+        <ion-title *ngIf="userId">Mis productos</ion-title>
+        <ion-title *ngIf="!userId">Productos</ion-title>
+<!--        <ion-buttons slot="end" routerLink="/product-details" style="zoom:2.0; padding-right: 4px;">-->
+<!--            <ion-icon name="add"></ion-icon>-->
+<!--        </ion-buttons>-->
     </ion-toolbar>
 </ion-header>
 
 <ion-item>
-    <ion-label>Ubicaciones</ion-label>
+    <ion-label>Categoría</ion-label>
 
     <ionic-selectable #selectComponent [(ngModel)]="category" [items]="categories" canSearch="true" searchPlaceholder="Buscar..." itemValueField="id" itemTextField="name" headerColor="danger" searchFailText="No se encuentran resultados">
         <ng-template ionicSelectableCloseButtonTemplate>
@@ -41,8 +43,9 @@
 <ion-content>
 
     <ion-row>
-        <ion-col size="6" *ngFor="let p of products">
-            <ion-card [routerLink]="['/product-details', p.id]">
+        <ion-col size="6" *ngFor="let p of dataList">
+<!--            <button [routerLink]="myVar ? ['/myScreen'] : []"></button>-->
+            <ion-card [routerLink]="user.id == p.userId ? ['/product-details', p.id] : ['/show-product', p.id]">
                 <ion-img *ngIf="p.pictures.length>0" class="full-image" src="{{p.pictures[0]}}"></ion-img>
                 <ion-img *ngIf="p.pictures.length==0" class="full-image" src="{{noImage}}"></ion-img>
                 <ion-card-header>
@@ -50,14 +53,20 @@
                     <div *ngIf="!p.offerPrice">${{p.price}}<br></div>
                     <small>{{p.name}}</small>
                 </ion-card-header>
+                <ion-card-content>
+<!--                    <ion-button *ngIf="user.id != p.userId" expand="block" size="small" color="danger"><ion-icon name="eye"></ion-icon></ion-button>-->
+                    <ion-button *ngIf="user.id != p.userId" expand="block" size="small" color="danger">Ver</ion-button>
+<!--                    <ion-button *ngIf="user.id == p.userId" expand="block" size="small" color="danger"><ion-icon name="settings"></ion-icon></ion-button>-->
+                    <ion-button *ngIf="user.id == p.userId" expand="block" size="small" color="danger">Editar</ion-button>
+                </ion-card-content>
             </ion-card>
         </ion-col>
     </ion-row>
 
-<!--    <ion-infinite-scroll threshold="100px" (ionInfinite)="load($event)">-->
-<!--        <ion-infinite-scroll-content loadingSpinner="bubbles" loadingText="Cargando más productos...">-->
-<!--        </ion-infinite-scroll-content>-->
-<!--    </ion-infinite-scroll>-->
+    <ion-infinite-scroll threshold="100px" (ionInfinite)="load($event)">
+        <ion-infinite-scroll-content loadingSpinner="bubbles" loadingText="Cargando más productos...">
+        </ion-infinite-scroll-content>
+    </ion-infinite-scroll>
 
     <ion-fab vertical="bottom" horizontal="end" slot="fixed">
         <ion-fab-button routerLink="/product-details" routerDirection="forward">
@@ -65,3 +74,4 @@
         </ion-fab-button>
     </ion-fab>
 </ion-content>
+<ion-button expand="full" color="danger" (click)="openActionSheet()">Opciones</ion-button>

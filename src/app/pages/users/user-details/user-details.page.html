@@ -61,7 +61,7 @@
             <ion-row class="ion-padding" *ngIf="((form.controls.role.value === 'RESIDENT' || form.controls.role.value === 'ADMIN') && form.controls.colonyId.value!='')">
                 <ion-col size="8">
                     <ion-label position="floating">Ubicación</ion-label>
-                    <ion-select class="asd" formControlName="houseId" value="Ubicación" okText="Ok" cancelText="Cancelar" [placeholder]="placeType">
+                    <ion-select formControlName="houseId" value="Ubicación" okText="Ok" cancelText="Cancelar" [placeholder]="placeType">
                         <ion-select-option *ngFor="let h of houses" value="{{h.id}}">{{placeType}} {{h.place}} - #{{h.number}}</ion-select-option>
                     </ion-select>
                     <ion-text color="danger"><small *ngIf="!form.controls.houseId.valid && attempt">Por favor seleccione una opción</small></ion-text>

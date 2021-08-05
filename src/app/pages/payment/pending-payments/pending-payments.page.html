@@ -16,8 +16,8 @@
                     <p>
                         {{ colonyType }} {{node.location.place}} - {{node.location.number}}
                     </p>
-                    <span *ngFor="let payment of node.payments">
-                        <ion-badge style="margin: 0 10px 0 0" color="danger" *ngIf="!payment.paid">{{payment.month}} / {{payment.year}}</ion-badge>
+                    <span *ngFor="let payment of node.payments; index as i">
+                        <ion-badge style="margin: 0 10px 0 0" color="danger" *ngIf="!payment.paid && (node.payments.length-1 == i || node.payments.length-2 == i || node.payments.length-3 == i)">{{payment.month}} / {{payment.year}}</ion-badge>
                     </span>
                 </ion-label>
             </ion-item>

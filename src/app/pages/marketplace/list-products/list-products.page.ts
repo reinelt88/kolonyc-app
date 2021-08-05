@@ -1,5 +1,5 @@
 import {Component, OnInit, ViewChild} from '@angular/core';
-import {IonInfiniteScroll, LoadingController, ToastController} from '@ionic/angular';
+import {ActionSheetController, IonInfiniteScroll, LoadingController, NavController, ToastController} from '@ionic/angular';
 import {StorageService} from '../../../sharedServices/storage.service';
 import {BasePage} from '../../base/base.page';
 import {timer} from 'rxjs';
@@ -7,6 +7,7 @@ import {ProductService} from '../product.service';
 import {Product} from '../../../models/product';
 import {IonicSelectableComponent} from 'ionic-selectable';
 import {MarketplaceCategoryService} from '../marketplaceCategory.service';
+import {UserService} from '../../users/user.service';
 
 
 @Component({
@@ -19,9 +20,12 @@ export class ListProductsPage extends BasePage implements OnInit {
     public products: Product[];
     public categories = [];
     public category = null;
+    public dataList = [];
+    public total = 0;
+    public offsetProduct = null;
+    public userId = null;
 
-    // @ts-ignore
-    @ViewChild('selectComponent') selectComponent: IonicSelectableComponent;
+    @ViewChild('selectComponent', {static: false}) selectComponent: IonicSelectableComponent;
     @ViewChild(IonInfiniteScroll, {static: false}) ionInfiniteScroll: IonInfiniteScroll;
 
     constructor(
@@ -29,14 +33,15 @@ export class ListProductsPage extends BasePage implements OnInit {
         private loadingController: LoadingController,
         protected toastController: ToastController,
         protected storageService: StorageService,
-        private productService: ProductService
+        private productService: ProductService,
+        private actionCtrl: ActionSheetController,
+        private nav: NavController,
+        protected userService: UserService,
     ) {
         super(storageService, toastController);
-
     }
 
     ngOnInit() {
-
     }
 
     ionViewWillEnter() {
@@ -45,12 +50,25 @@ export class ListProductsPage extends BasePage implements OnInit {
             this.user = this.savedUser;
             this.marketplaceCategoryService.getAll().subscribe(res => {
                 this.categories = res;
+                this.productService.getAllActived(this.savedUser.colonyId).subscribe(products => {
+                    this.total = products.length;
+                });
             });
-            this.loadProducts();
+
+            this.loadProducts(null, true);
         });
     }
 
-    async loadProducts() {
+    getOffset() {
+        if (this.dataList.length > 0) {
+            return this.dataList[this.dataList.length - 1];
+        } else {
+            return null;
+        }
+    }
+
+    async loadProducts(offset: any, clear: boolean) {
+
         const loading = await this.loadingController.create({
             spinner: null,
             cssClass: 'custom-loading',
@@ -60,11 +78,19 @@ export class ListProductsPage extends BasePage implements OnInit {
 
         await loading.present();
 
-        this.productService.getAll(this.user.colonyId).subscribe(res => {
-            this.products = res;
-            console.log(res);
+        if (clear) { this.dataList = []; }
+        this.productService.getPaginatedResults(this.user.colonyId, offset, this.category, this.userId).then(res => {
+            if (res) {
+                res.forEach(r => {
+                    if (!this.dataList.find(x => x.id === r.id)) {
+                        this.dataList.push(r);
+                    }
+                });
+                if (this.category != null) {
+                    this.total = this.dataList.length;
+                }
+            }
         });
-
 
         loading.dismiss();
     }
@@ -73,40 +99,75 @@ export class ListProductsPage extends BasePage implements OnInit {
         this.selectComponent.clear();
         this.selectComponent.close();
         this.category = null;
-        this.loadProducts();
+        this.loadProducts(null, true);
     }
 
     confirm() {
         this.selectComponent.confirm();
-        this.loadProducts();
+        this.loadProducts(null, true);
         this.selectComponent.close();
     }
 
-    // load(event) {
-    //
-    //     setTimeout(() => {
-    //         console.log('Done');
-    //
-    //         const product: Product = this.products[this.products.length - 1];
-    //
-    //         if (product) {
-    //
-    //             this.productService.getPaginatedResults(this.user.colonyId, product.id).subscribe(res => {
-    //                 // console.log(res);
-    //                 // res.forEach(p => {
-    //                 //     this.products.push(p);
-    //                 // });
-    //                 // console.log(this.products);
-    //                 console.log(res);
-    //             });
-    //         }
-    //
-    //         event.target.complete();
-    //
-    //         // if (this.dataList.length === 100) {
-    //         //     event.target.disabled = true;
-    //         // }
-    //     }, 500);
-    // }
+    load(event) {
+
+        setTimeout(() => {
+            this.loadProducts(this.getOffset(), false);
+
+            event.target.complete();
+
+            if (this.dataList.length === this.total) {
+                event.target.disabled = true;
+                this.toast(4000, 'Ya no existen más productos', 'dark');
+            }
+        }, 500);
+    }
+
+    myProducts() {
+        if (this.userId == null) {
+            this.userId = this.user.id;
+            this.loadProducts(null, true);
+        } else {
+            this.userId = null;
+            this.loadProducts(null, true);
+        }
+    }
+
+    openActionSheet() {
+
+        const btn = [
+            {
+                text: 'Mis chats',
+                icon: 'chatboxes',
+                handler: () => {
+                    this.nav.navigateForward('/list-chats');
+                }
+            },
+            {
+                text: 'Mis productos',
+                icon: 'funnel',
+                handler: () => {
+                    this.myProducts();
+                }
+            },
+            {
+                text: 'Productos guardados',
+                icon: 'bookmark',
+                handler: () => {
+                    this.nav.navigateForward('/saved-products');
+                }
+            },
+            {
+                text: 'Todos los productos',
+                icon: 'apps',
+                handler: () => {
+                    this.myProducts();
+                }
+            },
+        ];
+
+        this.actionCtrl.create({
+            buttons: btn
+        }).then(ac => ac.present());
+    }
 
 }

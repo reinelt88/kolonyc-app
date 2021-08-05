@@ -2,7 +2,6 @@ import {Injectable} from '@angular/core';
 import {Observable} from 'rxjs';
 import {map} from 'rxjs/operators';
 import {Booking} from '../../../models/booking';
-import {HouseService} from '../../resident/house.service';
 import {UserService} from '../../users/user.service';
 import {AngularFirestore, AngularFirestoreCollection} from '@angular/fire/firestore';
 
@@ -16,7 +15,6 @@ export class BookingService {
 
     constructor(
         private db: AngularFirestore,
-        private houseService: HouseService,
         private userService: UserService
     ) {
     }
@@ -87,10 +85,8 @@ export class BookingService {
                         data.startTime = new Date(data.startTime.seconds * 1000);
                         data.endTime = new Date(data.endTime.seconds * 1000);
 
-                        this.houseService.getResident(colonyId, data.residentId).then(resident => {
-                           this.userService.get(resident.userId).subscribe(user => {
-                               data.residentId = (user.displayName !== '') ? user.displayName : 'Sin nombre';
-                           });
+                        this.userService.get(data.id).subscribe(user => {
+                            data.userId = (user.displayName !== '') ? user.displayName : 'Sin nombre';
                         });
 
                         bookings.push(data);

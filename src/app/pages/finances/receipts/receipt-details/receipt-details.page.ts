@@ -1,7 +1,7 @@
 import {Component, OnInit} from '@angular/core';
 import {ReceiptType} from '../../../../models/receiptType';
 import {StorageService} from '../../../../sharedServices/storage.service';
-import {AlertController, LoadingController, NavController, Platform, ToastController} from '@ionic/angular';
+import {AlertController, LoadingController, NavController, ToastController} from '@ionic/angular';
 import {ActivatedRoute, Router} from '@angular/router';
 import {ReceiptService} from '../receipt.service';
 import {ReceiptTypeService} from '../../receiptType.service';
@@ -19,11 +19,11 @@ import {Events} from '../../../../sharedServices/events.service';
 })
 export class ReceiptDetailsPage extends BasePage implements OnInit {
 
-    public receiptId = null;
-    private colonyId = null;
     public receiptTypes: ReceiptType[];
     public form: FormGroup;
     public attempt = false;
+    public receiptId = null;
+    private colonyId = null;
 
 
     constructor(

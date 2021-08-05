@@ -2,6 +2,7 @@ import {Injectable} from '@angular/core';
 import {Observable} from 'rxjs';
 import {map} from 'rxjs/operators';
 import {Poll} from '../../models/poll';
+import {PollOptionService} from './pollOption.service';
 import {AngularFirestore, AngularFirestoreCollection} from '@angular/fire/firestore';
 
 @Injectable({
@@ -15,6 +16,7 @@ export class PollService {
 
     constructor(
         private db: AngularFirestore,
+        private pollOptionService: PollOptionService
     ) {
     }
 

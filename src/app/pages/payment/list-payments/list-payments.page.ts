@@ -43,21 +43,24 @@ export class ListPaymentsPage extends BasePage implements OnInit {
     }
 
     ngOnInit() {
-        this.payments = [];
         this.events.subscribe('userChange', (res) => {
             this.savedUser = res;
         });
-    }
 
-    ionViewWillEnter() {
-        this.payments = [];
         timer(1000).subscribe(() => {
             this.user = this.savedUser;
             this.loadPayments();
         });
     }
 
+    ionViewWillEnter() {
+        this.events.subscribe('paymentAdd', () => {
+            this.loadPayments();
+        });
+    }
+
     async loadPayments() {
+        this.payments = [];
         const loading = await this.loadingController.create({
             spinner: null,
             cssClass: 'custom-loading',
@@ -82,12 +85,10 @@ export class ListPaymentsPage extends BasePage implements OnInit {
 
         if (this.user.role === 'ADMIN') {
             if (this.house === null) {
-                this.payments = [];
                 this.paymentService.getAll(this.user.colonyId).subscribe(payments => {
                     this.process(payments);
                 });
             } else {
-                this.payments = [];
                 this.houseService.getByAllByPlace(this.user.colonyId, this.house.place).then(houses => {
                     houses.forEach(h => {
                         this.paymentService.getAllByHouseId(this.user.colonyId, h.id).then(payments => {
@@ -99,41 +100,34 @@ export class ListPaymentsPage extends BasePage implements OnInit {
                                     paymentsList.push(payment);
                                 });
                                 this.process(paymentsList);
+                            } else {
+                                this.showList = true;
                             }
                         });
                     });
                 });
             }
         } else {
-            this.houseService.getResidentByUid(this.user.colonyId, this.user.id).then(user => {
-               if (user) {
-                   this.houseService.getHouseByResident(this.user.colonyId, user.id).then(house => {
-                       if (house) {
-
-                           this.paymentService.getAllByHouseId(this.user.colonyId, house.id).then(payments => {
-                               if (payments.docs.length > 0) {
-                                   const paymentsList: any = [];
-                                   payments.docs.forEach(d => {
-                                       const data = d.data();
-                                       const payment: any = d.data();
-                                       payment.id = d.id;
-                                       paymentsList.push(payment);
-                                   });
-                                   this.process(paymentsList);
-                               }
-                           });
-                       }
+           this.paymentService.getAllByHouseId(this.user.colonyId, this.user.houseId).then(payments => {
+               if (payments.docs.length > 0) {
+                   const paymentsList: any = [];
+                   payments.docs.forEach(d => {
+                       const payment: any = d.data();
+                       payment.id = d.id;
+                       paymentsList.push(payment);
                    });
+                   this.process(paymentsList);
+               } else {
+                   this.showList = true;
                }
-
-            });
-
+           });
         }
 
         loading.dismiss();
     }
 
     process(payments) {
+        this.payments = [];
         payments.forEach((p: Payment) => {
 
             const month = this.months.filter(m => {
@@ -156,6 +150,7 @@ export class ListPaymentsPage extends BasePage implements OnInit {
             this.houseService.get(p.houseId, this.user.colonyId).subscribe(house => {
                 paymentMod.houseId = this.colonyType + ' ' + house.place + ' - ' + house.number;
             });
+
             this.payments.push(paymentMod);
         });
         this.showList = true;

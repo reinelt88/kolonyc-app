@@ -3,8 +3,8 @@ import {Observable} from 'rxjs';
 import {map} from 'rxjs/operators';
 import {User} from '../../models/user';
 import {StorageService} from '../../sharedServices/storage.service';
-import {Events} from '../../sharedServices/events.service';
 import {AngularFirestore, AngularFirestoreCollection} from '@angular/fire/firestore';
+import {Events} from '../../sharedServices/events.service';
 
 @Injectable({
     providedIn: 'root'
@@ -43,6 +43,14 @@ export class UserService {
         return this.collection.doc<User>(id).valueChanges();
     }
 
+    getSnapshot(id: string) {
+        return new Promise<any>((resolve, reject) => this.collection.doc<User>(id).get().subscribe(u => {
+                const data = u.data();
+                data.id = u.id;
+                resolve(data);
+            }, error => reject(error)));
+    }
+
     getByUid(id: string) {
         return new Promise<any>((resolve, reject) => this.db.collection('user').ref.where('uid', '==', id).get().then(res => {
                 res.docs.forEach(d => {
@@ -60,12 +68,19 @@ export class UserService {
             .get();
     }
 
-    getResidentsByHouse(houseId: string) {
-      return this.db.collection<User>('user')
-        .ref.where('role', '==', 'RESIDENT')
-        .where('houseId', '==', houseId)
-        .get();
+    getByColonyAndRoleAndHouse(colonyId: string, role: string, houseId: string) {
+        return this.db.collection<User>('user')
+            .ref.where('role', '==', role)
+            .where('colonyId', '==', colonyId)
+            .where('houseId', '==', houseId)
+            .get();
     }
+
+    getByColonyAndHouse(colonyId: string, houseId: string) {
+        return this.db.collection<User>('user')
+            .ref.where('colonyId', '==', colonyId)
+            .where('houseId', '==', houseId)
+            .get();    }
 
     async getByResidentAndAdminByColony(colonyId: string) {
         const residents = this.db.collection<User>('user')

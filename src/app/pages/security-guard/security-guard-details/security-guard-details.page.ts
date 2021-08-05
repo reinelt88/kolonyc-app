@@ -119,7 +119,7 @@ export class SecurityGuardDetailsPage extends BasePage implements OnInit {
 
                 this.authService.afAuth.createUserWithEmailAndPassword(this.form.value.email, 'user123')
                     .then((result) => {
-                        this.authService.afAuth.currentUser.then(u => u.sendEmailVerification())
+                      this.authService.afAuth.currentUser.then(u => u.sendEmailVerification())
                             .then(async () => {
                               // create new
                               this.form.value.uid = await this.authService.afAuth.currentUser.then(u => u.uid);
@@ -134,7 +134,9 @@ export class SecurityGuardDetailsPage extends BasePage implements OnInit {
                                 profilePicture: this.user.profilePicture,
                                 colonyId: this.savedUser.colonyId,
                                 token: '',
-                                createdAt: this.user.createdAt
+                                connected: false,
+                                createdAt: this.user.createdAt,
+                                savedProducts: []
                               };
 
                               this.userService.add(user).then(docRef => {

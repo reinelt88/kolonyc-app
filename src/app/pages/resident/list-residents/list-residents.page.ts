@@ -4,7 +4,6 @@ import {User} from '../../../models/user';
 import {ColonyService} from '../../colony/colony.service';
 import {LoadingController, ToastController} from '@ionic/angular';
 import {UserService} from '../../users/user.service';
-import {ResidentService} from '../resident.service';
 import {BasePage} from '../../base/base.page';
 import {timer} from 'rxjs';
 import {HouseService} from '../house.service';
@@ -35,7 +34,6 @@ export class ListResidentsPage extends BasePage implements OnInit {
         private loadingController: LoadingController,
         private userService: UserService,
         private colonyService: ColonyService,
-        private residentService: ResidentService,
         private houseService: HouseService,
     ) {
         super(storageService, toastController);
@@ -73,68 +71,56 @@ export class ListResidentsPage extends BasePage implements OnInit {
         });
 
         await loading.present();
-        if (this.house === null) {
-            this.houseService.getAll(this.user.colonyId).subscribe(houses => {
-                this.residentsList = [];
-                houses.forEach(h => {
-                  this.userService.getResidentsByHouse(h.id).then(res => {
-                    if (!res.empty) {
-                      const residents: any = [];
-                      res.docs.forEach(d => {
-                        const data: any = d.data();
-                        data.id = d.id;
-                        residents.push(data);
-                      });
-                      this.proccessList(residents, h);
-                    }
-                  }, error => console.log(error));
-                });
-            });
-        } else {
-            this.residentsList = [];
-            this.houseService.get(this.house.id, this.user.colonyId).subscribe(house => {
-                this.houseService.getByAllByPlace(this.user.colonyId, house.place).then(houses => {
-                  this.residentsList = [];
-                  houses.forEach(h => {
-                    this.userService.getResidentsByHouse(h.id).then(res => {
-                      if (!res.empty) {
-                        const residents: any = [];
-                        res.docs.forEach(d => {
-                          const data: any = d.data();
-                          data.id = d.id;
-                          residents.push(data);
-                        });
-                        this.proccessList(residents, h);
-                      }
-                    }, error => console.log(error));
-                  });
-                });
-            });
-        }
+
+        this.residentsList = [];
+        this.userService.getByColonyAndRole(this.user.colonyId, 'RESIDENT').then(res => {
+            if (res.docs.length > 0) {
+                this.proccessList(res.docs);
+            }
+        });
 
         loading.dismiss();
     }
 
-    proccessList(res, h) {
+    proccessList(res) {
         res.forEach(resident => {
+
+            const data = resident.data();
+
             const resMod: any = {
                 id: resident.id,
-                profilePicture: resident.profilePicture,
+                profilePicture: data.profilePicture,
                 colonyName: '',
-                name: resident.displayName,
-                place: h.place,
-                number: h.number,
+                name: data.displayName,
+                place: '',
+                number: '',
             };
 
-            this.colonyService.get(resident.colonyId).subscribe(colony => {
-                resMod.colonyName = colony.name;
+            this.colonyService.get(data.colonyId).subscribe(colony => {
+                if (colony) {
+                    resMod.colonyName = colony.name;
+
+                    this.houseService.get(data.houseId, data.colonyId).subscribe(house => {
+                        if (house) {
+
+                            resMod.place = house.place;
+                            resMod.number = house.number;
+
+                            if (this.house === null) {
+                                if (!this.residentsList.find(o => o.id === resMod.id)) {
+                                    this.residentsList.push(resMod);
+                                }
+                            } else {
+                                if (this.house.place === house.place) {
+                                    if (!this.residentsList.find(o => o.id === resMod.id)) {
+                                        this.residentsList.push(resMod);
+                                    }
+                                }
+                            }
+                        }
+                    });
+                }
             });
-
-            this.residentsList.push(resMod);
-            if (!this.residentsList.find(o => o.id === resMod.id)) {
-                this.residentsList.push(resMod);
-            }
-
         });
     }
 
@@ -147,7 +133,6 @@ export class ListResidentsPage extends BasePage implements OnInit {
 
     confirm() {
         this.selectComponent.confirm();
-        console.log(this.house);
         this.loadResidents();
         this.selectComponent.close();
     }

@@ -3,7 +3,7 @@
         <ion-buttons slot="start">
             <ion-back-button defaultHref="/list-products"></ion-back-button>
         </ion-buttons>
-        <ion-title *ngIf="productId">{{marketplaceCategory.name}}</ion-title>
+        <ion-title *ngIf="productId">{{product.name}}</ion-title>
         <ion-title *ngIf="!productId">Detalles</ion-title>
         <ion-buttons slot="end" (click)="saveProduct()" style="zoom:2.0; padding-right: 4px;">
             <ion-icon name="checkmark"></ion-icon>
@@ -89,10 +89,13 @@
 <!--            <ion-img [src]="p"></ion-img>-->
 <!--        </ion-thumbnail>-->
 
-    <ion-fab vertical="bottom" horizontal="end" slot="fixed" *ngIf="productId">
-        <ion-fab-button color="danger" (click)="confirmMessage()">
-            <ion-icon name="trash"></ion-icon>
-        </ion-fab-button>
-    </ion-fab>
+<!--    <ion-fab vertical="bottom" horizontal="end" slot="fixed" *ngIf="productId">-->
+<!--        <ion-fab-button color="danger" (click)="confirmMessage()">-->
+<!--            <ion-icon name="trash"></ion-icon>-->
+<!--        </ion-fab-button>-->
+<!--    </ion-fab>-->
+
+
 
 </ion-content>
+<ion-button expand="full" color="danger" (click)="openActionSheet()">Opciones</ion-button>

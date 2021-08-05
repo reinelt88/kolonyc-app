@@ -1,5 +1,6 @@
 import {Component, Inject, LOCALE_ID, OnInit, ViewChild} from '@angular/core';
 import {AlertController, ToastController} from '@ionic/angular';
+import {CalendarComponent} from 'ionic2-calendar';
 import {formatDate} from '@angular/common';
 import {ActivatedRoute} from '@angular/router';
 import {timer} from 'rxjs';
@@ -9,7 +10,6 @@ import {BasePage} from '../../../base/base.page';
 import {StorageService} from '../../../../sharedServices/storage.service';
 import * as moment from 'moment';
 import {HouseService} from '../../../resident/house.service';
-import {CalendarComponent} from 'ionic2-calendar';
 
 
 @Component({
@@ -70,9 +70,9 @@ export class BookingDetailsPage extends BasePage implements OnInit {
                     this.area = area;
                     // this.resetEvent();
                     // tslint:disable-next-line:radix
-                    this.calendar.startHour = parseInt(area.startHour);
+                    this.calendar.startHour = parseInt(area.startHour, 10);
                     // tslint:disable-next-line:radix
-                    this.calendar.endHour = parseInt(area.endHour) + 1;
+                    this.calendar.endHour = parseInt(area.endHour, 10) + 1;
                     this.startTime = moment().format();
                     this.endTime = moment().format();
                     this.dataLoaded = true;
@@ -151,50 +151,49 @@ export class BookingDetailsPage extends BasePage implements OnInit {
 
     // Create the right event format and reload source
     addEvent() {
-        this.houseService.getResidentByUid(this.user.colonyId, this.user.id).then(user => {
-            this.booking.title =  this.event.title;
-            this.booking.allDay = this.event.allDay;
-            this.booking.desc = this.event.desc;
-            this.booking.startTime = new Date(this.startTime);
-            this.booking.endTime = new Date(this.endTime);
-            this.booking.residentId = user.id;
 
-            this.bookingService.getBookingsInDate(this.booking.startTime, this.areaId, this.user.colonyId).then(res => {
-                // tslint:disable-next-line:radix
-                const min = parseInt(this.area.startHour);
-                // tslint:disable-next-line:radix
-                const max = parseInt(this.area.endHour);
+        this.booking.title =  this.event.title;
+        this.booking.allDay = this.event.allDay;
+        this.booking.desc = this.event.desc;
+        this.booking.startTime = new Date(this.startTime);
+        this.booking.endTime = new Date(this.endTime);
+        this.booking.userId = this.user.id;
 
-                const startTime =  new Date(this.startTime);
-                const startHour = startTime.getHours();
-                const endTime = new Date(this.endTime);
-                const endHour = endTime.getHours();
+        this.bookingService.getBookingsInDate(this.booking.startTime, this.areaId, this.user.colonyId).then(res => {
+            // tslint:disable-next-line:radix
+            const min = parseInt(this.area.startHour);
+            // tslint:disable-next-line:radix
+            const max = parseInt(this.area.endHour);
 
-                if (res === 0) {
+            const startTime =  new Date(this.startTime);
+            const startHour = startTime.getHours();
+            const endTime = new Date(this.endTime);
+            const endHour = endTime.getHours();
 
-                    if (startTime.getTime() < endTime.getTime()) {
-                        if ((startHour >= min && startHour < max) && (endHour >= min && endHour <= max)) {
-                            this.bookingService.add(this.booking, this.areaId, this.user.colonyId).then(r => {
-                                this.event.startTime = new Date(this.startTime).toISOString();
-                                this.event.endTime = new Date(this.endTime).toISOString();
-                                this.eventSource.push(this.event);
-                                this.myCal.loadEvents();
-                                this.resetEvent();
-                                this.toast(2000, 'Reserva agregada correctamente', 'success');
-                            }, e => console.log(e));
-                        } else {
-                            this.toast(4000, 'Solo se permiten reservas en el horario comprendido de ' + this.area.startHour + ' - ' + this.area.endHour, 'danger');
-                        }
+            if (res === 0) {
 
+                if (startTime.getTime() < endTime.getTime()) {
+                    if ((startHour >= min && startHour < max) && (endHour >= min && endHour <= max)) {
+                        this.bookingService.add(this.booking, this.areaId, this.user.colonyId).then(r => {
+                            this.event.startTime = new Date(this.startTime).toISOString();
+                            this.event.endTime = new Date(this.endTime).toISOString();
+                            this.eventSource.push(this.event);
+                            this.myCal.loadEvents();
+                            this.resetEvent();
+                            this.toast(2000, 'Reserva agregada correctamente', 'success');
+                        }, e => console.log(e));
                     } else {
-                        this.toast(4000, 'La fecha inicio debe de ser menor a la de fin', 'danger');
+                        this.toast(4000, 'Solo se permiten reservas en el horario comprendido de '
+                          + this.area.startHour + ' - ' + this.area.endHour, 'danger');
                     }
 
                 } else {
-                    this.toast(4000, 'Ya existe una reserva para el horario seleccionado', 'danger');
+                    this.toast(4000, 'La fecha inicio debe de ser menor a la de fin', 'danger');
                 }
 
-            });
+            } else {
+                this.toast(4000, 'Ya existe una reserva para el horario seleccionado', 'danger');
+            }
         });
     }
 

@@ -8,7 +8,6 @@ import {NotificationService} from '../notification/notification.service';
 import {HouseService} from '../resident/house.service';
 import * as moment from 'moment';
 import {PaymentService} from '../payment/payment.service';
-import {generateTypeCheckBlock} from '@angular/compiler-cli/src/ngtsc/typecheck/src/type_check_block';
 import {ColonyService} from '../colony/colony.service';
 import {Events} from '../../sharedServices/events.service';
 
@@ -59,25 +58,28 @@ export class HomePage extends BasePage implements OnInit {
 
         await loading.present();
 
-        timer(1000).subscribe(async () => {
+        timer(1000).subscribe(() => {
             this.loadData();
 
             timer(1000).subscribe(() => {
-              this.loadCards();
-              this.loadNotifications();
-              loading.dismiss();
+                this.loadCards();
+                this.loadNotifications();
+                loading.dismiss();
             });
         });
     }
 
     loadNotifications() {
-        this.notificationService.getUnreads(this.savedUser.id).then(res => {
-            if (res.docs.length > 0) {
-                this.notificationQuantity = res.docs.length;
-            } else {
-                this.notificationQuantity = null;
-            }
-        });
+        if (this.savedUser.id) {
+            this.notificationService.getUnreads(this.savedUser.id).then(res => {
+                if (res.docs.length > 0) {
+                    this.notificationQuantity = res.docs.length;
+                } else {
+                    this.notificationQuantity = null;
+                }
+            });
+        }
+
     }
 
     getMonths(fromDate, toDate) {
@@ -130,7 +132,7 @@ export class HomePage extends BasePage implements OnInit {
 
         const finances = {
             route: '/finances-home/receipts',
-            title: 'Finanzas colonia',
+            title: 'Finanzas de la colonia',
             src: '../../../assets/finanzas.png'
         };
 
@@ -142,7 +144,7 @@ export class HomePage extends BasePage implements OnInit {
 
         const payment = {
             route: '/payment-home/list',
-            title: 'Pagos mensualidad',
+            title: 'Pagos de mensualidad',
             src: '../../../assets/pagos.png'
         };
 
@@ -176,67 +178,63 @@ export class HomePage extends BasePage implements OnInit {
             src: '../../../assets/categorias-marketplace.png'
         };
 
-        if (this.savedUser.role === 'SUPERADMIN') {
+      if (this.savedUser.role === 'SUPERADMIN') {
 
-            this.cards = [colonies, users, accesses, finances, categories];
+        this.cards = [colonies, users, accesses, finances, categories];
 
-        } else if (this.savedUser.role === 'ADMIN') {
+      } else if (this.savedUser.role === 'ADMIN') {
 
-            // this.cards = [residents, security, accesses, finances, payment, areas, poll, marketplace];
-            this.cards = [residents, security, accesses, finances, payment, areas, poll];
+        this.cards = [residents, security, accesses, payment, finances, areas, poll, marketplace];
 
-        } else if (this.savedUser.role === 'RESIDENT') {
+      } else if (this.savedUser.role === 'RESIDENT') {
 
-            this.colonyService.get(this.savedUser.colonyId).subscribe(colony => {
-                this.houseService.getResidentByUid(this.savedUser.colonyId, this.savedUser.id).then(resident => {
-                    this.houseService.getHouseByResident(this.savedUser.colonyId, resident.id).then(house => {
-                        const startDate = moment(colony.createdAt.seconds * 1000).toDate();
-                        const endDate = moment().toDate();
+        this.colonyService.get(this.savedUser.colonyId).subscribe(colony => {
+          const startDate = moment(colony.createdAt.seconds * 1000).toDate();
+          const endDate = moment().toDate();
 
-                        const months = this.getMonths(startDate, endDate);
+          const months = this.getMonths(startDate, endDate);
 
-                        const promises = [];
-                        months.forEach(item => {
-                            promises.push(this.paymentService.getByHouseAndMonthAndYearApprovedQty(
-                              this.savedUser.colonyId, house.id, item.month + 1 , item.year
-                            ));
-                        });
+          const promises = [];
+          months.forEach(item => {
+            promises.push(this.paymentService.getByHouseAndMonthAndYearApprovedQty(
+              this.savedUser.colonyId,
+              this.savedUser.houseId,
+              item.month + 1,
+              item.year));
+          });
 
-                        Promise.all(promises).then(values => {
-                            let qty = 0;
-                            values.forEach(v => {
-                                if (v === 0) {
-                                    qty++;
-                                }
-                            });
-
-                            if (qty > 2) {
-                                this.cards = [payment];
-                                this.toast(16000, 'Tiene más de 2 meses sin pagar su mensualidad, por favor' +
-                                  ' realice el pago correspondiente para disfrutar de los beneficios ' +
-                                  'de Kolonyc', 'danger');
-                            } else {
-                                this.cards = [accesses, finances, payment, areas, poll];
-                            }
-
-                        }, reason => {
-                            console.log(reason);
-                        });
-
-                    });
-                });
+          Promise.all(promises).then(values => {
+            let qty = 0;
+            values.forEach(v => {
+              if (v === 0) {
+                qty++;
+              }
             });
 
-            // this.cards = [accesses, finances, payment, areas, poll, marketplace];
+            if (qty > 2) {
+              this.cards = [payment];
+              this.toast(8000, 'Tiene más de 2 meses sin pagar su mensualidad, por favor realice el pago' +
+                ' correspondiente para disfrutar de los beneficios de Kolonyc', 'danger');
+            } else {
+              this.cards = [accesses, payment, finances, areas, poll, marketplace];
+            }
+
+          }, reason => {
+            console.log(reason);
+          });
+
+        });
+
+        // this.cards = [accesses, finances, payment, areas, poll, marketplace];
 
 
-        } else if (this.savedUser.role === 'SECURITY') {
+      } else if (this.savedUser.role === 'SECURITY') {
 
-            this.cards = [accesses, proccess, paymentPendings];
+        this.cards = [accesses, proccess, paymentPendings];
 
-        } else {
-            this.cards = [];
-        }
+      } else {
+        this.cards = [];
+      }
 
     }
 

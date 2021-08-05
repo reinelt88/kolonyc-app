@@ -24,6 +24,7 @@ import {AngularFireStorageModule} from '@angular/fire/storage';
 import {SpeechRecognition} from '@ionic-native/speech-recognition/ngx';
 import { IonicStorageModule } from '@ionic/storage-angular';
 import { Drivers } from '@ionic/storage';
+import {BarcodeScanner} from '@ionic-native/barcode-scanner/ngx';
 
 @NgModule({
   declarations: [AppComponent],
@@ -53,7 +54,8 @@ import { Drivers } from '@ionic/storage';
     CallNumber,
     PhotoViewer,
     Keyboard,
-    PayPal
+    PayPal,
+    BarcodeScanner,
   ],
   bootstrap: [AppComponent],
 })

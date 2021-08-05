@@ -1,0 +1,51 @@
+<ion-header>
+  <ion-toolbar color="danger">
+
+      <ion-buttons slot="start">
+        <ion-back-button defaultHref="/list-products"></ion-back-button>
+<!--        <ion-back-button (click)="back()"></ion-back-button>-->
+      </ion-buttons>
+
+    <ion-title>Chat - <span *ngIf="product.name">{{product.name}}</span></ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<div class="chat-status ion-text-center" style="height: 20px;">
+    <span class="chat-content-center">{{ typeOfAnotherUser }} {{(anotherUser.connected) ? 'online' : 'offline'}}</span>
+</div>
+<ion-content #content>
+    <ion-list style="background-color: transparent">
+
+        <ion-item *ngFor="let chat of chats" lines="none">
+            <div class="chat-message ion-text-right ion-padding-bottom" *ngIf="chat.sendBy === user.id">
+                <div class="right-bubble">
+                    <span class="msg-name">Me</span>
+                    <span class="msg-date"> {{chat.createdAt}}</span>
+                    <p class="text-wrap">{{chat.message}}</p>
+                </div>
+            </div>
+            <div class="chat-message ion-text-left ion-padding-bottom" *ngIf="chat.sendBy !== user.id">
+                <div class="left-bubble">
+                    <span class="msg-name">{{this.anotherUser.displayName}}</span>
+                    <span class="msg-date"> {{chat.createdAt}}</span>
+                    <p class="text-wrap">{{chat.message}}</p>
+                </div>
+            </div>
+        </ion-item>
+    </ion-list>
+</ion-content>
+
+<ion-footer>
+    <ion-grid>
+        <ion-row>
+            <ion-col size="10">
+                <ion-textarea type="text" placeholder="Escribe un mensaje.." [(ngModel)]="chat.message" name="message" (keydown.enter)="sendMessage()"></ion-textarea>
+            </ion-col>
+            <ion-col size="2" class="ion-padding-vertical">
+                <ion-button color="danger" (click)="sendMessage()">
+                    <ion-icon name="paper-plane"></ion-icon>
+                </ion-button>
+            </ion-col>
+        </ion-row>
+    </ion-grid>
+</ion-footer>

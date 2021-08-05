@@ -6,4 +6,5 @@ export interface PushNotification {
     };
     registration_ids?: [];
     to?: string;
+    data?: any;
 }

@@ -55,18 +55,19 @@ export class PersonDetailsPage extends BasePage implements OnInit {
         timer(1000).subscribe(() => {
             if (this.personId && this.accessId) {
                 this.personService.get(this.personId, this.accessId, this.colonyId).subscribe(person => {
+                    if (person) {
+                        this.person = person;
 
-                    this.person = person;
+                        if (this.person.inDate !== '') {
+                            this.inDate = new Date(this.person.inDate.seconds * 1000).toISOString();
+                        }
 
-                    if (this.person.inDate) {
-                        this.inDate = new Date(this.person.inDate.seconds * 1000).toISOString();
+                        if (this.person.outDate !== '') {
+                            this.outDate = new Date(this.person.outDate.seconds * 1000).toISOString();
+                        }
+
+                        this.accessService.get(this.accessId, this.colonyId).subscribe(res => this.access = res);
                     }
-
-                    if (this.person.outDate) {
-                        this.outDate = new Date(this.person.outDate.seconds * 1000).toISOString();
-                    }
-
-                    this.accessService.get(this.accessId, this.colonyId).subscribe(res => this.access = res);
                 });
             }
         });
@@ -267,7 +268,12 @@ export class PersonDetailsPage extends BasePage implements OnInit {
         }
     }
 
-
-
+    back() {
+        if (this.access.createdBy === 'seguridad') {
+            this.router.navigateByUrl('/list-accesses');
+        } else {
+            this.router.navigateByUrl('/access-details/' + this.access.id);
+        }
+    }
 
 }

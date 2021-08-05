@@ -7,7 +7,7 @@ import { IonicModule } from '@ionic/angular';
 import { BookingDetailsPageRoutingModule } from './booking-details-routing.module';
 
 import { BookingDetailsPage } from './booking-details.page';
-import { NgCalendarModule  } from 'ionic2-calendar';
+import {NgCalendarModule} from 'ionic2-calendar';
 
 @NgModule({
   imports: [

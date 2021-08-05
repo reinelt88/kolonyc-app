@@ -4,7 +4,6 @@ import {LoadingController, ToastController} from '@ionic/angular';
 import {UserService} from '../../users/user.service';
 import {ColonyService} from '../../colony/colony.service';
 import {AccessService} from '../access.service';
-import {ResidentService} from '../../resident/resident.service';
 import {BasePage} from '../../base/base.page';
 import {Colony} from '../../../models/colony';
 import {timer} from 'rxjs';
@@ -26,6 +25,7 @@ export class ListAccessesPage extends BasePage implements OnInit {
     public searchTerm = null;
     public accessStatus = ['pendiente', 'completado', 'en curso'];
     public selectedStatus = null;
+    public colonyType = null;
 
     constructor(
         protected storageService: StorageService,
@@ -33,7 +33,6 @@ export class ListAccessesPage extends BasePage implements OnInit {
         private userService: UserService,
         private colonyService: ColonyService,
         private accessService: AccessService,
-        private residentService: ResidentService,
         protected toastController: ToastController,
         private colonyServices: ColonyService,
         private personService: PersonService,
@@ -45,8 +44,16 @@ export class ListAccessesPage extends BasePage implements OnInit {
     }
 
     ngOnInit() {
+    }
+
+    ionViewWillEnter() {
         timer(1000).subscribe(() => {
             this.user = this.savedUser;
+
+            this.colonyService.get(this.user.colonyId).subscribe(col => {
+                this.colony = col;
+                this.colonyType = (this.colony.type === 'vertical') ? 'Edificio' : 'Calle';
+            });
 
             if (this.user.role === 'SUPERADMIN') {
                 this.loadColonies();
@@ -56,10 +63,6 @@ export class ListAccessesPage extends BasePage implements OnInit {
 
             this.loadAccesses();
         });
-    }
-
-    ionViewWillEnter() {
-
     }
 
     search($event) {
@@ -94,14 +97,19 @@ export class ListAccessesPage extends BasePage implements OnInit {
         await loading.present();
 
         if (this.user.role === 'RESIDENT') {
-
-            this.houseService.getResidentByUid(this.colonyId, this.user.id).then(resident => {
-                    this.accessService.getAllByResidentId(this.colonyId, resident.id).subscribe(res => {
-                        this.accesses = [];
-                        this.processAccesses(res);
+            this.accessService.getByHouseId(this.user.colonyId, this.user.houseId).then(accesses => {
+                this.accesses = [];
+                if (accesses.docs.length > 0) {
+                    const arrAccess = [];
+                    accesses.docs.forEach( access => {
+                        const data = access.data();
+                        data.id = access.id;
+                        arrAccess.push(data);
                     });
-            });
 
+                    this.processAccesses(arrAccess);
+                }
+            });
         } else {
             this.accessService.getAll(this.colonyId).subscribe(res => {
                 this.accesses = [];
@@ -122,12 +130,9 @@ export class ListAccessesPage extends BasePage implements OnInit {
                 startDate:  new Date(access.startDate.seconds * 1000).toISOString(),
                 endDate: new Date(access.endDate.seconds * 1000).toISOString(),
                 status: access.status,
-                resident: '',
+                house: '',
                 code: access.code,
-                place: '',
-                number: '',
                 persons: '',
-                colonyType: '',
                 accessType: 'Ninguno',
                 createdBy: access.createdBy
             };
@@ -149,27 +154,12 @@ export class ListAccessesPage extends BasePage implements OnInit {
                 });
             }
 
-            this.colonyService.get(this.colonyId).subscribe(colony => {
-                accessMod.colonyType = (colony.type === 'vertical') ? 'Edificio' : 'Calle';
-            });
-
-            if (access.residentId !== '') {
-
-                this.houseService.getResident(this.colonyId, access.residentId).then(resident => {
-                   if (resident) {
-                       this.userService.get(resident.userId).subscribe(user => {
-                           if (user) {
-                               accessMod.resident = user.displayName;
-                           }
-                       });
-                   }
+            if (access.houseId !== '') {
+                this.houseService.get(access.houseId, this.user.colonyId).subscribe(house => {
+                    if (house) {
+                        accessMod.house = this.colonyType + ' ' +  house.place + ' #' + house.number;
+                    }
                 });
-
-                this.houseService.getHouseByResident(this.colonyId, access.residentId).then(house => {
-                    accessMod.place = house.place;
-                    accessMod.number = house.number;
-                });
-
             }
 
             if (this.selectedStatus === null) {

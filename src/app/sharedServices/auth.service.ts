@@ -3,9 +3,9 @@ import {User} from '../models/user';
 import {UserService} from '../pages/users/user.service';
 import {StorageService} from './storage.service';
 import {FCM} from '@ionic-native/fcm/ngx';
-import {Events} from './events.service';
-import {AngularFirestore} from '@angular/fire/firestore';
 import {AngularFireAuth} from '@angular/fire/auth';
+import {AngularFirestore} from '@angular/fire/firestore';
+import {Events} from './events.service';
 
 
 @Injectable({
@@ -16,7 +16,8 @@ export class AuthService {
     public isLogged: any = false;
     userId = '';
     private allowedEmails = ['rey880603@gmail.com', 'admin@colonyc.com', 'resident@colonyc.com', 'security@colonyc.com'];
-    private notActivatedMessage = 'La cuenta asociada a este email no ha sido verificada, por favor acceda al enlace que ha sido enviado a su correo electrónico para activarla';
+    private notActivatedMessage = 'La cuenta asociada a este email no ha sido verificada, por favor acceda al enlace ' +
+      'que ha sido enviado a su correo electrónico para activarla';
 
     constructor(public afAuth: AngularFireAuth,
                 private db: AngularFirestore,
@@ -40,6 +41,7 @@ export class AuthService {
                             user.match(/security_\d{1,10}@kolonyc.com/g) === null) {
 
                             if (res.user.emailVerified) {
+                                this.isLogged = true;
                                 this.userId = res.user.uid;
                                 this.manageUserEventAndStorage(password);
                                 resolve(res);
@@ -49,6 +51,7 @@ export class AuthService {
                             }
 
                         } else {
+                            this.isLogged = true;
                             this.userId = res.user.uid;
                             this.manageUserEventAndStorage(password);
                             resolve(res);

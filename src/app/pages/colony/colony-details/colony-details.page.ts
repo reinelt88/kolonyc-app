@@ -1,5 +1,5 @@
 import {Component, OnInit} from '@angular/core';
-import {LoadingController, NavController, ToastController, Platform, AlertController} from '@ionic/angular';
+import {LoadingController, NavController, ToastController, AlertController} from '@ionic/angular';
 import {ActivatedRoute, Router} from '@angular/router';
 import {StorageService} from '../../../sharedServices/storage.service';
 import {ColonyService} from '../colony.service';

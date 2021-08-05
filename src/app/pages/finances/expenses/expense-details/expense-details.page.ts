@@ -1,7 +1,7 @@
 import {Component, OnInit} from '@angular/core';
 import {BasePage} from '../../../base/base.page';
 import {StorageService} from '../../../../sharedServices/storage.service';
-import {AlertController, LoadingController, NavController, Platform, ToastController} from '@ionic/angular';
+import {AlertController, LoadingController, NavController, ToastController} from '@ionic/angular';
 import {ActivatedRoute, Router} from '@angular/router';
 import {ExpenseService} from '../expense.service';
 import {timer} from 'rxjs';
@@ -19,11 +19,11 @@ import {Events} from '../../../../sharedServices/events.service';
 })
 export class ExpenseDetailsPage extends BasePage implements OnInit {
 
-    public expenseId = null;
-    private colonyId = null;
     public expenseTypes: ExpenseType[];
     public form: FormGroup;
     public attempt = false;
+    public expenseId = null;
+    private colonyId = null;
 
 
     constructor(

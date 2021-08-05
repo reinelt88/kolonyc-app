@@ -1,6 +1,6 @@
 import {Component, OnInit} from '@angular/core';
 import {BasePage} from '../../base/base.page';
-import {AlertController, LoadingController, NavController, ToastController} from '@ionic/angular';
+import {ActionSheetController, AlertController, LoadingController, NavController, ToastController} from '@ionic/angular';
 import {ActivatedRoute, Router} from '@angular/router';
 import {MarketplaceCategoryService} from '../marketplaceCategory.service';
 import {StorageService} from '../../../sharedServices/storage.service';
@@ -42,6 +42,7 @@ export class ProductDetailsPage extends BasePage implements OnInit {
         private keyboard: Keyboard,
         private events: Events,
         private uploadService: UploadService,
+        private actionCtrl: ActionSheetController,
     ) {
         super(storageService, toastController);
         this.form = formBuilder.group(
@@ -181,6 +182,30 @@ export class ProductDetailsPage extends BasePage implements OnInit {
 
     showPhone($event) {
         this.product.showPhone = $event.detail.checked;
+    }
+
+    openActionSheet() {
+
+        const btn = [
+            {
+                text: 'Chats',
+                icon: 'chatboxes',
+                handler: () => {
+                    this.nav.navigateForward('/list-chats/' + this.productId);
+                }
+            },
+            // {
+            //     text: 'ELiminar',
+            //     icon: 'trash',
+            //     handler: () => {
+            //         this.confirmMessage();
+            //     }
+            // },
+        ];
+
+        this.actionCtrl.create({
+            buttons: btn
+        }).then(ac => ac.present());
     }
 
     // *******************************Image managment

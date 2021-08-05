@@ -4,7 +4,6 @@ import {ActivatedRoute, Router} from '@angular/router';
 import {StorageService} from '../../../sharedServices/storage.service';
 import {AccessService} from '../access.service';
 import {PersonService} from '../../person/person.service';
-import {ResidentService} from '../../resident/resident.service';
 import {BarcodeScanner} from '@ionic-native/barcode-scanner/ngx';
 import {Base64ToGallery} from '@ionic-native/base64-to-gallery/ngx';
 import * as moment from 'moment';
@@ -32,7 +31,7 @@ export class AccessDetailsPage extends BasePage implements OnInit {
     public startDate: string;
     public endDate: string;
     public persons = [];
-    public residents = [];
+    public locations = [];
     public accessId = null;
     public colonyId = null;
     public residentId = null;
@@ -44,6 +43,7 @@ export class AccessDetailsPage extends BasePage implements OnInit {
     public accessStatus = ['pendiente', 'en curso', 'completado'];
     public accessTypes: AccessType[];
     public showForm = false;
+    public selectedHouse = null;
 
     private elementType: 'url' | 'canvas' | 'img' = 'canvas';
     private hasWriteAccess = false;
@@ -62,7 +62,6 @@ export class AccessDetailsPage extends BasePage implements OnInit {
         protected storageService: StorageService,
         private accessService: AccessService,
         private personService: PersonService,
-        private residentService: ResidentService,
         private events: Events,
         private actionCtrl: ActionSheetController,
         private alertController: AlertController,
@@ -77,11 +76,23 @@ export class AccessDetailsPage extends BasePage implements OnInit {
         private accessTypeService: AccessTypeService
     ) {
         super(storageService, toastController);
+        const m = moment();
+        this.access.code = m.unix().toString();
+        const newDate = new Date();
+        this.access.startDate = new Date();
+        this.access.endDate = this.addMinute(newDate, 5);
+        this.startDate = newDate.toISOString();
+        this.endDate = this.addMinute(newDate, 5).toISOString();
+        // this.endDate = m.add(5, 'minutes').format();
     }
 
 
     ngOnInit() {
 
+    }
+
+    addMinute(dt, minutes) {
+        return new Date(dt.getTime() + minutes * 60000);
     }
 
     ionViewWillEnter() {
@@ -93,95 +104,51 @@ export class AccessDetailsPage extends BasePage implements OnInit {
             this.colonyId = (this.route.snapshot.params.colony !== undefined) ? this.route.snapshot.params.colony : this.user.colonyId;
 
             this.colonyService.get(this.colonyId).subscribe(col => {
-                this.colony = col;
-                this.colonyType = (this.colony.type === 'vertical') ? 'Edificio' : 'Calle';
-            });
 
-            if (this.user.role === 'RESIDENT') {
+                this.accessTypeService.getAll(this.user.colonyId).subscribe(accessTypes => {
+                    this.colony = col;
+                    this.colonyType = (this.colony.type === 'vertical') ? 'Edificio' : 'Calle';
+                    this.accessTypes = accessTypes;
 
-                this.houseService.getResidentByUid(this.colonyId, this.user.id).then(resident => {
-                    this.access.residentId = resident.id;
-                    this.resident = resident;
+                    if (this.user.role === 'RESIDENT') {
 
-                    this.houseService.getHouseByResident(this.colonyId, resident.id).then(house => {
-                        this.house = house;
-                    });
+                        this.access.houseId = this.user.houseId;
+                        this.houseService.get(this.user.houseId, this.user.colonyId).subscribe(house => this.house = house);
+
+                    } else {
+                        this.loadLocations();
+                    }
+
+                    // Is new access
+                    if (this.accessId !== undefined) {
+                        this.loadAccess();
+                    }
+                    this.showForm = true;
                 });
-
-            } else {
-
-                this.loadResidentsAndAdmins();
-                // this.userService.getByColonyAndRole(this.colonyId, 'RESIDENT').then(res => {
-                //
-                //     console.log(res.docs);
-                //
-                //     if (res.docs.length > 0) {
-                //         res.docs.forEach(d => {
-                //             const data = d.data();
-                //             const residentMod = {
-                //                 id: '',
-                //                 name: '',
-                //             };
-                //
-                //             this.houseService.getResidentByUid(this.colonyId, d.id).then(r => {
-                //                 if (r) {
-                //                     residentMod.id = r.id;
-                //                     this.houseService.getHouseByResident(this.colonyId, r.id).then(h => {
-                //                         if (h) {
-                //                             residentMod.name = data.displayName + ' (' + this.colonyType + ' ' + h.place + ' - #' + h.number + ')';
-                //                         }
-                //                     });
-                //
-                //                     if (!this.residents.find(o => o.id === r.id)) {
-                //                         this.residents.push(residentMod);
-                //                     }
-                //                 }
-                //             });
-                //         });
-                //     }
-                // });
-
-            }
-
-            if (this.accessId === undefined) {
-                this.access.code = moment().unix().toString();
-                this.access.startDate = new Date();
-                this.access.endDate = new Date();
-                this.startDate = moment().format();
-                this.endDate = moment().format();
-
-            } else {
-                this.loadAccess();
-            }
-
-            this.accessTypeService.getAll(this.user.colonyId).subscribe(accessTypes => {
-                this.accessTypes = accessTypes;
-                // this.showForm = true;
             });
-
-            this.showForm = true;
-
         });
 
         this.checkPermissions();
     }
 
-    loadResidentsAndAdmins() {
-        this.residents = [];
+    loadLocations() {
+        this.locations = [];
         this.userService.getByResidentAndAdminByColony(this.colonyId).then(res => {
             if (res.length > 0) {
-                const residentsArr = [];
+                const locationsArr = [];
                 res.forEach(d => {
                     const data = d.data();
-                    const residentMod = {
-                        id: d.id,
-                        name: data.displayName,
-                    };
-                    residentsArr.push(residentMod);
+                    this.houseService.get(data.houseId, this.colonyId).subscribe(house => {
+                        if (!locationsArr.find(l => l.id === data.houseId)) {
+                            locationsArr.push({
+                                id: data.houseId,
+                                name: this.colonyType + ' ' +  house.place + ' #' + house.number,
+                            });
+                        }
+                    });
                 });
 
-                this.residents = residentsArr;
-                console.log(this.residents);
+                this.locations = locationsArr;
 
                 this.showForm = true;
             }
@@ -202,34 +169,24 @@ export class AccessDetailsPage extends BasePage implements OnInit {
 
             if (res) {
 
-                console.log(res.callResident);
-
                 this.access.status = res.status;
-                this.access.residentId = res.residentId;
+                this.access.houseId = res.houseId;
                 this.access.code = res.code;
                 this.access.accessType = res.accessType;
                 this.access.callResident = res.callResident;
                 this.startDate = new Date(res.startDate.seconds * 1000).toISOString();
                 this.endDate = new Date(res.endDate.seconds * 1000).toISOString();
 
-                if (res.residentId !== '') {
-                    this.houseService.getResident(this.colonyId, res.residentId).then(resident => {
-
-                        if (resident) {
-                            this.resident = resident;
-                            this.userService.get(resident.userId).subscribe(user => this.user = user);
-                            this.houseService.getHouseByResident(this.colonyId, res.residentId).then(house => {
-                                if (house) {
-                                    this.house = house;
-                                }
-                            });
-                        }
+                if (res.houseId !== '') {
+                    this.houseService.get(res.houseId, this.colonyId).subscribe( house => {
+                        this.house = house;
                     });
                 }
 
-                this.personService.getAll(this.accessId, this.colonyId).subscribe(p => {
-                    if (p) {
-                        this.persons = p;
+                this.personService.getAll(this.accessId, this.colonyId).subscribe(persons => {
+                    if (persons) {
+                        console.log(persons);
+                        this.persons = persons;
                     }
                 });
 
@@ -250,27 +207,63 @@ export class AccessDetailsPage extends BasePage implements OnInit {
 
         await loading.present();
 
-        this.access.startDate = new Date(this.startDate);
-        this.access.endDate = new Date(this.endDate);
+        const oStartDate = new Date(this.startDate);
+        const oEndDate = new Date(this.endDate);
 
-        this.access.createdBy = (this.user.role === 'RESIDENT') ? 'residente' : (this.user.role === 'SECURITY') ? 'seguridad' : (this.user.role === 'ADMIN') ? 'administrador' : 'superadmin';
+        if (oStartDate < oEndDate) {
+            this.access.startDate = oStartDate;
+            this.access.endDate = oEndDate;
+            this.access.createdBy = (this.user.role === 'RESIDENT') ? 'residente' : (this.user.role === 'SECURITY') ? 'seguridad' : (this.user.role === 'ADMIN') ? 'administrador' : 'superadmin';
 
-        if (this.accessId) {
-            this.accessService.update(this.accessId, this.access, this.colonyId).then(() => {
-                loading.dismiss();
-                this.nav.navigateForward('/list-accesses');
-            });
-        } else {
-            this.access.status = 'pendiente';
-            if (this.access.residentId === '') {
-                this.toast(2000, 'Debe de seleccionar un residente', 'danger');
-            } else {
-                this.accessService.add(this.access, this.colonyId).then((result) => {
+            if (this.accessId) {
+                this.accessService.update(this.accessId, this.access, this.colonyId).then(() => {
                     loading.dismiss();
-                    this.nav.navigateForward('/access-details/' + this.colonyId + '/' + result.id);
+                    this.nav.navigateForward('/list-accesses');
                 });
+            } else {
+                if (this.user.role !== 'RESIDENT') {
+                    this.access.houseId = (this.selectedHouse) ? this.selectedHouse.id : null;
+                }
+                this.access.status = (this.user.role === 'SECURITY') ? 'en curso' : 'pendiente';
+                if (this.access.houseId === '' || this.access.houseId === '' || this.access.accessType === '' || this.access.startDate === '' || this.access.endDate === '') {
+                    this.toast(2000, 'Debe de completar los datos para poder crear el acceso', 'danger');
+                    loading.dismiss();
+                } else {
+                    this.accessService.add(this.access, this.colonyId).then(accessResponse => {
+                        if (accessResponse) {
+                            this.accessId = accessResponse.id;
+                            this.houseService.get(this.access.houseId, this.colonyId).subscribe( house => {
+                                this.house = house;
+                            });
+                            if (this.persons.length > 0) {
+                                this.persons.forEach(p => {
+                                    this.person.name = p.name;
+                                    this.person.companions = p.companions;
+                                    delete this.person.id;
+                                    this.personService.add(this.person, accessResponse.id, this.colonyId).then(personResponse => {
+                                        console.log(personResponse);
+                                    });
+                                });
+                            } else {
+                                this.person.name = 'Desconocido';
+                                this.person.companions = 0;
+                                this.personService.add(this.person, accessResponse.id, this.colonyId).then(personResponse => {
+                                    console.log(personResponse);
+                                });
+                            }
+
+                        }
+                        loading.dismiss();
+                        this.toast(2000, 'Acceso guardado correctamente', 'success');
+                        // this.nav.navigateForward('/list-accesses');
+                    });
+                }
             }
+        } else {
+            this.toast(2000, 'La fecha inicio debe de ser mayor a la fecha fin', 'danger');
+            loading.dismiss();
         }
+
     }
 
     removeAccesss() {
@@ -286,7 +279,65 @@ export class AccessDetailsPage extends BasePage implements OnInit {
     }
 
     removePerson(id: string) {
-        this.personService.remove(id, this.accessId, this.colonyId);
+        if (this.accessId) {
+            this.personService.remove(id, this.accessId, this.colonyId);
+        }
+
+        this.persons.forEach((item, index) => {
+            if (item.id === id) {
+                this.persons.splice(index, 1);
+            }
+        });
+    }
+
+    async deletePersonConfirmMessage(id: string) {
+        const alert = await this.alertController.create({
+            header: 'Confirmación',
+            message: 'Estas seguro que quieres eliminar a la persona?',
+            buttons: [
+                {
+                    text: 'Cancelar',
+                    role: 'cancel',
+                    cssClass: 'secondary',
+                    handler: (blah) => {
+                        console.log('Confirm Cancel: blah');
+                    }
+                }, {
+                    text: 'Ok',
+                    handler: () => {
+                        console.log('Confirm Okay');
+                        this.removePerson(id);
+                    }
+                }
+            ]
+        });
+
+        await alert.present();
+    }
+
+    async deleteAccessConfirmMessage() {
+        const alert = await this.alertController.create({
+            header: 'Confirmación',
+            message: 'Estas seguro que quieres eliminar el acceso?',
+            buttons: [
+                {
+                    text: 'Cancelar',
+                    role: 'cancel',
+                    cssClass: 'secondary',
+                    handler: (blah) => {
+                        console.log('Confirm Cancel: blah');
+                    }
+                }, {
+                    text: 'Ok',
+                    handler: () => {
+                        console.log('Confirm Okay');
+                        this.removeAccesss();
+                    }
+                }
+            ]
+        });
+
+        await alert.present();
     }
 
     updateStartDate($event) {
@@ -299,60 +350,72 @@ export class AccessDetailsPage extends BasePage implements OnInit {
 
     addPerson(data) {
 
-        if (data.name !== '' && data.companions !== '') {
-            this.person.name = data.name;
-            this.person.companions = data.companions;
+        if (data.name !== '') {
 
-            this.personService.add(this.person, this.accessId, this.colonyId).then(() => {
-                return true;
-            });
+            this.person.name = data.name;
+            this.person.companions = (data.companions !== '') ? data.companions : 0;
+
+            if (this.accessId) {
+                this.personService.add(this.person, this.accessId, this.colonyId).then(() => {
+                    this.persons.push(this.person);
+                });
+            } else {
+                this.save();
+                this.person.id = Math.random().toString(36).substring(7);
+                this.persons.push(this.person);
+            }
+
+        } else {
+            this.toast(2000, 'Debe de llenar los campos correspondientes', 'danger');
         }
     }
 
     openActionSheet() {
 
-        const btn = [
-            // {
-            //     text: 'Guardar cambios',
-            //     icon: 'save',
-            //     handler: () => {
-            //         this.saveAccess();
-            //     }
-            // },
-            {
-                text: 'Agregar persona',
-                icon: 'person',
-                handler: () => {
-                    this.presentAlertPrompt();
-                }
-            },
-            // {
-            //     text: 'Escanear código',
-            //     icon: 'qr-scanner',
-            //     handler: () => {
-            //         this.scanCode();
-            //     }
-            // },
-            {
+        const addPerson = {
+            text: 'Agregar persona',
+            icon: 'person',
+            handler: () => {
+                this.presentAlertPrompt();
+            }
+        };
+
+        const downloadQR = {
                 text: 'Descargar código QR',
                 icon: 'download',
                 handler: () => {
                     this.downloadQr();
                 }
-            },
-            {
-                text: 'Borrar',
-                icon: 'trash',
-                handler: () => {
-                    this.removeAccesss();
-                }
-            },
-            {
-                text: 'Cancelar',
-                icon: 'close-circle',
-                role: 'cancel'
+        };
+
+        const remove = {
+            text: 'Borrar',
+            icon: 'trash',
+            handler: () => {
+                this.deleteAccessConfirmMessage();
             }
-        ];
+        };
+
+        const cancel = {
+            text: 'Cancelar',
+            icon: 'close-circle',
+            role: 'cancel'
+        };
+
+        let btn = [];
+        if (this.savedUser.role === 'SECURITY' || this.accessId == null) {
+            btn = [
+                downloadQR, cancel
+            ];
+            if (this.selectedHouse !== null && this.access.accessType !== '') {
+                btn.push(addPerson);
+            }
+        } else {
+            btn = [
+                addPerson, downloadQR, remove, cancel
+            ];
+        }
+
 
         this.actionCtrl.create({
             buttons: btn
@@ -366,6 +429,7 @@ export class AccessDetailsPage extends BasePage implements OnInit {
                 {
                     name: 'name',
                     type: 'text',
+                    id: 'maxLength10',
                     placeholder: 'Nombre y apellidos',
                 },
                 {
@@ -392,7 +456,9 @@ export class AccessDetailsPage extends BasePage implements OnInit {
             ]
         });
 
-        await alert.present();
+        await alert.present().then(result => {
+            document.getElementById('maxLength10').setAttribute('maxlength', '30');
+        });
     }
 
     downloadQr() {
@@ -436,9 +502,9 @@ export class AccessDetailsPage extends BasePage implements OnInit {
     }
 
     makeCall() {
-
-        this.userService.get(this.resident.userId).subscribe(res => {
-            this.callNumber.callNumber(res.phone, true)
+        this.userService.getByColonyAndHouse(this.user.colonyId, this.access.houseId).then(users => {
+            const userData = users.docs[0].data(); // TODO: Hacer correctamente que seleccione a que residente llamar
+            this.callNumber.callNumber(userData.phone, true)
                 .then(r => console.log('Launched dialer!', r))
                 .catch(err => console.log('Error launching dialer', err));
         });
@@ -451,14 +517,13 @@ export class AccessDetailsPage extends BasePage implements OnInit {
     clear() {
         this.selectComponent.clear();
         this.selectComponent.close();
-        this.access.residentId = null;
-        this.loadResidentsAndAdmins();
+        this.access.houseId = null;
+        this.loadLocations();
     }
 
     confirm() {
         this.selectComponent.confirm();
-        console.log(this.house);
-        this.loadResidentsAndAdmins();
+        this.loadLocations();
         this.selectComponent.close();
     }
 

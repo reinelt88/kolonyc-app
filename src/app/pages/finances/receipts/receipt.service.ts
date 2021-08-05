@@ -13,8 +13,6 @@ export class ReceiptService {
     private collection: AngularFirestoreCollection<Receipt>;
     private obj: Observable<Receipt[]>;
 
-
-
     constructor(
         private db: AngularFirestore,
     ) {

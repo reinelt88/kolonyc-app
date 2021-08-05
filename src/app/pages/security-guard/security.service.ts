@@ -9,49 +9,52 @@ import {AngularFirestore, AngularFirestoreCollection} from '@angular/fire/firest
 })
 export class SecurityService {
 
-  public colonyId: string;
-  private collection: AngularFirestoreCollection<Security>;
-  private obj: Observable<Security[]>;
+    public colonyId: string;
+    private collection: AngularFirestoreCollection<Security>;
+    private obj: Observable<Security[]>;
 
-  constructor(
-      private db: AngularFirestore,
-  ) {
+    constructor(
+        private db: AngularFirestore,
+    ) {
 
-  }
+    }
 
-  getCollection(colonyId: string) {
-      return this.collection = this.db.collection<Security>('/colony/' + colonyId + '/security', ref => ref.orderBy('createdAt', 'desc'));
-  }
+    getCollection(colonyId: string) {
+        return this.collection = this.db.collection<Security>('/colony/' + colonyId + '/security', ref => ref.orderBy('createdAt', 'desc'));
+    }
 
-  getAll(colonyId: string) {
-      return this.obj = this.getCollection(colonyId).snapshotChanges().pipe(map(
-          actions => actions.map(
-                  a => {
+    getAll(colonyId: string) {
+        return this.obj = this.getCollection(colonyId).snapshotChanges().pipe(map(
+            actions => {
+                return actions.map(
+                    a => {
 
-                      const data = a.payload.doc.data();
+                        const data = a.payload.doc.data();
 
-                      const id = a.payload.doc.id;
+                        const id = a.payload.doc.id;
 
-                      return {id, ...data};
-                  }
-              )
-          )
-      );
-  }
+                        return {id, ...data};
+                    }
+                );
+            }
+            )
+        );
+    }
 
-  add(obj: Security, colonyId: string) {
-      return this.getCollection(colonyId).add(obj);
-  }
+    add(obj: Security, colonyId: string) {
+        return this.getCollection(colonyId).add(obj);
+    }
 
-  remove(id: string, colonyId: string) {
-      return this.getCollection(colonyId).doc(id).delete();
-  }
+    remove(id: string, colonyId: string) {
+        return this.getCollection(colonyId).doc(id).delete();
+    }
 
-  get(id: string, colonyId: string) {
-      return this.getCollection(colonyId).doc<Security>(id).valueChanges();
-  }
+    get(id: string, colonyId: string) {
+        return this.getCollection(colonyId).doc<Security>(id).valueChanges();
+    }
 
-  update(id: string, obj: Security, colonyId: string) {
-      return this.getCollection(colonyId).doc(id).update(obj);
-  }
+    update(id: string, obj: Security, colonyId: string) {
+        return this.getCollection(colonyId).doc(id).update(obj);
+    }
+
 }

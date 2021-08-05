@@ -39,8 +39,10 @@ export class AccessService {
     }
 
     getAllByResidentId(colonyId: string, residentId: string) {
-        return this.obj = this.db.collection<Access>('/colony/' + colonyId + '/access',
-            ref => ref.where('residentId', '==', residentId).orderBy('createdAt', 'desc')).snapshotChanges().pipe(map(
+        return this.obj = this.db.collection<Access>('/colony/' + colonyId + '/access', ref => ref
+          .where('residentId', '==', residentId)
+          .orderBy('createdAt', 'desc'))
+          .snapshotChanges().pipe(map(
                 actions => actions.map(
                         a => {
 
@@ -53,6 +55,16 @@ export class AccessService {
                     )
                 )
             );
+    }
+
+    getByHouseId(colonyId: string, houseId: string) {
+        return  this.db.collection<Access>('/colony/' + colonyId + '/access')
+            .ref.where('houseId', '==', houseId).get();
+    }
+
+    getByCode(colonyId: string, code: string) {
+        return  this.db.collection<Access>('/colony/' + colonyId + '/access')
+            .ref.where('code', '==', code).get();
     }
 
     add(obj: Access, colonyId: string) {
