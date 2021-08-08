@@ -1,161 +1,182 @@
 <ion-header>
-    <ion-toolbar color="danger">
-        <ion-buttons slot="start">
-            <ion-back-button defaultHref="/list-accesses"></ion-back-button>
-        </ion-buttons>
-        <ion-title>Detalles</ion-title>
-        <ion-buttons slot="end" (click)="save()" style="zoom:2.0; padding-right: 4px;">
-            <ion-icon name="checkmark"></ion-icon>
-        </ion-buttons>
-    </ion-toolbar>
+  <ion-toolbar color="danger">
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/list-accesses"></ion-back-button>
+    </ion-buttons>
+    <ion-title>Detalles</ion-title>
+    <ion-buttons slot="end" (click)="save()" style="zoom:2.0; padding-right: 4px;">
+      <ion-icon name="checkmark"></ion-icon>
+    </ion-buttons>
+  </ion-toolbar>
 </ion-header>
 
 <ion-content *ngIf="showForm">
 
-    <ion-row>
-        <ion-col class="ion-align-self-center" size="12">
-            <ion-list lines="full">
+  <ion-row>
+    <ion-col class="ion-align-self-center" size="12">
+      <ion-list lines="full">
 
-                <ion-item *ngIf="savedUser.role !== 'RESIDENT' && accessId==null">
-                    <ion-label>Ubicaciones</ion-label>
+        <ion-item *ngIf="savedUser.role !== 'RESIDENT' && accessId==null">
+          <ion-label>Ubicaciones</ion-label>
 
-                    <ionic-selectable #selectComponent [(ngModel)]="selectedHouse" [items]="locations" canSearch="true" searchPlaceholder="Buscar..." itemValueField="id" itemTextField="name" headerColor="danger" searchFailText="No se encuentran resultados">
-                        <ng-template ionicSelectableCloseButtonTemplate>
-                            <ion-icon name="close-circle"></ion-icon>
-                        </ng-template>
+          <ionic-selectable #selectComponent [(ngModel)]="selectedHouse" [items]="locations" canSearch="true"
+                            searchPlaceholder="Buscar..." itemValueField="id" itemTextField="name" headerColor="danger"
+                            searchFailText="No se encuentran resultados">
+            <ng-template ionicSelectableCloseButtonTemplate>
+              <ion-icon name="close-circle"></ion-icon>
+            </ng-template>
 
-                        <ng-template ionicSelectableTitleTemplate>
-                            Seleccione ubicación
-                        </ng-template>
+            <ng-template ionicSelectableTitleTemplate>
+              Seleccione ubicación
+            </ng-template>
 
-                        <ng-template ionicSelectableItemTemplate let-location="item">
-                            {{location.name}}
-                        </ng-template>
+            <ng-template ionicSelectableItemTemplate let-location="item">
+              {{location.name}}
+            </ng-template>
 
-                        <ng-template ionicSelectableFooterTemplate>
-                            <ion-footer>
-                                <ion-toolbar>
-                                    <ion-row class="ion-text-center">
-                                        <ion-col size="6"><ion-button color="danger" expand="block" (click)="clear()">Limpiar</ion-button></ion-col>
-                                        <ion-col size="6"><ion-button color="danger" expand="block" (click)="confirm()">OK</ion-button></ion-col>
-                                    </ion-row>
-                                </ion-toolbar>
-                            </ion-footer>
-                        </ng-template>
-                    </ionic-selectable>
-                </ion-item>
+            <ng-template ionicSelectableFooterTemplate>
+              <ion-footer>
+                <ion-toolbar>
+                  <ion-row class="ion-text-center">
+                    <ion-col size="6">
+                      <ion-button color="danger" expand="block" (click)="clear()">Limpiar</ion-button>
+                    </ion-col>
+                    <ion-col size="6">
+                      <ion-button color="danger" expand="block" (click)="confirm()">OK</ion-button>
+                    </ion-col>
+                  </ion-row>
+                </ion-toolbar>
+              </ion-footer>
+            </ng-template>
+          </ionic-selectable>
+        </ion-item>
 
-                <ion-item *ngIf="savedUser.role !== 'RESIDENT' && accessId">
-                    <ion-input type="text" [disabled]="true" [(ngModel)]="colonyType + ' ' + this.house.place + ' #' + this.house.number"></ion-input>
-                </ion-item>
+        <ion-item *ngIf="savedUser.role !== 'RESIDENT' && accessId">
+          <ion-input type="text" [disabled]="true"
+                     [(ngModel)]="colonyType + ' ' + this.house.place + ' #' + this.house.number"></ion-input>
+        </ion-item>
 
-                <ion-item>
-                    <ion-label>Motivo</ion-label>
-                    <ion-select value="estados" okText="Ok" cancelText="Cancelar" [(ngModel)]="access.accessType">
-                        <ion-select-option *ngFor="let a of accessTypes" value="{{a.id}}">{{a.name | titlecase}}</ion-select-option>
-                    </ion-select>
-                </ion-item>
+        <ion-item>
+          <ion-label>Motivo</ion-label>
+          <ion-select value="estados" okText="Ok" cancelText="Cancelar" [(ngModel)]="access.accessType">
+            <ion-select-option *ngFor="let a of accessTypes" value="{{a.id}}">{{a.name | titlecase}}</ion-select-option>
+          </ion-select>
+        </ion-item>
 
-                <ion-item *ngIf="accessId && savedUser.role !== 'RESIDENT'" >
-                    <ion-label>Estado</ion-label>
-                    <ion-select value="estados" okText="Ok" cancelText="Cancelar" [(ngModel)]="access.status">
-                        <ion-select-option *ngFor="let access of accessStatus" value="{{access}}">{{access | titlecase}}</ion-select-option>
-                    </ion-select>
-                </ion-item>
+        <ion-item *ngIf="accessId && savedUser.role !== 'RESIDENT'">
+          <ion-label>Estado</ion-label>
+          <ion-select value="estados" okText="Ok" cancelText="Cancelar" [(ngModel)]="access.status">
+            <ion-select-option *ngFor="let access of accessStatus"
+                               value="{{access}}">{{access | titlecase}}</ion-select-option>
+          </ion-select>
+        </ion-item>
 
-                <ion-item lines="none">
-                    <ion-label>Fecha inicio</ion-label>
-                    <ion-datetime *ngIf="startDate" cancelText="Cancelar" [min]="minDate" doneText="Ok" displayFormat="DD/MM/YYYY h:mm A" pickerFormat="MMM DD, YYYY HH:mm" placeholder="Seleccione fecha" [value]="startDate" [ngModel]="access.startDate" (ionChange)="updateStartDate($event)"></ion-datetime>
-                </ion-item>
+        <ion-item lines="none">
+          <ion-label>Fecha inicio</ion-label>
+          <ion-datetime *ngIf="startDate" cancelText="Cancelar" [min]="minDate" doneText="Ok"
+                        displayFormat="DD/MM/YYYY h:mm A" pickerFormat="MMM DD, YYYY HH:mm"
+                        placeholder="Seleccione fecha" [value]="startDate" [ngModel]="access.startDate"
+                        (ionChange)="updateStartDate($event)"></ion-datetime>
+        </ion-item>
 
-                <ion-item lines="none">
-                    <ion-label>Fecha fin</ion-label>
-                    <ion-datetime *ngIf="endDate" cancelText="Cancelar" [min]="minDate" doneText="Ok" displayFormat="DD/MM/YYYY h:mm A" pickerFormat="MMM DD, YYYY HH:mm" placeholder="Seleccione fecha" [value]="endDate" [ngModel]="access.endDate" (ionChange)="updateEndDate($event)"></ion-datetime>
-                </ion-item>
+        <ion-item lines="none">
+          <ion-label>Fecha fin</ion-label>
+          <ion-datetime *ngIf="endDate" cancelText="Cancelar" [min]="minDate" doneText="Ok"
+                        displayFormat="DD/MM/YYYY h:mm A" pickerFormat="MMM DD, YYYY HH:mm"
+                        placeholder="Seleccione fecha" [value]="endDate" [ngModel]="access.endDate"
+                        (ionChange)="updateEndDate($event)"></ion-datetime>
+        </ion-item>
 
-                <ion-item>
-                    <ion-label>Llamar para confirmar acceso</ion-label>
-                    <ion-toggle [disabled]="savedUser.role == 'SECURITY'" slot="start" color="danger" ngModel="{{access.callResident}}" (ionChange)="callResident($event)"></ion-toggle>
-                </ion-item>
-            </ion-list>
-        </ion-col>
-    </ion-row>
+        <ion-item>
+          <ion-label>Llamar para confirmar acceso</ion-label>
+          <ion-toggle [disabled]="savedUser.role == 'SECURITY'" slot="start" color="danger"
+                      ngModel="{{access.callResident}}" (ionChange)="callResident($event)"></ion-toggle>
+        </ion-item>
+      </ion-list>
+    </ion-col>
+  </ion-row>
 
-    <ion-row>
-        <ion-col class="ion-align-self-center" size="12">
-            <ion-list>
-                <ion-item>
-                    <ion-label>
-                        <div class="ion-text-center">
-                            <h2 class="title">Personas</h2>
-                        </div>
-                    </ion-label>
-                </ion-item>
-
-
-                <ion-item *ngIf="persons.length == 0">
-                    <ion-icon name="help-circle-outline" class="iconSize" color="secondary" size="large" slot="start"></ion-icon>
-                    <ion-label class="ion-text-wrap">
-                        <h3> ¿No has añadido Personas?</h3>
-                        <p><small> - Puedes agregar una o varias personas cuando hayas completado los datos del acceso</small></p>
-                        <p><small> - Adiciona acompañantes a una solicitud de acceso, es útil cuando un grupo de personas te visita</small></p>
-                    </ion-label>
-                </ion-item>
-
-                <ion-item *ngFor="let person of persons" [detail]="!!(accessId)">
-                        <ion-label [routerLink]="['/person-details', colonyId, accessId, person.id]">
-                        <h3>{{person.name}}</h3>
-                        <p *ngIf="person.companions">Acompañantes: {{person.companions}}</p>
-                        <p *ngIf="person.inDate">Entrada: {{person.inDate.toDate() | date:'dd/MM/yyyy h:mm:ss a'}}</p>
-                        <p *ngIf="person.outDate">Salida: {{person.outDate.toDate() | date:'dd/MM/yyyy h:mm:ss a'}}</p>
-                        <ion-badge [color]="person.status == 'pendiente' ? 'warning' : person.status == 'completado' ? 'success' : 'tertiary'">{{person.status}}</ion-badge>
-                    </ion-label>
-                    <ion-icon name="trash" color="danger" slot="end" (click)="deletePersonConfirmMessage(person.id)"></ion-icon>
-                </ion-item>
-
-                <ion-item>
-                    <ion-label class="ion-text-center">
-                        <ion-button color="primary" *ngIf="selectedHouse && access.accessType" (click)="presentAlertPrompt()"><ion-icon name="person" slot="start"></ion-icon> Agregar</ion-button>
-                    </ion-label>
-                </ion-item>
-            </ion-list>
-        </ion-col>
-    </ion-row>
-
-    <ion-row>
-        <ion-col>
-
-            <ion-list>
-                <ion-item>
-                    <ion-label>
-                        <div class="ion-text-center">
-                            <h2 class="title">Código QR generado</h2>
-                        </div>
-                    </ion-label>
-                </ion-item>
-                <ion-item>
-                    <ion-label>
-                        <div class="ion-text-center">
-                            <ngx-qrcode qrc-element-type="canvas" [qrc-value]="access.code"></ngx-qrcode>
-                        </div>
-                    </ion-label>
-                </ion-item>
-<!--                <ion-item>-->
-<!--                    <ion-icon name="help-circle-outline" class="iconSize" color="secondary" size="large" slot="start"></ion-icon>-->
-<!--                    <ion-label class="ion-text-wrap">-->
-<!--                        <p><small> - Desde el menú de  <strong>"Opciones"</strong> puedes descargar el código QR para enviárselo a tus invitados</small></p>-->
-<!--                    </ion-label>-->
-<!--                </ion-item>-->
-            </ion-list>
-        </ion-col>
-    </ion-row>
+  <ion-row>
+    <ion-col class="ion-align-self-center" size="12">
+      <ion-list>
+        <ion-item>
+          <ion-label>
+            <div class="ion-text-center">
+              <h2 class="title">Personas</h2>
+            </div>
+          </ion-label>
+        </ion-item>
 
 
-    <ion-fab *ngIf="this.savedUser.role === 'SECURITY' && access.callResident" vertical="bottom" horizontal="end" slot="fixed" (click)="makeCall()">
-        <ion-fab-button>
-            <ion-icon name="call"></ion-icon>
-        </ion-fab-button>
-    </ion-fab>
+        <ion-item *ngIf="persons.length == 0">
+          <ion-icon name="help-circle-outline" class="iconSize" color="secondary" size="large" slot="start"></ion-icon>
+          <ion-label class="ion-text-wrap">
+            <h3> ¿No has añadido Personas?</h3>
+            <p><small> - Puedes agregar una o varias personas cuando hayas completado los datos del acceso</small></p>
+            <p><small> - Adiciona acompañantes a una solicitud de acceso, es útil cuando un grupo de personas te
+              visita</small></p>
+          </ion-label>
+        </ion-item>
+
+        <ion-item *ngFor="let person of persons" [detail]="!!(accessId)">
+          <ion-label [routerLink]="['/person-details', colonyId, accessId, person.id]">
+            <h3>{{person.name}}</h3>
+            <p *ngIf="person.companions">Acompañantes: {{person.companions}}</p>
+            <p *ngIf="person.inDate">Entrada: {{person.inDate.toDate() | date:'dd/MM/yyyy h:mm:ss a'}}</p>
+            <p *ngIf="person.outDate">Salida: {{person.outDate.toDate() | date:'dd/MM/yyyy h:mm:ss a'}}</p>
+            <ion-badge
+              [color]="person.status == 'pendiente' ? 'warning' : person.status == 'completado' ? 'success' : 'tertiary'">{{person.status}}</ion-badge>
+          </ion-label>
+          <ion-icon name="trash" color="danger" slot="end" (click)="deletePersonConfirmMessage(person.id)"></ion-icon>
+        </ion-item>
+
+        <ion-item>
+          <ion-label class="ion-text-center">
+            <ion-button color="primary" *ngIf="selectedHouse && access.accessType" (click)="presentAlertPrompt()">
+              <ion-icon name="person" slot="start"></ion-icon>
+              Agregar
+            </ion-button>
+          </ion-label>
+        </ion-item>
+      </ion-list>
+    </ion-col>
+  </ion-row>
+
+  <ion-row>
+    <ion-col>
+
+      <ion-list>
+        <ion-item>
+          <ion-label>
+            <div class="ion-text-center">
+              <h2 class="title">Código QR generado</h2>
+            </div>
+          </ion-label>
+        </ion-item>
+        <ion-item>
+          <ion-label>
+            <div class="ion-text-center">
+              <ngx-qrcode qrc-element-type="canvas" [qrc-value]="access.code"></ngx-qrcode>
+            </div>
+          </ion-label>
+        </ion-item>
+        <!--                <ion-item>-->
+        <!--                    <ion-icon name="help-circle-outline" class="iconSize" color="secondary" size="large" slot="start"></ion-icon>-->
+        <!--                    <ion-label class="ion-text-wrap">-->
+        <!--                        <p><small> - Desde el menú de  <strong>"Opciones"</strong> puedes descargar el código QR para enviárselo a tus invitados</small></p>-->
+        <!--                    </ion-label>-->
+        <!--                </ion-item>-->
+      </ion-list>
+    </ion-col>
+  </ion-row>
+
+
+  <ion-fab *ngIf="this.savedUser.role === 'SECURITY' && access.callResident" vertical="bottom" horizontal="end"
+           slot="fixed" (click)="makeCall()">
+    <ion-fab-button>
+      <ion-icon name="call"></ion-icon>
+    </ion-fab-button>
+  </ion-fab>
 
 </ion-content>
 <ion-button expand="full" (click)="openActionSheet()" color="danger">Opciones</ion-button>

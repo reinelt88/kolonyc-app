@@ -17,15 +17,14 @@
 
             <ion-item>
                 <ion-label *ngIf="residentId" position="floating">Email</ion-label>
-                <ion-input formControlName="email" [disabled]="residentId" type="text" placeholder="Email"></ion-input>
+                <ion-input formControlName="email" type="text" placeholder="Email"></ion-input>
                 <ion-text color="danger">
                     <small *ngIf="!form.controls.email.valid && attempt">Por favor ingrese un email válido</small>
                 </ion-text>
             </ion-item>
             <ion-item>
                 <ion-label *ngIf="residentId" position="floating">Nombre</ion-label>
-                <ion-input formControlName="displayName" type="text" placeholder="Nombre"
-                           autocapitalize="true"></ion-input>
+                <ion-input formControlName="displayName" type="text" placeholder="Nombre" autocapitalize="true"></ion-input>
                 <ion-text color="danger">
                     <small *ngIf="!form.controls.displayName.valid && attempt">{{defaultErrorMessage}}</small>
                 </ion-text>

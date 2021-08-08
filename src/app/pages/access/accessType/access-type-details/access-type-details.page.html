@@ -17,7 +17,8 @@
       <ion-item>
         <ion-label *ngIf="typeId" position="floating">Nombre</ion-label>
         <ion-input formControlName="name" type="text" placeholder="Nombre" autocapitalize="true"></ion-input>
-        <ion-text color="danger"><small *ngIf="!form.controls.name.valid && attempt">{{defaultErrorMessage}}</small></ion-text>
+        <ion-text color="danger"><small *ngIf="!form.controls.name.valid && attempt">{{defaultErrorMessage}}</small>
+        </ion-text>
       </ion-item>
     </ion-list>
   </form>

@@ -11,6 +11,7 @@ import {SecurityService} from '../security.service';
 import {User} from '../../../models/user';
 import {Keyboard} from '@ionic-native/keyboard/ngx';
 import * as moment from 'moment';
+import {timer} from "rxjs";
 
 @Component({
     selector: 'app-security-guard-details',
@@ -19,11 +20,12 @@ import * as moment from 'moment';
 })
 export class SecurityGuardDetailsPage extends BasePage implements OnInit {
 
-    securitytId = null;
-    generateEmail = 0;
+    public securitytId = null;
+    public generateEmail = 0;
     public form: FormGroup;
     public attempt = false;
     public defaultErrorMessage = 'Por favor ingrese un valor válido';
+    public show = false;
 
     constructor(
         private loadingController: LoadingController,
@@ -41,20 +43,21 @@ export class SecurityGuardDetailsPage extends BasePage implements OnInit {
         private keyboard: Keyboard,
     ) {
         super(storageService, toastController);
-        this.form = formBuilder.group(
-            {
-                email: ['', Validators.compose([Validators.required, Validators.email])],
-                displayName: ['', Validators.compose([Validators.required, Validators.min(5)])],
-                profilePicture: this.user.profilePicture,
-                phone: ['', Validators.compose([Validators.required, Validators.pattern('[0-9]{10}')])],
-            });
+
+        this.securitytId = this.route.snapshot.params.id;
+        this.form = this.formBuilder.group(
+        {
+          email: [{value: '', disabled: !!(this.securitytId)}, Validators.compose([Validators.required, Validators.email])],
+          displayName: ['', Validators.compose([Validators.required, Validators.min(5)])],
+          profilePicture: this.user.profilePicture,
+          phone: ['', Validators.compose([Validators.required, Validators.pattern('[0-9]{10}')])],
+        });
+
     }
 
     ngOnInit() {
-        this.securitytId = this.route.snapshot.params.id;
-
         if (this.securitytId) {
-            this.loadSecurity();
+          this.loadSecurity();
         }
     }
 
@@ -68,25 +71,27 @@ export class SecurityGuardDetailsPage extends BasePage implements OnInit {
 
         await loading.present();
 
-        this.securityService.get(this.securitytId, this.savedUser.colonyId).subscribe(res => {
+      this.securityService.get(this.securitytId, this.savedUser.colonyId).subscribe(res => {
 
-            this.security = res;
+        if (res) {
+          this.security = res;
 
-            const userId = this.security.userId;
+          const userId = this.security.userId;
 
-            if (userId !== '') {
+          if (userId !== '') {
 
-                this.userService.get(userId).subscribe(user => {
-                    this.user = user;
-                    this.user.id = userId;
-                    this.form.get('email').setValue(user.email);
-                    this.form.get('phone').setValue(user.phone);
-                    this.form.get('displayName').setValue(user.displayName);
-                });
-            }
+            this.userService.get(userId).subscribe(user => {
+              this.user = user;
+              this.user.id = userId;
+              this.form.get('email').setValue(user.email);
+              this.form.get('phone').setValue(user.phone);
+              this.form.get('displayName').setValue(user.displayName);
+            });
+          }
+        }
 
-            loading.dismiss();
-        });
+        loading.dismiss();
+      });
 
     }
 
@@ -104,16 +109,16 @@ export class SecurityGuardDetailsPage extends BasePage implements OnInit {
         if (this.form.valid) {
             if (this.securitytId) {
 
-                this.securityService.update(this.securitytId, this.security, this.savedUser.colonyId).then(() => {
+                // this.securityService.update(this.securitytId, this.security, this.savedUser.colonyId).then(() => {
 
                     this.user.displayName = this.form.value.displayName;
-                    this.user.email = this.form.value.email;
+                    // this.user.email = this.form.value.email;
                     this.user.phone = this.form.value.phone;
                     this.userService.update(this.user, this.security.userId).then(() => {
                         this.attempt = false;
                         this.nav.navigateForward('/list-security-guards');
                     });
-                });
+                // });
 
             } else {
 

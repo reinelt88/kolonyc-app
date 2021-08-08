@@ -17,12 +17,13 @@
           <img [src]="a.picture">
         </ion-thumbnail>
         <ion-label>
-          <h2 >{{a.name}}</h2>
+          <h2>{{a.name}}</h2>
         </ion-label>
       </ion-item>
     </ion-item-sliding>
   </ion-list>
-  <ion-fab *ngIf="this.user.role === 'SUPERADMIN' || this.user.role === 'ADMIN'" vertical="bottom" horizontal="end" slot="fixed">
+  <ion-fab *ngIf="this.user.role === 'SUPERADMIN' || this.user.role === 'ADMIN'" vertical="bottom" horizontal="end"
+           slot="fixed">
     <ion-fab-button routerLink="/area-details" routerDirection="forward">
       <ion-icon name="add"></ion-icon>
     </ion-fab-button>

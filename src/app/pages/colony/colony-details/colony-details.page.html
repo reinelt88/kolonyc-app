@@ -17,7 +17,8 @@
       <ion-item>
         <ion-label *ngIf="colonyId" position="floating">Nombre</ion-label>
         <ion-input formControlName="name" type="text" placeholder="Nombre" autocapitalize="true"></ion-input>
-        <ion-text color="danger"><small *ngIf="!form.controls.name.valid && attempt">{{defaultErrorMessage}}</small></ion-text>
+        <ion-text color="danger"><small *ngIf="!form.controls.name.valid && attempt">{{defaultErrorMessage}}</small>
+        </ion-text>
       </ion-item>
 
       <ion-item>
@@ -31,36 +32,44 @@
       <ion-item>
         <ion-label *ngIf="colonyId" position="floating">Código postal</ion-label>
         <ion-input formControlName="postalCode" type="text" placeholder="Código postal"></ion-input>
-        <ion-text color="danger"><small *ngIf="!form.controls.postalCode.valid && attempt">{{defaultErrorMessage}} de 5 dígitos</small></ion-text>
+        <ion-text color="danger"><small *ngIf="!form.controls.postalCode.valid && attempt">{{defaultErrorMessage}} de 5
+          dígitos</small></ion-text>
       </ion-item>
       <ion-item>
         <ion-label *ngIf="colonyId" position="floating">Calle</ion-label>
         <ion-input formControlName="street" type="text" placeholder="Calle" autocapitalize="true"></ion-input>
-        <ion-text color="danger"><small *ngIf="!form.controls.street.valid && attempt">{{defaultErrorMessage}}</small></ion-text>
+        <ion-text color="danger"><small *ngIf="!form.controls.street.valid && attempt">{{defaultErrorMessage}}</small>
+        </ion-text>
       </ion-item>
       <ion-item>
         <ion-label *ngIf="colonyId" position="floating">Número</ion-label>
         <ion-input formControlName="number" type="text" placeholder="Número"></ion-input>
-        <ion-text color="danger"><small *ngIf="!form.controls.number.valid && attempt">{{defaultErrorMessage}}</small></ion-text>
+        <ion-text color="danger"><small *ngIf="!form.controls.number.valid && attempt">{{defaultErrorMessage}}</small>
+        </ion-text>
       </ion-item>
       <ion-item>
         <ion-label *ngIf="colonyId" position="floating">Municipio</ion-label>
         <ion-input formControlName="municipality" type="text" placeholder="Municipio" autocapitalize="true"></ion-input>
-        <ion-text color="danger"><small *ngIf="!form.controls.municipality.valid && attempt">{{defaultErrorMessage}}</small></ion-text>
+        <ion-text color="danger"><small
+          *ngIf="!form.controls.municipality.valid && attempt">{{defaultErrorMessage}}</small></ion-text>
       </ion-item>
       <ion-item>
         <ion-label *ngIf="colonyId" position="floating">Estado</ion-label>
         <ion-input formControlName="state" type="text" placeholder="Estado" autocapitalize="true"></ion-input>
-        <ion-text color="danger"><small *ngIf="!form.controls.state.valid && attempt">{{defaultErrorMessage}}</small></ion-text>
+        <ion-text color="danger"><small *ngIf="!form.controls.state.valid && attempt">{{defaultErrorMessage}}</small>
+        </ion-text>
       </ion-item>
       <ion-item>
         <ion-label *ngIf="colonyId" position="floating">País</ion-label>
-        <ion-input formControlName="country" type="text" placeholder="País" autocapitalize="true" (keydown.enter)="hideKeyboard()"></ion-input>
-        <ion-text color="danger"><small *ngIf="!form.controls.country.valid && attempt">{{defaultErrorMessage}}</small></ion-text>
+        <ion-input formControlName="country" type="text" placeholder="País" autocapitalize="true"
+                   (keydown.enter)="hideKeyboard()"></ion-input>
+        <ion-text color="danger"><small *ngIf="!form.controls.country.valid && attempt">{{defaultErrorMessage}}</small>
+        </ion-text>
       </ion-item>
       <ion-item>
         <ion-label class="ion-text-wrap">Usar Paypal en pagos de mensualidades</ion-label>
-        <ion-toggle slot="start" color="danger" formControlName="usePaypal" (ionChange)="usePaypal($event)"></ion-toggle>
+        <ion-toggle slot="start" color="danger" formControlName="usePaypal"
+                    (ionChange)="usePaypal($event)"></ion-toggle>
         <ion-thumbnail slot="end">
           <ion-img src="https://i.blogs.es/afeb92/paypal/1366_2000.jpg"></ion-img>
         </ion-thumbnail>
@@ -68,12 +77,14 @@
       <ion-item *ngIf="colony.usePaypal">
         <ion-label *ngIf="colonyId" position="floating">ClientID</ion-label>
         <ion-input formControlName="paypalClientId" type="text" placeholder="ClientID"></ion-input>
-        <ion-text color="danger"><small *ngIf="!form.controls.paypalClientId.valid && attempt">{{defaultErrorMessage}}</small></ion-text>
+        <ion-text color="danger"><small
+          *ngIf="!form.controls.paypalClientId.valid && attempt">{{defaultErrorMessage}}</small></ion-text>
       </ion-item>
       <ion-item *ngIf="colony.usePaypal">
         <ion-label *ngIf="colonyId" position="floating">ClientSecret</ion-label>
         <ion-input formControlName="paypalClientSecret" type="text" placeholder="ClientSecret"></ion-input>
-        <ion-text color="danger"><small *ngIf="!form.controls.paypalClientSecret.valid && attempt">{{defaultErrorMessage}}</small></ion-text>
+        <ion-text color="danger"><small
+          *ngIf="!form.controls.paypalClientSecret.valid && attempt">{{defaultErrorMessage}}</small></ion-text>
       </ion-item>
 
     </ion-list>

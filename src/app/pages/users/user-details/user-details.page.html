@@ -1,100 +1,111 @@
 <ion-header>
-    <ion-toolbar color="danger">
-        <ion-buttons slot="start">
-            <ion-back-button defaultHref="/list-users"></ion-back-button>
-        </ion-buttons>
-        <ion-title>
-            {{form.controls.displayName.value}}
-        </ion-title>
-        <ion-buttons slot="end" (click)="saveUser()" style="zoom:2.0; padding-right: 4px;">
-            <ion-icon name="checkmark"></ion-icon>
-        </ion-buttons>
-    </ion-toolbar>
+  <ion-toolbar color="danger">
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/list-users"></ion-back-button>
+    </ion-buttons>
+    <ion-title>
+      {{form.controls.displayName.value}}
+    </ion-title>
+    <ion-buttons slot="end" (click)="saveUser()" style="zoom:2.0; padding-right: 4px;">
+      <ion-icon name="checkmark"></ion-icon>
+    </ion-buttons>
+  </ion-toolbar>
 </ion-header>
 
 <ion-content class="ion-padding">
-    <form [formGroup]="form">
-        <ion-list lines="full" *ngIf="user">
+  <form [formGroup]="form">
+    <ion-list lines="full" *ngIf="user">
 
-            <ion-item>
-                <ion-label *ngIf="userId" position="floating">Email</ion-label>
-                <ion-input formControlName="email" type="email" placeholder="Email"></ion-input>
-                <ion-text color="danger"><small *ngIf="!form.controls.email.valid && attempt">Por favor ingrese un email válido</small></ion-text>
-            </ion-item>
+      <ion-item>
+        <ion-label *ngIf="userId" position="floating">Email</ion-label>
+        <ion-input formControlName="email" type="email" placeholder="Email"></ion-input>
+        <ion-text color="danger"><small *ngIf="!form.controls.email.valid && attempt">Por favor ingrese un email
+          válido</small></ion-text>
+      </ion-item>
 
-            <ion-item>
-                <ion-label *ngIf="userId" position="floating">Nombre</ion-label>
-                <ion-input formControlName="displayName" type="text" placeholder="Nombre"></ion-input>
-                <ion-text color="danger"><small *ngIf="!form.controls.displayName.valid && attempt">{{defaultErrorMessage}}</small></ion-text>
-            </ion-item>
+      <ion-item>
+        <ion-label *ngIf="userId" position="floating">Nombre</ion-label>
+        <ion-input formControlName="displayName" type="text" placeholder="Nombre"></ion-input>
+        <ion-text color="danger"><small
+          *ngIf="!form.controls.displayName.valid && attempt">{{defaultErrorMessage}}</small></ion-text>
+      </ion-item>
 
-            <ion-item>
-                <ion-label *ngIf="userId" position="floating">Teléfono</ion-label>
-                <ion-input formControlName="phone" type="text" placeholder="Teléfono"></ion-input>
-                <ion-text color="danger"><small *ngIf="!form.controls.phone.valid && attempt">{{defaultErrorMessage}}</small></ion-text>
-            </ion-item>
+      <ion-item>
+        <ion-label *ngIf="userId" position="floating">Teléfono</ion-label>
+        <ion-input formControlName="phone" type="text" placeholder="Teléfono"></ion-input>
+        <ion-text color="danger"><small *ngIf="!form.controls.phone.valid && attempt">{{defaultErrorMessage}}</small>
+        </ion-text>
+      </ion-item>
 
-            <ion-item>
-                <ion-label position="floating">Rol</ion-label>
-                <ion-select formControlName="role" value="roles" okText="Ok" cancelText="Cancelar">
-                    <ion-select-option *ngFor="let role of roles" value="{{role}}">{{role}}</ion-select-option>
-                </ion-select>
-                <ion-text color="danger"><small *ngIf="!form.controls.role.valid && attempt">Por favor seleccione una opción</small></ion-text>
-            </ion-item>
+      <ion-item>
+        <ion-label position="floating">Rol</ion-label>
+        <ion-select formControlName="role" value="roles" okText="Ok" cancelText="Cancelar">
+          <ion-select-option *ngFor="let role of roles" value="{{role}}">{{role}}</ion-select-option>
+        </ion-select>
+        <ion-text color="danger"><small *ngIf="!form.controls.role.valid && attempt">Por favor seleccione una
+          opción</small></ion-text>
+      </ion-item>
 
-            <ion-item>
-                <ion-label position="floating">Colonia</ion-label>
-                <ion-select formControlName="colonyId" value="colonyId" okText="Ok" cancelText="Cancelar" (ionChange)="colonyChange($event)">
-                    <ion-select-option *ngFor="let colony of colonies" value="{{colony.id}}" [selected]="user.colonyId == colony.id">{{colony.name}}</ion-select-option>
-                </ion-select>
-                <ion-text color="danger"><small *ngIf="!form.controls.colonyId.valid && attempt">Por favor seleccione una opción</small></ion-text>
-            </ion-item>
+      <ion-item>
+        <ion-label position="floating">Colonia</ion-label>
+        <ion-select formControlName="colonyId" value="colonyId" okText="Ok" cancelText="Cancelar"
+                    (ionChange)="colonyChange($event)">
+          <ion-select-option *ngFor="let colony of colonies" value="{{colony.id}}"
+                             [selected]="user.colonyId == colony.id">{{colony.name}}</ion-select-option>
+        </ion-select>
+        <ion-text color="danger"><small *ngIf="!form.controls.colonyId.valid && attempt">Por favor seleccione una
+          opción</small></ion-text>
+      </ion-item>
 
-<!--            <ion-item *ngIf="(form.controls.role.value === 'RESIDENT' || form.controls.role.value === 'ADMIN')">-->
-<!--                <ion-label position="floating">Ubicación</ion-label>-->
-<!--                <ion-select formControlName="houseId" value="Ubicación" okText="Ok" cancelText="Cancelar" [placeholder]="placeType">-->
-<!--                    <ion-select-option *ngFor="let h of houses" value="{{h.id}}">{{placeType}} {{h.place}} - #{{h.number}}</ion-select-option>-->
-<!--                </ion-select>-->
-<!--                <ion-text color="danger"><small *ngIf="!form.controls.houseId.valid && attempt">Por favor seleccione una opción</small></ion-text>-->
-<!--            </ion-item>-->
+      <!--            <ion-item *ngIf="(form.controls.role.value === 'RESIDENT' || form.controls.role.value === 'ADMIN')">-->
+      <!--                <ion-label position="floating">Ubicación</ion-label>-->
+      <!--                <ion-select formControlName="houseId" value="Ubicación" okText="Ok" cancelText="Cancelar" [placeholder]="placeType">-->
+      <!--                    <ion-select-option *ngFor="let h of houses" value="{{h.id}}">{{placeType}} {{h.place}} - #{{h.number}}</ion-select-option>-->
+      <!--                </ion-select>-->
+      <!--                <ion-text color="danger"><small *ngIf="!form.controls.houseId.valid && attempt">Por favor seleccione una opción</small></ion-text>-->
+      <!--            </ion-item>-->
 
-            <ion-row class="ion-padding" *ngIf="((form.controls.role.value === 'RESIDENT' || form.controls.role.value === 'ADMIN') && form.controls.colonyId.value!='')">
-                <ion-col size="8">
-                    <ion-label position="floating">Ubicación</ion-label>
-                    <ion-select formControlName="houseId" value="Ubicación" okText="Ok" cancelText="Cancelar" [placeholder]="placeType">
-                        <ion-select-option *ngFor="let h of houses" value="{{h.id}}">{{placeType}} {{h.place}} - #{{h.number}}</ion-select-option>
-                    </ion-select>
-                    <ion-text color="danger"><small *ngIf="!form.controls.houseId.valid && attempt">Por favor seleccione una opción</small></ion-text>
-                </ion-col>
-                <ion-col size="2">
-                    <ion-button (click)="addHouseAlert()">
-                        <ion-icon name="add"></ion-icon>
-                    </ion-button>
-                </ion-col>
-                <ion-col size="2">
-                    <ion-button *ngIf="form.controls.houseId.value !== ''" (click)="deleteHouseAlert(form.controls.houseId.value)" color="danger">
-                        <ion-icon name="remove"></ion-icon>
-                    </ion-button>
-                </ion-col>
-            </ion-row>
+      <ion-row class="ion-padding"
+               *ngIf="((form.controls.role.value === 'RESIDENT' || form.controls.role.value === 'ADMIN') && form.controls.colonyId.value!='')">
+        <ion-col size="8">
+          <ion-label position="floating">Ubicación</ion-label>
+          <ion-select formControlName="houseId" value="Ubicación" okText="Ok" cancelText="Cancelar"
+                      [placeholder]="placeType">
+            <ion-select-option *ngFor="let h of houses" value="{{h.id}}">{{placeType}} {{h.place}} -
+              #{{h.number}}</ion-select-option>
+          </ion-select>
+          <ion-text color="danger"><small *ngIf="!form.controls.houseId.valid && attempt">Por favor seleccione una
+            opción</small></ion-text>
+        </ion-col>
+        <ion-col size="2">
+          <ion-button (click)="addHouseAlert()">
+            <ion-icon name="add"></ion-icon>
+          </ion-button>
+        </ion-col>
+        <ion-col size="2">
+          <ion-button *ngIf="form.controls.houseId.value !== ''" (click)="deleteHouseAlert(form.controls.houseId.value)"
+                      color="danger">
+            <ion-icon name="remove"></ion-icon>
+          </ion-button>
+        </ion-col>
+      </ion-row>
 
 
+      <!--            <ion-item>-->
+      <!--                <ion-input required type="text" placeholder="Foto de perfil" [(ngModel)]="user.profilePicture"></ion-input>-->
+      <!--            </ion-item>-->
 
-<!--            <ion-item>-->
-<!--                <ion-input required type="text" placeholder="Foto de perfil" [(ngModel)]="user.profilePicture"></ion-input>-->
-<!--            </ion-item>-->
+      <div class="box" *ngIf="userId">
+        <div class="preview">
+          <ion-img [src]="user.profilePicture"></ion-img>
+        </div>
+      </div>
 
-            <div class="box" *ngIf="userId">
-                <div class="preview">
-                    <ion-img [src]="user.profilePicture"></ion-img>
-                </div>
-            </div>
-
-        </ion-list>
-    </form>
-    <ion-fab vertical="bottom" horizontal="end" slot="fixed" *ngIf="userId">
-        <ion-fab-button color="danger" (click)="confirmMessage()">
-            <ion-icon name="trash"></ion-icon>
-        </ion-fab-button>
-    </ion-fab>
+    </ion-list>
+  </form>
+  <ion-fab vertical="bottom" horizontal="end" slot="fixed" *ngIf="userId">
+    <ion-fab-button color="danger" (click)="confirmMessage()">
+      <ion-icon name="trash"></ion-icon>
+    </ion-fab-button>
+  </ion-fab>
 </ion-content>

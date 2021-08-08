@@ -1,13 +1,13 @@
-import { NgModule } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import {NgModule} from '@angular/core';
+import {CommonModule} from '@angular/common';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 
-import { IonicModule } from '@ionic/angular';
+import {IonicModule} from '@ionic/angular';
 
-import { AccessDetailsPageRoutingModule } from './access-details-routing.module';
+import {AccessDetailsPageRoutingModule} from './access-details-routing.module';
 
-import { AccessDetailsPage } from './access-details.page';
-import { NgxQRCodeModule } from '@techiediaries/ngx-qrcode';
+import {AccessDetailsPage} from './access-details.page';
+import {NgxQRCodeModule} from '@techiediaries/ngx-qrcode';
 import {IonicSelectableModule} from 'ionic-selectable';
 
 @NgModule({
@@ -22,4 +22,5 @@ import {IonicSelectableModule} from 'ionic-selectable';
   ],
   declarations: [AccessDetailsPage]
 })
-export class AccessDetailsPageModule {}
+export class AccessDetailsPageModule {
+}

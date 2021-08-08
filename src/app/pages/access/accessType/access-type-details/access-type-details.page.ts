@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {AlertController, LoadingController, NavController, ToastController} from '@ionic/angular';
 import {ActivatedRoute, Router} from '@angular/router';
@@ -21,23 +21,23 @@ export class AccessTypeDetailsPage extends BasePage implements OnInit {
   public defaultErrorMessage = 'Por favor ingrese un valor válido';
 
   constructor(
-      private loadingController: LoadingController,
-      private route: ActivatedRoute,
-      private nav: NavController,
-      private router: Router,
-      protected storageService: StorageService,
-      protected toastController: ToastController,
-      private alertController: AlertController,
-      private formBuilder: FormBuilder,
-      private keyboard: Keyboard,
-      private events: Events,
-      private typeService: AccessTypeService
+    private loadingController: LoadingController,
+    private route: ActivatedRoute,
+    private nav: NavController,
+    private router: Router,
+    protected storageService: StorageService,
+    protected toastController: ToastController,
+    private alertController: AlertController,
+    private formBuilder: FormBuilder,
+    private keyboard: Keyboard,
+    private events: Events,
+    private typeService: AccessTypeService
   ) {
     super(storageService, toastController);
     this.form = formBuilder.group(
-        {
-          name: ['', Validators.compose([Validators.required, Validators.min(5)])],
-        });
+      {
+        name: ['', Validators.compose([Validators.required, Validators.min(5)])],
+      });
   }
 
 

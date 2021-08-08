@@ -17,32 +17,40 @@
 
       <ion-item>
         <ion-label *ngIf="areaId" position="floating">Nombre</ion-label>
-        <ion-input [disabled]="user.role === 'RESIDENT'" formControlName="name" type="text" placeholder="Nombre" autocapitalize="true"></ion-input>
-        <ion-text color="danger"><small *ngIf="!form.controls.name.valid && attempt">{{defaultErrorMessage}}</small></ion-text>
+        <ion-input [disabled]="user.role === 'RESIDENT'" formControlName="name" type="text" placeholder="Nombre"
+                   autocapitalize="true"></ion-input>
+        <ion-text color="danger"><small *ngIf="!form.controls.name.valid && attempt">{{defaultErrorMessage}}</small>
+        </ion-text>
       </ion-item>
 
       <ion-item>
         <ion-label position="floating">Días de la semana</ion-label>
-        <ion-select [disabled]="user.role === 'RESIDENT'" formControlName="daysOfWeek" value="Días de la semana" okText="Ok" cancelText="Cancelar" multiple="true">
+        <ion-select [disabled]="user.role === 'RESIDENT'" formControlName="daysOfWeek" value="Días de la semana"
+                    okText="Ok" cancelText="Cancelar" multiple="true">
           <ion-select-option *ngFor="let r of daysOfWeek" value="{{r.id}}">{{r.name}}</ion-select-option>
         </ion-select>
-        <ion-text color="danger"><small *ngIf="!form.controls.daysOfWeek.valid && attempt">Por favor seleccione una opción</small></ion-text>
+        <ion-text color="danger"><small *ngIf="!form.controls.daysOfWeek.valid && attempt">Por favor seleccione una
+          opción</small></ion-text>
       </ion-item>
 
       <ion-item>
         <ion-label position="floating">Hora inicio</ion-label>
-        <ion-select [disabled]="user.role === 'RESIDENT'" formControlName="startHour" value="Hora inicio" okText="Ok" cancelText="Cancelar" multiple="false">
+        <ion-select [disabled]="user.role === 'RESIDENT'" formControlName="startHour" value="Hora inicio" okText="Ok"
+                    cancelText="Cancelar" multiple="false">
           <ion-select-option *ngFor="let h of hours" value="{{h.id}}">{{h.name}}</ion-select-option>
         </ion-select>
-        <ion-text color="danger"><small *ngIf="!form.controls.startHour.valid && attempt">Por favor seleccione una opción</small></ion-text>
+        <ion-text color="danger"><small *ngIf="!form.controls.startHour.valid && attempt">Por favor seleccione una
+          opción</small></ion-text>
       </ion-item>
 
       <ion-item>
         <ion-label position="floating">Hora fin</ion-label>
-        <ion-select [disabled]="user.role === 'RESIDENT'" formControlName="endHour" value="Hora fin" okText="Ok" cancelText="Cancelar" multiple="false">
+        <ion-select [disabled]="user.role === 'RESIDENT'" formControlName="endHour" value="Hora fin" okText="Ok"
+                    cancelText="Cancelar" multiple="false">
           <ion-select-option *ngFor="let h of hours" value="{{h.id}}">{{h.name}}</ion-select-option>
         </ion-select>
-        <ion-text color="danger"><small *ngIf="!form.controls.endHour.valid && attempt">Por favor seleccione una opción</small></ion-text>
+        <ion-text color="danger"><small *ngIf="!form.controls.endHour.valid && attempt">Por favor seleccione una
+          opción</small></ion-text>
       </ion-item>
     </ion-list>
 
@@ -61,16 +69,17 @@
     </ion-row>
   </form>
 
-<!--  <ion-list lines="full" *ngIf="bookings.length > 0">-->
+  <!--  <ion-list lines="full" *ngIf="bookings.length > 0">-->
 
-<!--  </ion-list>-->
+  <!--  </ion-list>-->
   <ion-list>
     <ion-item-sliding><h4 class="ion-text-center">Próximas reservas</h4></ion-item-sliding>
     <ion-item-sliding *ngFor="let b of bookings">
       <ion-item lines="inset">
         <ion-label class="ion-text-wrap">
           <p>{{b.residentId}}</p>
-          <small>{{b.startTime | date:'dd/MM/yyyy h:mm:ss a'}} <b>-</b> {{b.endTime | date:'dd/MM/yyyy h:mm:ss a'}}</small>
+          <small>{{b.startTime | date:'dd/MM/yyyy h:mm:ss a'}} <b>-</b> {{b.endTime | date:'dd/MM/yyyy h:mm:ss a'}}
+          </small>
           <p>{{b.title}}</p>
         </ion-label>
       </ion-item>
@@ -83,7 +92,8 @@
     </ion-fab-button>
   </ion-fab>
 
-  <ion-fab  vertical="bottom" horizontal="end" slot="fixed" *ngIf="areaId && (this.user.role === 'SUPERADMIN' || this.user.role === 'ADMIN')">
+  <ion-fab vertical="bottom" horizontal="end" slot="fixed"
+           *ngIf="areaId && (this.user.role === 'SUPERADMIN' || this.user.role === 'ADMIN')">
     <ion-fab-button color="danger" (click)="confirmMessage()">
       <ion-icon name="trash"></ion-icon>
     </ion-fab-button>

@@ -29,17 +29,22 @@
       </ion-item>
       <ion-item>
         <ion-label>Inicio</ion-label>
-        <ion-datetime cancelText="Cancelar" doneText="Ok" displayFormat="DD/MM/YYYY h:mm A" pickerFormat="MMM DD, YYYY HH:mm" placeholder="Seleccione fecha" [ngModel]="event.startTime" [value]="startTime" [min]="minDate" (ionChange)="updateStartTime($event)"></ion-datetime>
+        <ion-datetime cancelText="Cancelar" doneText="Ok" displayFormat="DD/MM/YYYY h:mm A"
+                      pickerFormat="MMM DD, YYYY HH:mm" placeholder="Seleccione fecha" [ngModel]="event.startTime"
+                      [value]="startTime" [min]="minDate" (ionChange)="updateStartTime($event)"></ion-datetime>
       </ion-item>
       <ion-item>
         <ion-label>Fin</ion-label>
-        <ion-datetime cancelText="Cancelar" doneText="Ok" displayFormat="DD/MM/YYYY h:mm A" pickerFormat="MMM DD, YYYY HH:mm" placeholder="Seleccione fecha" [ngModel]="event.endTime" [value]="endTime" [min]="minDate" (ionChange)="updateEndTime($event)"></ion-datetime>
+        <ion-datetime cancelText="Cancelar" doneText="Ok" displayFormat="DD/MM/YYYY h:mm A"
+                      pickerFormat="MMM DD, YYYY HH:mm" placeholder="Seleccione fecha" [ngModel]="event.endTime"
+                      [value]="endTime" [min]="minDate" (ionChange)="updateEndTime($event)"></ion-datetime>
       </ion-item>
-<!--      <ion-item>-->
-<!--        <ion-label>Todo el día?</ion-label>-->
-<!--        <ion-checkbox [(ngModel)]="event.allDay"></ion-checkbox>-->
-<!--      </ion-item>-->
-      <ion-button color="danger" expand="block" (click)="addEvent()" [disabled]="event.title == ''">Registar</ion-button>
+      <!--      <ion-item>-->
+      <!--        <ion-label>Todo el día?</ion-label>-->
+      <!--        <ion-checkbox [(ngModel)]="event.allDay"></ion-checkbox>-->
+      <!--      </ion-item>-->
+      <ion-button color="danger" expand="block" (click)="addEvent()" [disabled]="event.title == ''">Registar
+      </ion-button>
 
     </ion-card-content>
   </ion-card>
@@ -47,13 +52,19 @@
   <ion-row>
     <!-- Change the displayed calendar mode -->
     <ion-col size="4">
-      <ion-button expand="block" [color]="calendar.mode == 'month' ? 'primary' : 'secondary'" (click)="changeMode('month')">Mes</ion-button>
+      <ion-button expand="block" [color]="calendar.mode == 'month' ? 'primary' : 'secondary'"
+                  (click)="changeMode('month')">Mes
+      </ion-button>
     </ion-col>
     <ion-col size="4">
-      <ion-button expand="block" [color]="calendar.mode == 'week' ? 'primary' : 'secondary'" (click)="changeMode('week')">Semana</ion-button>
+      <ion-button expand="block" [color]="calendar.mode == 'week' ? 'primary' : 'secondary'"
+                  (click)="changeMode('week')">Semana
+      </ion-button>
     </ion-col>
     <ion-col size="4">
-      <ion-button expand="block" [color]="calendar.mode == 'day' ? 'primary' : 'secondary'" (click)="changeMode('day')">Día</ion-button>
+      <ion-button expand="block" [color]="calendar.mode == 'day' ? 'primary' : 'secondary'" (click)="changeMode('day')">
+        Día
+      </ion-button>
     </ion-col>
 
     <!-- Move back one screen of the slides -->
@@ -72,25 +83,27 @@
   </ion-row>
 
   <calendar *ngIf="dataLoaded"
-          [eventSource]="eventSource"
-          [calendarMode]="calendar.mode"
-          [currentDate]="calendar.currentDate"
-          [locale]="calendar.locale"
-          [noEventsLabel]="calendar.noEventsLabel"
-          (onEventSelected)="onEventSelected($event)"
-          (onTitleChanged)="onViewTitleChanged($event)"
-          (onTimeSelected)="onTimeSelected($event)"
-          [allDayLabel]="calendar.allDayLabel"
-          [lockSwipes]="false"
-          [markDisabled]="markDisabled"
-          queryMode="remote"
-          (onRangeChanged)="onRangeChanged($event)"
-          [startHour]="calendar.startHour"
-          [endHour]="calendar.endHour"
-          [step]="30"
-          startingDayWeek="1">
+            [eventSource]="eventSource"
+            [calendarMode]="calendar.mode"
+            [currentDate]="calendar.currentDate"
+            [locale]="calendar.locale"
+            [noEventsLabel]="calendar.noEventsLabel"
+            (onEventSelected)="onEventSelected($event)"
+            (onTitleChanged)="onViewTitleChanged($event)"
+            (onTimeSelected)="onTimeSelected($event)"
+            [allDayLabel]="calendar.allDayLabel"
+            [lockSwipes]="false"
+            [markDisabled]="markDisabled"
+            queryMode="remote"
+            (onRangeChanged)="onRangeChanged($event)"
+            [startHour]="calendar.startHour"
+            [endHour]="calendar.endHour"
+            [step]="30"
+            startingDayWeek="1">
   </calendar>
 
-    <ng-template #monthviewDisplayEventTemplate let-view="view" let-row="row" let-col="col"> <div [ngClass]="getMonthviewHighLevelClass(view.dates[row*7+col].date)"> {{view.dates[row*7+col].label}} </div> </ng-template>
+  <ng-template #monthviewDisplayEventTemplate let-view="view" let-row="row" let-col="col">
+    <div [ngClass]="getMonthviewHighLevelClass(view.dates[row*7+col].date)"> {{view.dates[row * 7 + col].label}} </div>
+  </ng-template>
 
 </ion-content>

@@ -1,7 +1,7 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
-import { IonicModule } from '@ionic/angular';
+import {async, ComponentFixture, TestBed} from '@angular/core/testing';
+import {IonicModule} from '@ionic/angular';
 
-import { AccessDetailsPage } from './access-details.page';
+import {AccessDetailsPage} from './access-details.page';
 
 describe('AccessDetailsPage', () => {
   let component: AccessDetailsPage;
@@ -9,7 +9,7 @@ describe('AccessDetailsPage', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ AccessDetailsPage ],
+      declarations: [AccessDetailsPage],
       imports: [IonicModule.forRoot()]
     }).compileComponents();
 

@@ -6,59 +6,59 @@ import {HouseService} from '../resident/house.service';
 import {AngularFirestore, AngularFirestoreCollection} from '@angular/fire/firestore';
 
 @Injectable({
-    providedIn: 'root'
+  providedIn: 'root'
 })
 export class ColonyService {
 
-    private collection: AngularFirestoreCollection<Colony>;
-    private obj: Observable<Colony[]>;
+  private collection: AngularFirestoreCollection<Colony>;
+  private obj: Observable<Colony[]>;
 
-    constructor(
-        private db: AngularFirestore,
-        private houseService: HouseService,
-    ) {
-        this.collection = db.collection<Colony>('colony', ref => ref.orderBy('createdAt', 'desc'));
-    }
+  constructor(
+    private db: AngularFirestore,
+    private houseService: HouseService,
+  ) {
+    this.collection = db.collection<Colony>('colony', ref => ref.orderBy('createdAt', 'desc'));
+  }
 
-    getAll() {
+  getAll() {
 
-        return this.obj = this.collection.snapshotChanges().pipe(map(
-            actions => actions.map(
-                    a => {
+    return this.obj = this.collection.snapshotChanges().pipe(map(
+        actions => actions.map(
+          a => {
 
-                        const data = a.payload.doc.data();
+            const data = a.payload.doc.data();
 
-                        const id = a.payload.doc.id;
+            const id = a.payload.doc.id;
 
-                        return {id, ...data};
-                    }
-                )
-            )
-        );
-    }
+            return {id, ...data};
+          }
+        )
+      )
+    );
+  }
 
-    get(id: string) {
-        return this.collection.doc<Colony>(id).valueChanges();
-    }
+  get(id: string) {
+    return this.collection.doc<Colony>(id).valueChanges();
+  }
 
-    update(obj: Colony, id: string) {
-        return this.collection.doc(id).update(obj);
-    }
+  update(obj: Colony, id: string) {
+    return this.collection.doc(id).update(obj);
+  }
 
-    add(obj: Colony) {
-        return this.collection.add(obj);
-    }
+  add(obj: Colony) {
+    return this.collection.add(obj);
+  }
 
-    remove(id: string) {
-        return this.collection.doc(id).delete();
-    }
+  remove(id: string) {
+    return this.collection.doc(id).delete();
+  }
 
-    getHouses(id: string) {
-        const houses = [];
-        return new Promise<any>((resolve, reject) => this.houseService.getAll(id).subscribe(h => {
-                if (h.length > 0) {
-                    resolve(h);
-                }
-            }, e => reject(e)));
-    }
+  getHouses(id: string) {
+    const houses = [];
+    return new Promise<any>((resolve, reject) => this.houseService.getAll(id).subscribe(h => {
+      if (h.length > 0) {
+        resolve(h);
+      }
+    }, e => reject(e)));
+  }
 }

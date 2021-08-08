@@ -1,12 +1,12 @@
-import { NgModule } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
+import {NgModule} from '@angular/core';
+import {CommonModule} from '@angular/common';
+import {FormsModule} from '@angular/forms';
 
-import { IonicModule } from '@ionic/angular';
+import {IonicModule} from '@ionic/angular';
 
-import { BasePageRoutingModule } from './base-routing.module';
+import {BasePageRoutingModule} from './base-routing.module';
 
-import { BasePage } from './base.page';
+import {BasePage} from './base.page';
 
 @NgModule({
   imports: [
@@ -17,4 +17,5 @@ import { BasePage } from './base.page';
   ],
   declarations: [BasePage]
 })
-export class BasePageModule {}
+export class BasePageModule {
+}

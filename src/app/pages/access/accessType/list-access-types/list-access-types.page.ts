@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {BasePage} from '../../../base/base.page';
 import {LoadingController, ToastController} from '@ionic/angular';
 import {StorageService} from '../../../../sharedServices/storage.service';
@@ -15,10 +15,10 @@ export class ListAccessTypesPage extends BasePage implements OnInit {
   public types = [];
 
   constructor(
-      private loadingController: LoadingController,
-      private typeService: AccessTypeService,
-      protected toastController: ToastController,
-      protected storageService: StorageService,
+    private loadingController: LoadingController,
+    private typeService: AccessTypeService,
+    protected toastController: ToastController,
+    protected storageService: StorageService,
   ) {
     super(storageService, toastController);
   }

@@ -25,8 +25,7 @@ export class SecurityService {
 
     getAll(colonyId: string) {
         return this.obj = this.getCollection(colonyId).snapshotChanges().pipe(map(
-            actions => {
-                return actions.map(
+            actions => actions.map(
                     a => {
 
                         const data = a.payload.doc.data();
@@ -35,8 +34,7 @@ export class SecurityService {
 
                         return {id, ...data};
                     }
-                );
-            }
+                )
             )
         );
     }

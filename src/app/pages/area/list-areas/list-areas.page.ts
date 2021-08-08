@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {Area} from '../../../models/area';
 import {BasePage} from '../../base/base.page';
 import {LoadingController, ToastController} from '@ionic/angular';
@@ -16,10 +16,10 @@ export class ListAreasPage extends BasePage implements OnInit {
   areas: Area[];
 
   constructor(
-      private loadingController: LoadingController,
-      private areaService: AreaService,
-      protected toastController: ToastController,
-      protected storageService: StorageService,
+    private loadingController: LoadingController,
+    private areaService: AreaService,
+    protected toastController: ToastController,
+    protected storageService: StorageService,
   ) {
     super(storageService, toastController);
   }

@@ -1,7 +1,7 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
-import { IonicModule } from '@ionic/angular';
+import {async, ComponentFixture, TestBed} from '@angular/core/testing';
+import {IonicModule} from '@ionic/angular';
 
-import { ProcessAccessPage } from './process-access.page';
+import {ProcessAccessPage} from './process-access.page';
 
 describe('ProcessAccessPage', () => {
   let component: ProcessAccessPage;
@@ -9,7 +9,7 @@ describe('ProcessAccessPage', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ ProcessAccessPage ],
+      declarations: [ProcessAccessPage],
       imports: [IonicModule.forRoot()]
     }).compileComponents();
 

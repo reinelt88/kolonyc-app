@@ -1,12 +1,12 @@
-import { NgModule } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import {NgModule} from '@angular/core';
+import {CommonModule} from '@angular/common';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 
-import { IonicModule } from '@ionic/angular';
+import {IonicModule} from '@ionic/angular';
 
-import { ColonyDetailsPageRoutingModule } from './colony-details-routing.module';
+import {ColonyDetailsPageRoutingModule} from './colony-details-routing.module';
 
-import { ColonyDetailsPage } from './colony-details.page';
+import {ColonyDetailsPage} from './colony-details.page';
 
 @NgModule({
   imports: [
@@ -18,4 +18,5 @@ import { ColonyDetailsPage } from './colony-details.page';
   ],
   declarations: [ColonyDetailsPage]
 })
-export class ColonyDetailsPageModule {}
+export class ColonyDetailsPageModule {
+}

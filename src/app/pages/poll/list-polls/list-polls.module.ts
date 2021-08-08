@@ -1,12 +1,12 @@
-import { NgModule } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
+import {NgModule} from '@angular/core';
+import {CommonModule} from '@angular/common';
+import {FormsModule} from '@angular/forms';
 
-import { IonicModule } from '@ionic/angular';
+import {IonicModule} from '@ionic/angular';
 
-import { ListPollsPageRoutingModule } from './list-polls-routing.module';
+import {ListPollsPageRoutingModule} from './list-polls-routing.module';
 
-import { ListPollsPage } from './list-polls.page';
+import {ListPollsPage} from './list-polls.page';
 
 @NgModule({
   imports: [
@@ -17,4 +17,5 @@ import { ListPollsPage } from './list-polls.page';
   ],
   declarations: [ListPollsPage]
 })
-export class ListPollsPageModule {}
+export class ListPollsPageModule {
+}

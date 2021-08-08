@@ -1,12 +1,12 @@
-import { NgModule } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
+import {NgModule} from '@angular/core';
+import {CommonModule} from '@angular/common';
+import {FormsModule} from '@angular/forms';
 
-import { IonicModule } from '@ionic/angular';
+import {IonicModule} from '@ionic/angular';
 
-import { PersonDetailsHelpPageRoutingModule } from './person-details-help-routing.module';
+import {PersonDetailsHelpPageRoutingModule} from './person-details-help-routing.module';
 
-import { PersonDetailsHelpPage } from './person-details-help.page';
+import {PersonDetailsHelpPage} from './person-details-help.page';
 
 @NgModule({
   imports: [
@@ -17,4 +17,5 @@ import { PersonDetailsHelpPage } from './person-details-help.page';
   ],
   declarations: []
 })
-export class PersonDetailsHelpPageModule {}
+export class PersonDetailsHelpPageModule {
+}

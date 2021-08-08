@@ -17,306 +17,308 @@ import {HouseService} from '../../resident/house.service';
 import {House} from '../../../models/house';
 
 @Component({
-    selector: 'app-user-details',
-    templateUrl: './user-details.page.html',
-    styleUrls: ['./user-details.page.scss'],
+  selector: 'app-user-details',
+  templateUrl: './user-details.page.html',
+  styleUrls: ['./user-details.page.scss'],
 })
 export class UserDetailsPage extends BasePage implements OnInit {
 
-    colonies: Colony[];
-    public roles = ['SUPERADMIN', 'ADMIN', 'RESIDENT', 'SECURITY'];
-    public userId = null;
-    public form: FormGroup;
-    public attempt = false;
-    public defaultErrorMessage = 'Por favor ingrese un valor válido';
-    public colonyType = '';
-    public colonyId = null;
-    public houses: House[];
-    public placeType = null;
-    public numberType = null;
-    public userRole = null;
-    public docId = null;
+  colonies: Colony[];
+  public roles = ['SUPERADMIN', 'ADMIN', 'RESIDENT', 'SECURITY'];
+  public userId = null;
+  public form: FormGroup;
+  public attempt = false;
+  public defaultErrorMessage = 'Por favor ingrese un valor válido';
+  public colonyType = '';
+  public colonyId = null;
+  public houses: House[];
+  public placeType = null;
+  public numberType = null;
+  public userRole = null;
+  public docId = null;
 
-    constructor(
-        private loadingController: LoadingController,
-        private authService: AuthService,
-        private route: ActivatedRoute,
-        private nav: NavController,
-        private userService: UserService,
-        private router: Router,
-        protected storageService: StorageService,
-        private colonyService: ColonyService,
-        protected toastController: ToastController,
-        protected alertController: AlertController,
-        private formBuilder: FormBuilder,
-        private adminService: AdminService,
-        private securityService: SecurityService,
-        private houseService: HouseService,
-    ) {
-        super(storageService, toastController);
-        this.form = formBuilder.group(
-            {
-                email: ['', Validators.compose([Validators.required, Validators.email])],
-                phone: ['', Validators.compose([Validators.required, Validators.pattern('[0-9]{10}')])],
-                displayName: ['', Validators.compose([Validators.required, Validators.min(5)])],
-                colonyId: ['', Validators.required],
-                role: ['', Validators.required],
-                profilePicture: this.user.profilePicture,
-                houseId: [''],
-                uid: [''],
-                token: [''],
-                createdAt: [this.user.createdAt]
-            });
+  constructor(
+    private loadingController: LoadingController,
+    private authService: AuthService,
+    private route: ActivatedRoute,
+    private nav: NavController,
+    private userService: UserService,
+    private router: Router,
+    protected storageService: StorageService,
+    private colonyService: ColonyService,
+    protected toastController: ToastController,
+    protected alertController: AlertController,
+    private formBuilder: FormBuilder,
+    private adminService: AdminService,
+    private securityService: SecurityService,
+    private houseService: HouseService,
+  ) {
+    super(storageService, toastController);
+    this.form = formBuilder.group(
+      {
+        email: ['', Validators.compose([Validators.required, Validators.email])],
+        phone: ['', Validators.compose([Validators.required, Validators.pattern('[0-9]{10}')])],
+        displayName: ['', Validators.compose([Validators.required, Validators.min(5)])],
+        colonyId: ['', Validators.required],
+        role: ['', Validators.required],
+        profilePicture: this.user.profilePicture,
+        houseId: [''],
+        uid: [''],
+        token: [''],
+        createdAt: [this.user.createdAt]
+      });
 
-    }
+  }
 
-    ngOnInit() {
-        this.userId = this.route.snapshot.params.id;
+  ngOnInit() {
+    this.userId = this.route.snapshot.params.id;
 
-        timer(1000).subscribe(() => {
+    timer(1000).subscribe(() => {
 
-            if (this.userId) {
-                this.loadUser();
-            }
+      if (this.userId) {
+        this.loadUser();
+      }
 
-            this.loadColonies();
+      this.loadColonies();
 
+    });
+  }
+
+  async loadColonies() {
+    this.colonyService.getAll().subscribe(res => {
+      this.colonies = res;
+    });
+  }
+
+  async loadUser() {
+    const loading = await this.loadingController.create({
+      spinner: null,
+      cssClass: 'custom-loading',
+      showBackdrop: false,
+      translucent: true,
+    });
+
+    await loading.present();
+
+    this.userService.getByUid(this.userId).then(res => {
+      this.docId = res.id;
+      this.userRole = res.role;
+      this.form.get('uid').setValue(res.uid);
+      this.form.get('email').setValue(res.email);
+      this.form.get('phone').setValue(res.phone);
+      this.form.get('colonyId').setValue(res.colonyId);
+      this.form.get('role').setValue(res.role);
+      this.form.get('displayName').setValue(res.displayName);
+      this.form.get('profilePicture').setValue(res.profilePicture);
+
+      if (res.role === 'RESIDENT' || res.role === 'ADMIN') {
+        this.form.get('houseId').setValue(res.houseId);
+        this.houseService.get(res.houseId, res.colonyId).subscribe(house => {
+          this.house = house;
+          this.house.id = res.houseId;
+
+          console.log(this.house);
         });
-    }
+      }
 
-    async loadColonies() {
-        this.colonyService.getAll().subscribe(res => {
-            this.colonies = res;
+      loading.dismiss();
+    });
+  }
+
+  async saveUser() {
+
+    const loading = await this.loadingController.create({
+      spinner: null,
+      cssClass: 'custom-loading',
+      showBackdrop: false,
+      translucent: true,
+    });
+
+    await loading.present();
+
+    if (this.form.valid) {
+      if (this.userId) {
+
+        // Update
+        this.user.email = this.form.value.email;
+        this.user.phone = this.form.value.phone;
+        this.user.role = this.form.value.role;
+        this.user.displayName = this.form.value.displayName;
+        this.user.colonyId = this.form.value.colonyId;
+
+        this.userService.update(this.form.value, this.docId).then(() => {
+          this.attempt = false;
+          this.nav.navigateForward('/list-users');
         });
-    }
+      } else {
 
-    async loadUser() {
-        const loading = await this.loadingController.create({
-            spinner: null,
-            cssClass: 'custom-loading',
-            showBackdrop: false,
-            translucent: true,
-        });
+        this.authService.afAuth.createUserWithEmailAndPassword(this.form.value.email, 'user123')
+          .then((res) => {
+            this.authService.afAuth.currentUser
+              .then(u => u.sendEmailVerification())
+              .then(async () => {
+                // create new
+                this.form.get('uid').setValue(await this.authService.afAuth.currentUser.then(u => u.uid));
+                this.userService.add(this.form.value).then((user) => {
+                  if (this.form.value.role === 'ADMIN') {
+                    const adm: Admin = {
+                      userId: user.id,
+                      createdAt: this.user.createdAt
+                    };
 
-        await loading.present();
+                    this.adminService.add(adm, this.form.value.colonyId).then(() => {
+                    });
+                  } else if (this.form.value.role === 'SECURITY') {
+                    const secur: Security = {
+                      userId: user.id,
+                      createdAt: this.user.createdAt
+                    };
 
-        this.userService.getByUid(this.userId).then(res => {
-            this.docId = res.id;
-            this.userRole = res.role;
-            this.form.get('uid').setValue(res.uid);
-            this.form.get('email').setValue(res.email);
-            this.form.get('phone').setValue(res.phone);
-            this.form.get('colonyId').setValue(res.colonyId);
-            this.form.get('role').setValue(res.role);
-            this.form.get('displayName').setValue(res.displayName);
-            this.form.get('profilePicture').setValue(res.profilePicture);
-
-            if (res.role === 'RESIDENT' || res.role === 'ADMIN') {
-                this.form.get('houseId').setValue(res.houseId);
-                this.houseService.get(res.houseId, res.colonyId).subscribe(house => {
-                    this.house = house;
-                    this.house.id = res.houseId;
-
-                    console.log(this.house);
+                    this.securityService.add(secur, this.form.value.colonyId).then(() => {
+                    });
+                  }
+                  this.attempt = false;
+                  this.nav.navigateForward('/list-users');
                 });
-            }
-
-            loading.dismiss();
+              });
+          }).catch((error) => {
+          console.log('Error registering user', error.message);
+          this.toast(2000, 'Error al registrar el usuario', 'danger');
         });
+      }
+    } else {
+      this.attempt = true;
     }
 
-    async saveUser() {
+    loading.dismiss();
+  }
 
-        const loading = await this.loadingController.create({
-            spinner: null,
-            cssClass: 'custom-loading',
-            showBackdrop: false,
-            translucent: true,
-        });
-
-        await loading.present();
-
-        if (this.form.valid) {
-            if (this.userId) {
-
-                // Update
-                this.user.email = this.form.value.email;
-                this.user.phone = this.form.value.phone;
-                this.user.role = this.form.value.role;
-                this.user.displayName = this.form.value.displayName;
-                this.user.colonyId = this.form.value.colonyId;
-
-                this.userService.update(this.form.value, this.docId).then(() => {
-                    this.attempt = false;
-                    this.nav.navigateForward('/list-users');
-                });
-            } else {
-
-                this.authService.afAuth.createUserWithEmailAndPassword(this.form.value.email, 'user123')
-                    .then((res) => {
-                      this.authService.afAuth.currentUser
-                        .then(u => u.sendEmailVerification())
-                        .then(async () => {
-                          // create new
-                          this.form.get('uid').setValue(await this.authService.afAuth.currentUser.then(u => u.uid));
-                          this.userService.add(this.form.value).then((user) => {
-                              if (this.form.value.role === 'ADMIN') {
-                                  const adm: Admin = {
-                                      userId: user.id,
-                                      createdAt: this.user.createdAt
-                                  };
-
-                                  this.adminService.add(adm, this.form.value.colonyId).then(() => { });
-                              } else if (this.form.value.role === 'SECURITY') {
-                                  const secur: Security = {
-                                      userId: user.id,
-                                      createdAt: this.user.createdAt
-                                  };
-
-                                  this.securityService.add(secur, this.form.value.colonyId).then(() => { });
-                              }
-                              this.attempt = false;
-                              this.nav.navigateForward('/list-users');
-                          });
-                        });
-                    }).catch((error) => {
-                    console.log('Error registering user', error.message);
-                    this.toast(2000, 'Error al registrar el usuario', 'danger');
-                });
-            }
-        } else {
-            this.attempt = true;
+  async confirmMessage() {
+    const alert = await this.alertController.create({
+      header: 'Confirmación',
+      message: 'Estas seguro que quieres eliminar al usuario?',
+      buttons: [
+        {
+          text: 'Cancelar',
+          role: 'cancel',
+          cssClass: 'secondary',
+          handler: (blah) => {
+            console.log('Confirm Cancel: blah');
+          }
+        }, {
+          text: 'Ok',
+          handler: () => {
+            console.log('Confirm Okay');
+            this.removeUser();
+          }
         }
+      ]
+    });
 
-        loading.dismiss();
-    }
+    await alert.present();
+  }
 
-    async confirmMessage() {
-        const alert = await this.alertController.create({
-            header: 'Confirmación',
-            message: 'Estas seguro que quieres eliminar al usuario?',
-            buttons: [
-                {
-                    text: 'Cancelar',
-                    role: 'cancel',
-                    cssClass: 'secondary',
-                    handler: (blah) => {
-                        console.log('Confirm Cancel: blah');
-                    }
-                }, {
-                    text: 'Ok',
-                    handler: () => {
-                        console.log('Confirm Okay');
-                        this.removeUser();
-                    }
-                }
-            ]
-        });
+  removeUser() {
+    this.userService.remove(this.userId);
+    this.nav.navigateForward('/list-users');
+  }
 
-        await alert.present();
-    }
+  colonyChange($event) {
+    this.colonyId = $event.detail.value;
 
-    removeUser() {
-        this.userService.remove(this.userId);
-        this.nav.navigateForward('/list-users');
-    }
+    this.colonyService.get($event.detail.value).subscribe(col => {
+      this.placeType = (col.type === 'vertical') ? 'Edificio' : 'Calle';
+      this.numberType = (col.type === 'vertical') ? 'Departamento' : 'Número';
+    });
 
-    colonyChange($event) {
-        this.colonyId = $event.detail.value;
+    this.houseService.getAll($event.detail.value).subscribe(houses => {
+      console.log(houses);
+      this.houses = houses;
+    });
+  }
 
-        this.colonyService.get($event.detail.value).subscribe(col => {
-            this.placeType = (col.type === 'vertical') ? 'Edificio' : 'Calle';
-            this.numberType = (col.type === 'vertical') ? 'Departamento' : 'Número';
-        });
-
-        this.houseService.getAll($event.detail.value).subscribe(houses => {
-            console.log(houses);
-            this.houses = houses;
-        });
-    }
-
-    async addHouseAlert() {
-        const alert = await this.alertController.create({
-            header: 'Agregar ubicación',
-            inputs: [
-                {
-                    name: 'place',
-                    type: 'text',
-                    placeholder: this.placeType,
-                },
-                {
-                    name: 'number',
-                    type: 'text',
-                    placeholder: this.numberType,
-                },
-            ],
-            buttons: [
-                {
-                    text: 'Cancelar',
-                    role: 'cancel',
-                    cssClass: 'secondary',
-                    handler: () => {
-                        console.log('Confirm Cancel');
-                    }
-                }, {
-                    text: 'Ok',
-                    handler: (data) => {
-                        console.log('Confirm Ok');
-                        this.addHouse(data);
-                    }
-                }
-            ]
-        });
-
-        await alert.present();
-    }
-
-    addHouse(data) {
-        if (data.name !== '') {
-            const h: House = {
-                number: data.number,
-                place: data.place,
-                createdAt: this.house.createdAt
-            };
-            this.houseService.add(h, this.form.value.colonyId).then(() => true);
+  async addHouseAlert() {
+    const alert = await this.alertController.create({
+      header: 'Agregar ubicación',
+      inputs: [
+        {
+          name: 'place',
+          type: 'text',
+          placeholder: this.placeType,
+        },
+        {
+          name: 'number',
+          type: 'text',
+          placeholder: this.numberType,
+        },
+      ],
+      buttons: [
+        {
+          text: 'Cancelar',
+          role: 'cancel',
+          cssClass: 'secondary',
+          handler: () => {
+            console.log('Confirm Cancel');
+          }
+        }, {
+          text: 'Ok',
+          handler: (data) => {
+            console.log('Confirm Ok');
+            this.addHouse(data);
+          }
         }
-    }
+      ]
+    });
 
-    async deleteHouseAlert(id: string) {
-        const alert = await this.alertController.create({
-            header: 'Confirmación',
-            message: 'Estas seguro que deseas eliminar el departamento seleccionado?',
-            buttons: [
-                {
-                    text: 'Cancelar',
-                    role: 'cancel',
-                    cssClass: 'secondary',
-                    handler: (blah) => {
-                        console.log('Confirm Cancel: blah');
-                    }
-                }, {
-                    text: 'Ok',
-                    handler: () => {
-                        console.log('Confirm Okay');
-                        this.deleteHouse(id);
-                    }
-                }
-            ]
-        });
+    await alert.present();
+  }
 
-        await alert.present();
+  addHouse(data) {
+    if (data.name !== '') {
+      const h: House = {
+        number: data.number,
+        place: data.place,
+        createdAt: this.house.createdAt
+      };
+      this.houseService.add(h, this.form.value.colonyId).then(() => true);
     }
+  }
 
-    deleteHouse(id: string) {
-        const colonyId = this.form.value.colonyId;
-        this.userService.getByColonyAndHouse(colonyId, id).then(res => {
-           if (res.docs.length > 0) {
-               this.toast(4000, 'No se puede eliminar la ubicación porque tiene residentes asociados', 'danger');
-           } else {
-               this.form.get('houseId').setValue('');
-               this.houseService.remove(id, colonyId);
-               this.toast(2000, 'Ubicación eliminada correctamente', 'success');
-           }
-        });
-    }
+  async deleteHouseAlert(id: string) {
+    const alert = await this.alertController.create({
+      header: 'Confirmación',
+      message: 'Estas seguro que deseas eliminar el departamento seleccionado?',
+      buttons: [
+        {
+          text: 'Cancelar',
+          role: 'cancel',
+          cssClass: 'secondary',
+          handler: (blah) => {
+            console.log('Confirm Cancel: blah');
+          }
+        }, {
+          text: 'Ok',
+          handler: () => {
+            console.log('Confirm Okay');
+            this.deleteHouse(id);
+          }
+        }
+      ]
+    });
+
+    await alert.present();
+  }
+
+  deleteHouse(id: string) {
+    const colonyId = this.form.value.colonyId;
+    this.userService.getByColonyAndHouse(colonyId, id).then(res => {
+      if (res.docs.length > 0) {
+        this.toast(4000, 'No se puede eliminar la ubicación porque tiene residentes asociados', 'danger');
+      } else {
+        this.form.get('houseId').setValue('');
+        this.houseService.remove(id, colonyId);
+        this.toast(2000, 'Ubicación eliminada correctamente', 'success');
+      }
+    });
+  }
 }

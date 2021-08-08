@@ -1,12 +1,12 @@
-import { NgModule } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import {NgModule} from '@angular/core';
+import {CommonModule} from '@angular/common';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 
-import { IonicModule } from '@ionic/angular';
+import {IonicModule} from '@ionic/angular';
 
-import { AreaDetailsPageRoutingModule } from './area-details-routing.module';
+import {AreaDetailsPageRoutingModule} from './area-details-routing.module';
 
-import { AreaDetailsPage } from './area-details.page';
+import {AreaDetailsPage} from './area-details.page';
 
 @NgModule({
   imports: [
@@ -18,4 +18,5 @@ import { AreaDetailsPage } from './area-details.page';
   ],
   declarations: [AreaDetailsPage]
 })
-export class AreaDetailsPageModule {}
+export class AreaDetailsPageModule {
+}

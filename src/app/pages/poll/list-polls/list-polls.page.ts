@@ -6,46 +6,46 @@ import {PollService} from '../poll.service';
 import {timer} from 'rxjs';
 
 @Component({
-    selector: 'app-list-polls',
-    templateUrl: './list-polls.page.html',
-    styleUrls: ['./list-polls.page.scss'],
+  selector: 'app-list-polls',
+  templateUrl: './list-polls.page.html',
+  styleUrls: ['./list-polls.page.scss'],
 })
 export class ListPollsPage extends BasePage implements OnInit {
 
-    public polls = [];
+  public polls = [];
 
-    constructor(
-        private loadingController: LoadingController,
-        private pollService: PollService,
-        protected toastController: ToastController,
-        protected storageService: StorageService,
-    ) {
-        super(storageService, toastController);
-    }
+  constructor(
+    private loadingController: LoadingController,
+    private pollService: PollService,
+    protected toastController: ToastController,
+    protected storageService: StorageService,
+  ) {
+    super(storageService, toastController);
+  }
 
-    ngOnInit() {
-        timer(1000).subscribe(() => {
-            this.user = this.savedUser;
-            this.loadPolls();
-        });
-    }
+  ngOnInit() {
+    timer(1000).subscribe(() => {
+      this.user = this.savedUser;
+      this.loadPolls();
+    });
+  }
 
-    async loadPolls() {
+  async loadPolls() {
 
-        const loading = await this.loadingController.create({
-            spinner: null,
-            cssClass: 'custom-loading',
-            showBackdrop: false,
-            translucent: true,
-        });
+    const loading = await this.loadingController.create({
+      spinner: null,
+      cssClass: 'custom-loading',
+      showBackdrop: false,
+      translucent: true,
+    });
 
-        await loading.present();
+    await loading.present();
 
-        this.pollService.getAll(this.user.colonyId).subscribe(res => {
-            this.polls = res;
-        });
+    this.pollService.getAll(this.user.colonyId).subscribe(res => {
+      this.polls = res;
+    });
 
-        loading.dismiss();
-    }
+    loading.dismiss();
+  }
 
 }

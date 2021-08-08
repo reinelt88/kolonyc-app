@@ -7,121 +7,122 @@ import {AngularFirestore, AngularFirestoreCollection} from '@angular/fire/firest
 import {Events} from '../../sharedServices/events.service';
 
 @Injectable({
-    providedIn: 'root'
+  providedIn: 'root'
 })
 export class UserService {
 
-    private collection: AngularFirestoreCollection<User>;
-    private obj: Observable<User[]>;
+  private collection: AngularFirestoreCollection<User>;
+  private obj: Observable<User[]>;
 
-    constructor(
-        private db: AngularFirestore,
-        private events: Events,
-        private storageService: StorageService
-    ) {
-        this.collection = db.collection<User>('user', ref => ref.orderBy('createdAt', 'desc'));
-    }
+  constructor(
+    private db: AngularFirestore,
+    private events: Events,
+    private storageService: StorageService
+  ) {
+    this.collection = db.collection<User>('user', ref => ref.orderBy('createdAt', 'desc'));
+  }
 
-    getAll() {
+  getAll() {
 
-        return this.obj = this.collection.snapshotChanges().pipe(map(
-            actions => actions.map(
-                    a => {
+    return this.obj = this.collection.snapshotChanges().pipe(map(
+        actions => actions.map(
+          a => {
 
-                        const data = a.payload.doc.data();
+            const data = a.payload.doc.data();
 
-                        const id = a.payload.doc.id;
+            const id = a.payload.doc.id;
 
-                        return {id, ...data};
-                    }
-                )
-            )
-        );
-    }
+            return {id, ...data};
+          }
+        )
+      )
+    );
+  }
 
-    get(id: string) {
-        return this.collection.doc<User>(id).valueChanges();
-    }
+  get(id: string) {
+    return this.collection.doc<User>(id).valueChanges();
+  }
 
-    getSnapshot(id: string) {
-        return new Promise<any>((resolve, reject) => this.collection.doc<User>(id).get().subscribe(u => {
-                const data = u.data();
-                data.id = u.id;
-                resolve(data);
-            }, error => reject(error)));
-    }
+  getSnapshot(id: string) {
+    return new Promise<any>((resolve, reject) => this.collection.doc<User>(id).get().subscribe(u => {
+      const data = u.data();
+      data.id = u.id;
+      resolve(data);
+    }, error => reject(error)));
+  }
 
-    getByUid(id: string) {
-        return new Promise<any>((resolve, reject) => this.db.collection('user').ref.where('uid', '==', id).get().then(res => {
-                res.docs.forEach(d => {
-                    const model: any = d.data();
-                    model.id = d.id;
-                    resolve(model);
-                });
-            }));
-    }
+  getByUid(id: string) {
+    return new Promise<any>((resolve, reject) => this.db.collection('user').ref.where('uid', '==', id).get().then(res => {
+      res.docs.forEach(d => {
+        const model: any = d.data();
+        model.id = d.id;
+        resolve(model);
+      });
+    }));
+  }
 
-    getByColonyAndRole(colonyId: string, role: string) {
-        return this.db.collection<User>('user')
-            .ref.where('role', '==', role)
-            .where('colonyId', '==', colonyId)
-            .get();
-    }
+  getByColonyAndRole(colonyId: string, role: string) {
+    return this.db.collection<User>('user')
+      .ref.where('role', '==', role)
+      .where('colonyId', '==', colonyId)
+      .get();
+  }
 
-    getByColonyAndRoleAndHouse(colonyId: string, role: string, houseId: string) {
-        return this.db.collection<User>('user')
-            .ref.where('role', '==', role)
-            .where('colonyId', '==', colonyId)
-            .where('houseId', '==', houseId)
-            .get();
-    }
+  getByColonyAndRoleAndHouse(colonyId: string, role: string, houseId: string) {
+    return this.db.collection<User>('user')
+      .ref.where('role', '==', role)
+      .where('colonyId', '==', colonyId)
+      .where('houseId', '==', houseId)
+      .get();
+  }
 
-    getByColonyAndHouse(colonyId: string, houseId: string) {
-        return this.db.collection<User>('user')
-            .ref.where('colonyId', '==', colonyId)
-            .where('houseId', '==', houseId)
-            .get();    }
+  getByColonyAndHouse(colonyId: string, houseId: string) {
+    return this.db.collection<User>('user')
+      .ref.where('colonyId', '==', colonyId)
+      .where('houseId', '==', houseId)
+      .get();
+  }
 
-    async getByResidentAndAdminByColony(colonyId: string) {
-        const residents = this.db.collection<User>('user')
-            .ref.where('role', '==', 'RESIDENT')
-            .where('colonyId', '==', colonyId)
-            .get();
-        const admins = this.db.collection<User>('user')
-            .ref.where('role', '==', 'ADMIN')
-            .where('colonyId', '==', colonyId)
-            .get();
+  async getByResidentAndAdminByColony(colonyId: string) {
+    const residents = this.db.collection<User>('user')
+      .ref.where('role', '==', 'RESIDENT')
+      .where('colonyId', '==', colonyId)
+      .get();
+    const admins = this.db.collection<User>('user')
+      .ref.where('role', '==', 'ADMIN')
+      .where('colonyId', '==', colonyId)
+      .get();
 
-        const [residentsQuerySnapshot, adminsQuerySnapshot] = await Promise.all([
-            residents,
-            admins
-        ]);
+    const [residentsQuerySnapshot, adminsQuerySnapshot] = await Promise.all([
+      residents,
+      admins
+    ]);
 
-        const residentsArray = residentsQuerySnapshot.docs;
-        const adminsArray = adminsQuerySnapshot.docs;
+    const residentsArray = residentsQuerySnapshot.docs;
+    const adminsArray = adminsQuerySnapshot.docs;
 
-        return residentsArray.concat(adminsArray);
-    }
+    return residentsArray.concat(adminsArray);
+  }
 
-    getByEmailAndColony(colonyId: string, email: string) {
-        return this.db.collection<User>('user').ref.where('email', '==', email).where('colonyId', '==', colonyId).get();
-    }
+  getByEmailAndColony(colonyId: string, email: string) {
+    return this.db.collection<User>('user').ref.where('email', '==', email).where('colonyId', '==', colonyId).get();
+  }
 
-    update(obj: User, id: string) {
-        return this.collection.doc(id).update(obj);
-    }
+  update(obj: User, id: string) {
+    return this.collection.doc(id).update(obj);
+  }
 
-    add(obj: User) {
-        return this.collection.add(obj);
-    }
+  add(obj: User) {
+    return this.collection.add(obj);
+  }
 
-    remove(id: string) {
-        return this.collection.doc(id).delete();
-    }
+  remove(id: string) {
+    return this.collection.doc(id).delete();
+  }
 
-    updateStorageAndEvents(user: User) {
-        this.storageService.setObject('user', user);
-        this.events.publish('userChange', user);
-    }
+  updateStorageAndEvents(user: User) {
+    this.storageService.setObject('user', user);
+    this.events.publish('userChange', user);
+  }
 
 }

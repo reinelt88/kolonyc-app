@@ -8,7 +8,7 @@
   ion-card {
     position: relative;
     text-align: center;
-    max-height: 20vh!important;
+    max-height: 20vh !important;
   }
 
   .card-title {
@@ -30,7 +30,7 @@
 
 }
 
-ion-content{
+ion-content {
   --background: url('../../../assets/logo-opacity.png') no-repeat bottom center;
 }
 
@@ -46,5 +46,5 @@ ion-button {
     }
   }
 
-  --box-shadow:none;
+  --box-shadow: none;
 }

@@ -4,7 +4,8 @@
       <ion-menu-button></ion-menu-button>
     </ion-buttons>
     <ion-title>Listado de accesos</ion-title>
-    <ion-buttons *ngIf="user.role === 'ADMIN'" slot="end" style="zoom:2.0; padding-right: 4px;" routerLink="/list-access-types">
+    <ion-buttons *ngIf="user.role === 'ADMIN'" slot="end" style="zoom:2.0; padding-right: 4px;"
+                 routerLink="/list-access-types">
       <ion-icon name="settings"></ion-icon>
     </ion-buttons>
   </ion-toolbar>
@@ -14,30 +15,35 @@
 
   <ion-item *ngIf="savedUser.role==='SUPERADMIN'">
     <ion-label>Colonias</ion-label>
-    <ion-select value="colonias" okText="Ok" cancelText="Cancelar" [(ngModel)]="colonyId" (ionChange)="colonyChange($event)">
+    <ion-select value="colonias" okText="Ok" cancelText="Cancelar" [(ngModel)]="colonyId"
+                (ionChange)="colonyChange($event)">
       <ion-select-option *ngFor="let colony of colonies" value="{{colony.id}}">{{colony.name}}</ion-select-option>
     </ion-select>
   </ion-item>
 
-  <ion-item  *ngIf="savedUser.role==='RESIDENT' || savedUser.role==='ADMIN'">
+  <ion-item *ngIf="savedUser.role==='RESIDENT' || savedUser.role==='ADMIN'">
     <ion-label>Filtrar por estado</ion-label>
-    <ion-select value="Estados" okText="Ok" cancelText="Cancelar" [(ngModel)]="selectedStatus" (ionChange)="statusChange($event)">
-      <ion-select-option *ngFor="let status of accessStatus" value="{{status}}">{{status | titlecase}}</ion-select-option>
+    <ion-select value="Estados" okText="Ok" cancelText="Cancelar" [(ngModel)]="selectedStatus"
+                (ionChange)="statusChange($event)">
+      <ion-select-option *ngFor="let status of accessStatus"
+                         value="{{status}}">{{status | titlecase}}</ion-select-option>
     </ion-select>
   </ion-item>
 
-  <ion-searchbar [(ngModel)]="searchTerm" (ionInput)="search($event)" (keydown.enter)="hideKeyboard()" placeholder="Buscar"></ion-searchbar>
+  <ion-searchbar [(ngModel)]="searchTerm" (ionInput)="search($event)" (keydown.enter)="hideKeyboard()"
+                 placeholder="Buscar"></ion-searchbar>
 
   <ion-list>
     <ion-item-sliding *ngFor="let access of accesses">
       <ion-item detail="true" lines="inset" button [routerLink]="['/access-details',colonyId, access.id]">
         <ion-label>
-          <ion-badge [color]="access.status == 'pendiente' ? 'warning' : access.status == 'completado' ? 'success' : 'tertiary'">{{access.status}}</ion-badge>
+          <ion-badge
+            [color]="access.status == 'pendiente' ? 'warning' : access.status == 'completado' ? 'success' : 'tertiary'">{{access.status}}</ion-badge>
           <p *ngIf="savedUser.role !== 'RESIDENT'"><strong>Ubicación</strong> - {{ access.house}}</p>
           <p><strong>Motivo:</strong> {{access.accessType}}</p>
           <p><strong>Inicio:</strong> {{access.startDate | date:'dd/MM/yyyy h:mm:ss a'}}</p>
           <p><strong>Fin:</strong> {{access.endDate | date:'dd/MM/yyyy h:mm:ss a'}}</p>
-<!--          <p *ngIf="access.createdBy == 'residente'"><strong>Creado por:</strong> {{access.resident}}</p>-->
+          <!--          <p *ngIf="access.createdBy == 'residente'"><strong>Creado por:</strong> {{access.resident}}</p>-->
           <p *ngIf="access.createdBy != 'residente'"><strong>Creado por:</strong> {{access.createdBy}}</p>
           <p *ngIf="access.persons"><strong>Personas:</strong> {{access.persons}}</p>
         </ion-label>

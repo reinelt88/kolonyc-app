@@ -18,7 +18,8 @@
           <small>{{ p.description }}</small>
           <p>
             <ion-badge [color]="p.status == 'En curso' ? 'success' : 'danger'">{{p.status}}</ion-badge>
-            <span *ngIf="p.status == 'En curso'"> Finaliza el: {{p.endDateFormatted | date:'dd/MM/yyyy h:mm:ss a'}}</span>
+            <span
+              *ngIf="p.status == 'En curso'"> Finaliza el: {{p.endDateFormatted | date:'dd/MM/yyyy h:mm:ss a'}}</span>
           </p>
         </ion-label>
       </ion-item>

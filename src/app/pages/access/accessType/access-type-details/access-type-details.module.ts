@@ -1,12 +1,12 @@
-import { NgModule } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import {NgModule} from '@angular/core';
+import {CommonModule} from '@angular/common';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 
-import { IonicModule } from '@ionic/angular';
+import {IonicModule} from '@ionic/angular';
 
-import { AccessTypeDetailsPageRoutingModule } from './access-type-details-routing.module';
+import {AccessTypeDetailsPageRoutingModule} from './access-type-details-routing.module';
 
-import { AccessTypeDetailsPage } from './access-type-details.page';
+import {AccessTypeDetailsPage} from './access-type-details.page';
 
 @NgModule({
   imports: [
@@ -18,4 +18,5 @@ import { AccessTypeDetailsPage } from './access-type-details.page';
   ],
   declarations: [AccessTypeDetailsPage]
 })
-export class AccessTypeDetailsPageModule {}
+export class AccessTypeDetailsPageModule {
+}
