@@ -19,7 +19,7 @@
         <ion-item *ngIf="savedUser.role !== 'RESIDENT' && accessId==null">
           <ion-label>Ubicaciones</ion-label>
 
-          <ionic-selectable #selectComponent [(ngModel)]="selectedHouse" [items]="locations" canSearch="true"
+          <ionic-selectable #selectComponent [(ngModel)]="selectedHouse" [items]="locations"
                             searchPlaceholder="Buscar..." itemValueField="id" itemTextField="name" headerColor="danger"
                             searchFailText="No se encuentran resultados">
             <ng-template ionicSelectableCloseButtonTemplate>
@@ -125,7 +125,7 @@
             <p *ngIf="person.inDate">Entrada: {{person.inDate.toDate() | date:'dd/MM/yyyy h:mm:ss a'}}</p>
             <p *ngIf="person.outDate">Salida: {{person.outDate.toDate() | date:'dd/MM/yyyy h:mm:ss a'}}</p>
             <ion-badge
-              [color]="person.status == 'pendiente' ? 'warning' : person.status == 'completado' ? 'success' : 'tertiary'">{{person.status}}</ion-badge>
+              [color]="person.status == 'pendiente' ? 'warning' : person.status === 'completado' ? 'success' : 'tertiary'">{{person.status}}</ion-badge>
           </ion-label>
           <ion-icon name="trash" color="danger" slot="end" (click)="deletePersonConfirmMessage(person.id)"></ion-icon>
         </ion-item>
@@ -156,7 +156,13 @@
         <ion-item>
           <ion-label>
             <div class="ion-text-center">
-              <ngx-qrcode qrc-element-type="canvas" [qrc-value]="access.code"></ngx-qrcode>
+<!--              <ngx-qrcode qrc-element-type="canvas" [qrc-value]="access.code"></ngx-qrcode>-->
+<!--              <ngx-qrcode-->
+<!--                elementType="url"-->
+<!--                [value]="access.code"-->
+<!--                cssClass="aclass"-->
+<!--                >-->
+<!--              </ngx-qrcode>-->
             </div>
           </ion-label>
         </ion-item>

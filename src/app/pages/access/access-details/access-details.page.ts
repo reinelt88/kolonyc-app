@@ -182,7 +182,7 @@ export class AccessDetailsPage extends BasePage implements OnInit {
         this.startDate = new Date(res.startDate.seconds * 1000).toISOString();
         this.endDate = new Date(res.endDate.seconds * 1000).toISOString();
 
-        if (res.houseId !== '') {
+        if (res.houseId) {
           this.houseService.get(res.houseId, this.colonyId).subscribe(house => {
             this.house = house;
           });
@@ -273,7 +273,7 @@ export class AccessDetailsPage extends BasePage implements OnInit {
 
   removeAccesss() {
     this.accessService.get(this.accessId, this.colonyId).subscribe(a => {
-      if (a.status === 'en curso' || a.status === 'completado') {
+      if (a && (a.status === 'en curso' || a.status === 'completado')) {
         this.toast(4000, 'El acceso no se puede eliminar estando en curso o completado', 'danger');
       } else {
         this.accessService.remove(this.accessId, this.colonyId);

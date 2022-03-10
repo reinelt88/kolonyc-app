@@ -11,7 +11,6 @@ import {SecurityService} from '../security.service';
 import {User} from '../../../models/user';
 import {Keyboard} from '@ionic-native/keyboard/ngx';
 import * as moment from 'moment';
-import {timer} from "rxjs";
 
 @Component({
     selector: 'app-security-guard-details',

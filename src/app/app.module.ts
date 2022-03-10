@@ -25,6 +25,8 @@ import {SpeechRecognition} from '@ionic-native/speech-recognition/ngx';
 import { IonicStorageModule } from '@ionic/storage-angular';
 import { Drivers } from '@ionic/storage';
 import {BarcodeScanner} from '@ionic-native/barcode-scanner/ngx';
+import {NgxQRCodeModule} from '@techiediaries/ngx-qrcode';
+import {HttpClientModule, HttpClient} from '@angular/common/http';
 
 @NgModule({
   declarations: [AppComponent],
@@ -38,6 +40,8 @@ import {BarcodeScanner} from '@ionic-native/barcode-scanner/ngx';
     AngularFireAuthModule,
     AngularFirestoreModule,
     AngularFireStorageModule,
+    NgxQRCodeModule,
+    HttpClientModule,
     IonicStorageModule.forRoot({
       driverOrder: [Drivers.IndexedDB, Drivers.LocalStorage]
     })
@@ -56,6 +60,7 @@ import {BarcodeScanner} from '@ionic-native/barcode-scanner/ngx';
     Keyboard,
     PayPal,
     BarcodeScanner,
+    HttpClient,
   ],
   bootstrap: [AppComponent],
 })

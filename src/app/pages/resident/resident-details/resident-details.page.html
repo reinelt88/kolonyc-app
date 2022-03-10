@@ -43,7 +43,7 @@
             <ion-item>
                 <ion-label>Ubicacion</ion-label>
 
-                <ionic-selectable #selectComponent [(ngModel)]="selectedHouse" [ngModelOptions]="{standalone: true}" [items]="houses" canSearch="true" searchPlaceholder="Buscar..." itemValueField="id" itemTextField="place" headerColor="danger" searchFailText="No se encuentran resultados">
+                <ionic-selectable #selectComponent [(ngModel)]="selectedHouse" [ngModelOptions]="{standalone: true}" [items]="houses"  searchPlaceholder="Buscar..." itemValueField="id" itemTextField="place" headerColor="danger" searchFailText="No se encuentran resultados">
                     <ng-template ionicSelectableCloseButtonTemplate>
                         <ion-icon name="close-circle"></ion-icon>
                     </ng-template>

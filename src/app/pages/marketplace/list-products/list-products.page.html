@@ -14,7 +14,7 @@
 <ion-item>
     <ion-label>Categoría</ion-label>
 
-    <ionic-selectable #selectComponent [(ngModel)]="category" [items]="categories" canSearch="true" searchPlaceholder="Buscar..." itemValueField="id" itemTextField="name" headerColor="danger" searchFailText="No se encuentran resultados">
+    <ionic-selectable #selectComponent [(ngModel)]="category" [items]="categories"  searchPlaceholder="Buscar..." itemValueField="id" itemTextField="name" headerColor="danger" searchFailText="No se encuentran resultados">
         <ng-template ionicSelectableCloseButtonTemplate>
             <ion-icon name="close-circle"></ion-icon>
         </ng-template>

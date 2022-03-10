@@ -154,7 +154,7 @@ export class ListAccessesPage extends BasePage implements OnInit {
         });
       }
 
-      if (access.houseId !== '') {
+      if (access.houseId) {
         this.houseService.get(access.houseId, this.user.colonyId).subscribe(house => {
           if (house) {
             accessMod.house = this.colonyType + ' ' + house.place + ' #' + house.number;

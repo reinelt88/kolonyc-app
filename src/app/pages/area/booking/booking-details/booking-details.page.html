@@ -1,7 +1,7 @@
 <ion-header>
   <ion-toolbar color="danger">
     <ion-buttons slot="start">
-      <ion-back-button [defaultHref]="['/area-details', areaId]"></ion-back-button>
+      <ion-back-button></ion-back-button>
     </ion-buttons>
     <ion-title>
       {{ viewTitle }}
@@ -84,7 +84,6 @@
 
   <calendar *ngIf="dataLoaded"
             [eventSource]="eventSource"
-            [calendarMode]="calendar.mode"
             [currentDate]="calendar.currentDate"
             [locale]="calendar.locale"
             [noEventsLabel]="calendar.noEventsLabel"
@@ -99,7 +98,7 @@
             [startHour]="calendar.startHour"
             [endHour]="calendar.endHour"
             [step]="30"
-            startingDayWeek="1">
+  >
   </calendar>
 
   <ng-template #monthviewDisplayEventTemplate let-view="view" let-row="row" let-col="col">

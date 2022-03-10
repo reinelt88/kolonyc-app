@@ -22,10 +22,10 @@
                     <ion-col>
                         <div class="ion-text-center">
                             <h4>{{displayName}}</h4>
-                            <ion-select *ngIf="showRoleSwitch" value="Role" [ngModel]="role" (ngModelChange)="roleChange($event)" style="width: 60%; margin: 0 auto;">
-                                <ion-select-option [selected]="role=='ADMIN'" value="ADMIN">Administrador</ion-select-option>
-                                <ion-select-option [selected]="role=='RESIDENT'" value="RESIDENT">Residente</ion-select-option>
-                            </ion-select>
+<!--                            <ion-select *ngIf="showRoleSwitch" value="Role" [ngModel]="role" (ngModelChange)="roleChange($event)" style="width: 60%; margin: 0 auto;">-->
+<!--                                <ion-select-option [selected]="role=='ADMIN'" value="ADMIN">Administrador</ion-select-option>-->
+<!--                                <ion-select-option [selected]="role=='RESIDENT'" value="RESIDENT">Residente</ion-select-option>-->
+<!--                            </ion-select>-->
                             <ion-menu-toggle auto-hide="false">
                                 <ion-button color="light" size="small" [routerDirection]="'root'" [routerLink]="['/my-account']">Mi cuenta</ion-button>
 <!--                                <ion-button *ngIf="role === 'ADMIN' || role === 'RESIDENT'" color="light" size="small" [routerDirection]="'root'" [routerLink]="['/user-switch']">  <ion-icon name="refresh"></ion-icon> Switch</ion-button>-->

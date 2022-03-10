@@ -31,7 +31,7 @@ export class PaymentDetailsPage extends BasePage implements OnInit {
     public attempt = false;
     public defaultErrorMessage = 'Por favor ingrese un valor válido';
     public paymentId = null;
-    public years = [2019, 2020, 2021];
+    public years = [2019, 2020, 2021, 2022, 2023, 2024];
     public types = ['Transferencia', 'Depósito', 'Efectivo'];
     public statuses = ['Pendiente', 'Rechazado', 'Aprobado', 'Realizado'];
     public houses = [];
@@ -63,6 +63,7 @@ export class PaymentDetailsPage extends BasePage implements OnInit {
         private navController: NavController,
     ) {
         super(storageService, toastController);
+        this.paymentId = this.route.snapshot.params.id;
         this.buildForm();
         this.setReferenceNumberValidators();
     }
@@ -106,7 +107,7 @@ export class PaymentDetailsPage extends BasePage implements OnInit {
     }
 
     ngOnInit() {
-        this.paymentId = this.route.snapshot.params.id;
+
         timer(1000).subscribe(() => {
             this.user = this.savedUser;
 

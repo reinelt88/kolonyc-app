@@ -24,7 +24,7 @@
             <ion-item>
                 <ion-label>Mes</ion-label>
                 <ion-select value="Año" okText="Ok" cancelText="Cancelar" formControlName="month">
-                    <ion-select-option [selected]="form.controls.month.value == m.id" *ngFor="let m of months" [value]="m.id">{{m.name}}</ion-select-option>
+                    <ion-select-option *ngFor="let m of months" [value]="m.id">{{m.name}}</ion-select-option>
                 </ion-select>
                 <ion-text color="danger"><small *ngIf="!form.controls.month.valid && attempt">{{defaultErrorMessage}}</small></ion-text>
             </ion-item>
@@ -32,7 +32,7 @@
             <ion-item>
                 <ion-label>Año</ion-label>
                 <ion-select value="Año" okText="Ok" cancelText="Cancelar" formControlName="year">
-                    <ion-select-option [selected]="y == form.controls.year.value" *ngFor="let y of years" [value]="y">{{y}}</ion-select-option>
+                    <ion-select-option *ngFor="let y of years" [value]="y">{{y}}</ion-select-option>
                 </ion-select>
                 <ion-text color="danger"><small *ngIf="!form.controls.year.valid && attempt">{{defaultErrorMessage}}</small></ion-text>
             </ion-item>
@@ -40,7 +40,7 @@
             <ion-item *ngIf="user.role === 'ADMIN'">
                 <ion-label>Ubicacion</ion-label>
 
-                <ionic-selectable #selectComponent [(ngModel)]="selectedHouse" [ngModelOptions]="{standalone: true}" [items]="houses" canSearch="true" searchPlaceholder="Buscar..." itemValueField="id" itemTextField="place" headerColor="danger" searchFailText="No se encuentran resultados">
+                <ionic-selectable #selectComponent [(ngModel)]="selectedHouse" [ngModelOptions]="{standalone: true}" [items]="houses"  searchPlaceholder="Buscar..." itemValueField="id" itemTextField="place" headerColor="danger" searchFailText="No se encuentran resultados">
                     <ng-template ionicSelectableCloseButtonTemplate>
                         <ion-icon name="close-circle"></ion-icon>
                     </ng-template>

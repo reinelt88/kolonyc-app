@@ -50,8 +50,7 @@
         <ion-label position="floating">Colonia</ion-label>
         <ion-select formControlName="colonyId" value="colonyId" okText="Ok" cancelText="Cancelar"
                     (ionChange)="colonyChange($event)">
-          <ion-select-option *ngFor="let colony of colonies" value="{{colony.id}}"
-                             [selected]="user.colonyId == colony.id">{{colony.name}}</ion-select-option>
+          <ion-select-option *ngFor="let colony of colonies" value="{{colony.id}}">{{colony.name}}</ion-select-option>
         </ion-select>
         <ion-text color="danger"><small *ngIf="!form.controls.colonyId.valid && attempt">Por favor seleccione una
           opción</small></ion-text>

@@ -41,7 +41,14 @@
     {
       "files": ["*.html"],
       "extends": ["plugin:@angular-eslint/template/recommended"],
-      "rules": {}
+      "rules": {
+        "@angular-eslint/component-class-suffix": [
+          "error",
+          {
+            "suffixes": ["Page", "Component"]
+          }
+        ]
+      }
     }
   ]
 }
