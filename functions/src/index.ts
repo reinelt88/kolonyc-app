@@ -3,11 +3,12 @@ import * as functions from 'firebase-functions';
 const nodemailer = require('nodemailer');
 const cors = require('cors')({origin: true});
 
+//TODO: add environment variables
 const transporter = nodemailer.createTransport({
     service: 'gmail',
     auth: {
-        user: 'kolonyc.app@gmail.com',
-        pass: 'Diago200212'
+        user: '',
+        pass: ''
     }
 });
 
